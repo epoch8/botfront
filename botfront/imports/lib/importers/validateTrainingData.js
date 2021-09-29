@@ -257,14 +257,16 @@ export class TrainingDataValidator {
         }
     };
 
-    static loadNluFromCsv = (file) => {
+    loadNluFromCsv = async (file) => {
+        if (!file.filename.match(/\.csv$/)) return false;
+
         const common_examples = [];
         file.rawText.split('\n').forEach((row) => {
-            const cols = row.split(',');
-            if (cols.length < 2) return;
+            const cols = row.split(';');
+            if (cols.length !== 2) return;
 
-            const intent_name = cols[0];
-            const example = cols[1];
+            const intent_name = cols[0].trim();
+            const example = cols[1].trim();
             if (!intent_name || !example) return;
 
             common_examples.push({
@@ -273,7 +275,13 @@ export class TrainingDataValidator {
                 entities: [],
             });
         });
-        return { nlu: { common_examples }, language: 'ru' };
+
+        const parsed = { rasa_nlu_data: { common_examples } };
+        try {
+            return { nlu: await this.getNluFromFile(parsed, 'json') };
+        } catch (error) {
+            return { errors: [error.message] };
+        }
     };
 
     loadNluFromMd = async (file) => {
@@ -367,7 +375,7 @@ export class TrainingDataValidator {
         if (file.errors && file.errors.length > 0) return file;
         let loadedFile = await this.loadFromYaml(file);
         if (!loadedFile) loadedFile = await this.loadFromJson(file);
-        if (!loadedFile) loadedFile = TrainingDataValidator.loadNluFromCsv(file);
+        if (!loadedFile) loadedFile = await this.loadNluFromCsv(file);
         if (!loadedFile) loadedFile = await this.loadFromMd(file);
         return { ...file, ...loadedFile };
     };
