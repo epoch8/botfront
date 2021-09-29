@@ -142,7 +142,7 @@ export class TrainingDataValidator {
     convertNluToJson = async (rawText, extension) => {
         // if yaml, we preload to json to avoid mysterious yaml
         // parsing perf issue over at Rasa side
-        
+
         const { data } = await this.axiosClient.post('data/convert/nlu', {
             data: extension === 'yaml' ? safeLoad(rawText) : rawText,
             input_format: extension === 'yaml' ? 'parsed_yaml' : extension,
@@ -257,6 +257,25 @@ export class TrainingDataValidator {
         }
     };
 
+    static loadNluFromCsv = (file) => {
+        const common_examples = [];
+        file.rawText.split('\n').forEach((row) => {
+            const cols = row.split(',');
+            if (cols.length < 2) return;
+
+            const intent_name = cols[0];
+            const example = cols[1];
+            if (!intent_name || !example) return;
+
+            common_examples.push({
+                text: example,
+                intent: intent_name,
+                entities: [],
+            });
+        });
+        return { nlu: { common_examples }, language: 'ru' };
+    };
+
     loadNluFromMd = async (file) => {
         const language = TrainingDataValidator.getLanguageFromMdNluFile(file.rawText);
         const canonicalText = TrainingDataValidator.getCanonicalFromMdNluFile(
@@ -348,6 +367,7 @@ export class TrainingDataValidator {
         if (file.errors && file.errors.length > 0) return file;
         let loadedFile = await this.loadFromYaml(file);
         if (!loadedFile) loadedFile = await this.loadFromJson(file);
+        if (!loadedFile) loadedFile = TrainingDataValidator.loadNluFromCsv(file);
         if (!loadedFile) loadedFile = await this.loadFromMd(file);
         return { ...file, ...loadedFile };
     };

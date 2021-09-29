@@ -1,3 +1,5 @@
+import * as iconv from 'iconv-lite';
+import * as jschardet from 'jschardet';
 import JSZip from 'jszip';
 import { basename } from 'path';
 import { determineDataType } from '../../../lib/importers/common';
@@ -41,8 +43,21 @@ export async function getRawTextAndType(files) {
             if (file?.errors?.length) return file;
             const { filename } = file;
             // files unzipped on the server already have rawText
-            const rawText = file.rawText
-                || (await streamToBuffer(file.createReadStream())).toString('utf8');
+            let rawText = file.rawText
+                || (await streamToBuffer(file.createReadStream()));
+            console.log(typeof rawText);
+            const { encoding } = jschardet.detect(rawText);
+            console.log(encoding);
+            if (encoding !== 'UTF-8' && encoding !== 'ascii') {
+                console.log('converting');
+                if (typeof rawText === 'string') {
+                    rawText = Buffer.from(rawText);
+                }
+                rawText = iconv.decode(rawText, encoding);
+            }
+            if (rawText instanceof Buffer) {
+                rawText.toString('utf-8');
+            }
             if (/\ufffd/.test(rawText)) {
                 // out of range char test
                 return {
@@ -51,7 +66,9 @@ export async function getRawTextAndType(files) {
                     errors: [{ text: 'File is not parseable text.' }],
                 };
             }
+            console.log('ok');
             const dataType = determineDataType(file, rawText);
+            console.log(`dtatType: ${dataType}`);
             if (['unknown', 'empty'].includes(dataType)) {
                 const text = dataType === 'unknown' ? 'Unknown file type' : 'Empty file';
                 return {

@@ -36,6 +36,7 @@ export const determineDataType = (f, rawText) => {
             if (typeof data === 'object' && Object.keys(data).length === 0) return 'empty';
             return 'training_data';
         }
+        if (filename.match(/\.csv$/)) return 'training_data';
         if (filename.match(/^analyticsconfig.ya?ml$/)) return 'analytics';
         if (filename.match(/\.ya?ml$/)) {
             let data;
