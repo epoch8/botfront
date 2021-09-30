@@ -21,6 +21,8 @@ import { Evaluations } from '../../../../api/nlu_evaluation';
 import UploadDropzone from '../../utils/UploadDropzone';
 import { Loading } from '../../utils/Utils';
 import { can } from '../../../../lib/scopes';
+import { readNluFromCsv } from '../../../../lib/nlu.utils';
+import { toUtf8 } from '../../../../lib/encoding.utils';
 import 'react-select/dist/react-select.css';
 
 
@@ -142,15 +144,29 @@ class Evaluation extends React.Component {
 
     loadData(data) {
         const { loading } = this.state;
+        const textData = toUtf8(Buffer.from(data));
+        let parsed;
         try {
-            const parsed = JSON.parse(data);
-            if (loading) this.setState({ data: parsed, loading: false });
+            parsed = JSON.parse(textData);
         } catch (e) {
-            Alert.error('Error: you must upload a JSON file with the same format as an export', {
+            parsed = readNluFromCsv(textData);
+            if (!parsed) {
+                Alert.error('Error: you must upload a JSON or CSV file with the same format as an export', {
+                    position: 'top',
+                    timeout: 'none',
+                });
+                return;
+            }
+        }
+        if (/\ufffd/.test(parsed)) {
+            // out of range char test
+            Alert.error('Error: invalid file encoding', {
                 position: 'top',
                 timeout: 'none',
             });
+            return;
         }
+        if (loading) this.setState({ data: parsed, loading: false });
     }
 
     render() {
@@ -182,27 +198,27 @@ class Evaluation extends React.Component {
                     <br />
                     <Form>
                         {can('nlu-data:x', projectId) && (
-                        <>
-                            <div id='test_set_buttons'>
-                                <InputButtons
-                                    labels={['Use training set', 'Upload test set', 'Use validated examples']}
-                                    operations={[this.useTrainingSet.bind(this), this.useTestSet.bind(this), this.useValidatedSet.bind(this)]}
-                                    defaultSelection={defaultSelection}
-                                    onDefaultLoad={defaultSelection === 2 ? this.evaluate : () => {}}
-                                    selectedIndex={selectedIndex}
-                                />
-                            </div>
-                            {exampleSet === 'test' && <UploadDropzone success={!!data} onDropped={this.loadData} binary={false} />}
-                            {!dataLoading && !errorMessage && (
-                                <div>
-                                    <Button type='submit' basic fluid color='green' loading={evaluating} onClick={this.evaluate} data-cy='start-evaluation'>
-                                        <Icon name='percent' />
-                                    Start evaluation
-                                    </Button>
-                                    <br />
+                            <>
+                                <div id='test_set_buttons'>
+                                    <InputButtons
+                                        labels={['Use training set', 'Upload test set', 'Use validated examples']}
+                                        operations={[this.useTrainingSet.bind(this), this.useTestSet.bind(this), this.useValidatedSet.bind(this)]}
+                                        defaultSelection={defaultSelection}
+                                        onDefaultLoad={defaultSelection === 2 ? this.evaluate : () => {}}
+                                        selectedIndex={selectedIndex}
+                                    />
                                 </div>
-                            )}
-                        </>
+                                {exampleSet === 'test' && <UploadDropzone success={!!data} onDropped={this.loadData} binary />}
+                                {!dataLoading && !errorMessage && (
+                                    <div>
+                                        <Button type='submit' basic fluid color='green' loading={evaluating} onClick={this.evaluate} data-cy='start-evaluation'>
+                                            <Icon name='percent' />
+                                            Start evaluation
+                                        </Button>
+                                        <br />
+                                    </div>
+                                )}
+                            </>
                         )}
                         {!!evaluation && !evaluating && (
                             <Tab menu={{ pointing: true, secondary: true }} panes={this.getPrimaryPanes()} />

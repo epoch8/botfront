@@ -1,16 +1,16 @@
 import * as iconv from 'iconv-lite';
 import * as jschardet from 'jschardet';
 
-export function toUtf8(data) {
-    const { encoding } = jschardet.detect(data);
+/**
+ * @param {Buffer} buffer
+ * @returns {string}
+ */
+export function toUtf8(buffer) {
+    const { encoding } = jschardet.detect(buffer);
     console.log(`Data encoding: ${encoding}`);
     if (encoding === 'UTF-8' || encoding === 'ascii') {
-        if (data instanceof Buffer) {
-            return data.toString('utf-8');
-        }
-        return data;
+        return buffer.toString('utf-8');
     }
-    console.log('Converting');
-    const buf = (typeof data === 'string') ? Buffer.from(data) : data;
-    return iconv.decode(buf, encoding);
+    console.log('Converting to utf-8');
+    return iconv.decode(buffer, encoding);
 }

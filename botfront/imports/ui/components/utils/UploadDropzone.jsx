@@ -49,7 +49,7 @@ export default function UploadDropzone(props) {
 
         reader.onabort = () => handleError('file reading was aborted');
         reader.onerror = () => handleError('file reading has failed');
-        return binary ? reader.readAsBinaryString(file) : reader.readAsText(file);
+        return binary ? reader.readAsArrayBuffer(file) : reader.readAsText(file);
     };
 
     const [{ canDrop, isOver }, drop] = useDrop({

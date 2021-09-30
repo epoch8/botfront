@@ -7,6 +7,7 @@ import { languages as LANGUAGES, langFromCode } from '../languages';
 import { DialogueFragmentValidator } from '../dialogue_fragment_validator';
 import { extractDomain, addCheckpoints } from '../story.utils';
 import { Stories } from '../../api/story/stories.collection';
+import { readNluFromCsv } from '../nlu.utils';
 
 const NLU_ENGLISH_MAPPINGS = {
     common_examples: 'example',
@@ -259,24 +260,7 @@ export class TrainingDataValidator {
 
     loadNluFromCsv = async (file) => {
         if (!file.filename.match(/\.csv$/)) return false;
-
-        const common_examples = [];
-        file.rawText.split('\n').forEach((row) => {
-            const cols = row.split(';');
-            if (cols.length !== 2) return;
-
-            const intent_name = cols[0].trim();
-            const example = cols[1].trim();
-            if (!intent_name || !example) return;
-
-            common_examples.push({
-                text: example,
-                intent: intent_name,
-                entities: [],
-            });
-        });
-
-        const parsed = { rasa_nlu_data: { common_examples } };
+        const parsed = readNluFromCsv(file.rawText);
         try {
             return { nlu: await this.getNluFromFile(parsed, 'json') };
         } catch (error) {

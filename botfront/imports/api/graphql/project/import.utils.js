@@ -42,8 +42,7 @@ export async function getRawTextAndType(files) {
             if (file?.errors?.length) return file;
             const { filename } = file;
             // files unzipped on the server already have rawText
-            const rawText = toUtf8(file.rawText
-                || (await streamToBuffer(file.createReadStream())));
+            const rawText = file.rawText || toUtf8(await streamToBuffer(file.createReadStream()));
             if (/\ufffd/.test(rawText)) {
                 // out of range char test
                 return {
