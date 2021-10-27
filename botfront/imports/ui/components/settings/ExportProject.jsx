@@ -39,7 +39,7 @@ const ExportProject = ({
         setLoading(true);
         const noSpaceName = projectName.replace(/ +/g, '_');
         const options = { conversations: exportConversations, incoming: exportIncoming };
-        Meteor.call('exportRasa', projectId, exportLanguage, options, (err, rasaDataZip) => {
+        Meteor.apply('exportRasa', [projectId, exportLanguage, options], { noRetry: true }, (err, rasaDataZip) => {
             if (err) {
                 setErrorMessage({ header: 'Export Failed!', text: err.message });
                 setExportSuccessful(false);
@@ -58,13 +58,13 @@ const ExportProject = ({
                             saveAs(blob, `${noSpaceName}_${date}.zip`);
                         });
                 });
-              
+
                 setExportSuccessful(true);
                 setLoading(false);
             }
         });
     };
-    
+
 
     if (ExportSuccessful === true) {
         return (
@@ -120,7 +120,7 @@ const ExportProject = ({
                     key='exportIncoming'
                 />
             </>
-            
+
             <br />
 
             <Button
@@ -131,8 +131,8 @@ const ExportProject = ({
                 <Icon name='download' />
                     Export project for Rasa or Botfront
             </Button>
-            
-           
+
+
         </>
     );
 };

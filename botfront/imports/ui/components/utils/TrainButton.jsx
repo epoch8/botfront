@@ -72,7 +72,7 @@ class TrainButton extends React.Component {
             project: { _id: projectId },
         } = this.context;
         Meteor.call('project.markTrainingStarted', projectId);
-        Meteor.call('rasa.train', projectId, target, wrapMeteorCallback());
+        Meteor.apply('rasa.train', [projectId, target, wrapMeteorCallback()], { noRetry: true });
     };
 
     showModal = (env, visible) => {
@@ -232,7 +232,7 @@ class TrainButton extends React.Component {
             project: { _id: projectId },
         } = this.context;
         const { webhook } = this.state;
-        const isTest = !!window.Cypress
+        const isTest = !!window.Cypress;
 
         try {
             if (!webhook.url || !webhook.method) {

@@ -357,7 +357,15 @@ if (Meteor.isServer) {
                     rasa_nlu_data: (await getNluDataAndConfig(projectId, language))
                         .rasa_nlu_data,
                 };
-                const client = await createAxiosForRasa(projectId, { timeout: 60 * 60 * 1000 }, { language });
+                const client = await createAxiosForRasa(
+                    projectId,
+                    {
+                        timeout: process.env.EVALUATION_TIMEOUT || 0,
+                        maxContentLength: process.env.EVALUATION_MAX_CONTENT_LEN || Infinity,
+                        maxBodyLength: process.env.EVALUATION_MAX_BODY_LEN || Infinity,
+                    },
+                    { language },
+                );
                 addLoggingInterceptors(client, appMethodLogger);
                 axiosRetry(client, {
                     retries: 3,
