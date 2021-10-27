@@ -291,8 +291,13 @@ if (Meteor.isServer) {
                 const client = await createAxiosForRasa(projectId, { timeout: process.env.TRAINING_TIMEOUT || 0 });
                 addLoggingInterceptors(client, appMethodLogger);
                 const trainingClient = await createAxiosForRasa(projectId,
-                    { timeout: process.env.TRAINING_TIMEOUT || 0, responseType: 'arraybuffer' });
-                
+                    {
+                        timeout: process.env.TRAINING_TIMEOUT || 0,
+                        responseType: 'arraybuffer',
+                        maxContentLength: process.env.TRAINING_MAX_CONTENT_LEN || Infinity,
+                        maxBodyLength: process.env.TRAINING_MAX_BODY_LEN || Infinity,
+                    });
+
                 addLoggingInterceptors(trainingClient, appMethodLogger);
                 const trainingResponse = await trainingClient.post(
                     '/model/train',
