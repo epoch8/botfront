@@ -228,12 +228,12 @@ if (Meteor.isServer) {
             check(target, String);
             check(projectId, String);
             check(isTest, Boolean);
-            await Meteor.callWithPromise('rasa.train', projectId, 'development');
-            await Meteor.callWithPromise('commitAndPushToRemote', projectId, 'chore: deployment checkpoint');
-            const result = await runTestCases(projectId);
-            if (result.failing !== 0) {
-                throw new Meteor.Error('500', `${result.failing} test${result.failing === 1 ? '' : 's'} failed during the pre-deployment test run`);
-            }
+            // await Meteor.callWithPromise('rasa.train', projectId, 'development');
+            // await Meteor.callWithPromise('commitAndPushToRemote', projectId, 'chore: deployment checkpoint');
+            // const result = await runTestCases(projectId);
+            // if (result.failing !== 0) {
+            //     throw new Meteor.Error('500', `${result.failing} test${result.failing === 1 ? '' : 's'} failed during the pre-deployment test run`);
+            // }
             const { namespace, gitSettings } = await Projects.findOne({ _id: projectId }, { fields: { namespace: 1, gitSettings: 1 } });
             const data = {
                 projectId,
@@ -251,8 +251,8 @@ if (Meteor.isServer) {
             if (resp === undefined) throw new Meteor.Error('500', 'No response from the deployment webhook');
             if (resp.status === 404) throw new Meteor.Error('404', 'Deployment webhook not Found');
             if (resp.status !== 200) throw new Meteor.Error('500', `Deployment webhook: ${get(resp, 'data.detail', false) || ' rejected upload.'}`);
-            if (!resp.data.message || resp.data.message === ''){
-                resp.data.message = "Your project is being deployed."
+            if (!resp.data.message || resp.data.message === '') {
+                resp.data.message = 'Your project is being deployed.';
             }
             return resp;
         },
