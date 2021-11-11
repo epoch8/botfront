@@ -87,7 +87,7 @@ class Evaluation extends React.Component {
 
         const { data } = this.state;
 
-        Meteor.call('rasa.evaluate.nlu', projectId, workingLanguage, data, (err) => {
+        Meteor.apply('rasa.evaluate.nlu', [projectId, workingLanguage, data], { noRetry: true }, (err) => {
             this.setState({ evaluating: false });
             if (err) {
                 Alert.error(`Error: ${JSON.stringify(err.reason)}`, {
