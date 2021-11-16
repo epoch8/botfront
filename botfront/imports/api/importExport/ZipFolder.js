@@ -14,5 +14,5 @@ export class ZipFolder {
         this.zipContainer = this.zipContainer.file(`${this.filePrefix}${fileName}`, rasaComponentBlob);
     }
 
-    generateBlob = () => this.zipContainer.generateAsync({ type: 'base64' })
+    generateBlob = (output_type = 'base64') => this.zipContainer.generateAsync({ type: output_type })
 }

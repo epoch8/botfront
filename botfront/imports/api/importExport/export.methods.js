@@ -63,14 +63,12 @@ if (Meteor.isServer) {
     };
 
     const deletePathsNotInZip = (dir, zip, exclusions) => Promise.all(
-            glob.sync(join('**', '*'), {
-                cwd: dir,
-                nodir: true,
-                ignore: [...exclusions, ...Object.keys(zip.files)]
-            }).map((path) => {
-                return fs.promises.unlink(join(dir, path));
-            }),
-        );
+        glob.sync(join('**', '*'), {
+            cwd: dir,
+            nodir: true,
+            ignore: [...exclusions, ...Object.keys(zip.files)],
+        }).map(path => fs.promises.unlink(join(dir, path))),
+    );
 
     const extractZip = (dir, zip) => Promise.all(
         Object.entries(zip.files).map(async ([path, item]) => {
@@ -676,7 +674,7 @@ if (Meteor.isServer) {
             }
 
             if (options.noBlob) return rasaZip.zipContainer;
-            return rasaZip.generateBlob();
+            return rasaZip.generateBlob('uint8array');
         },
     });
 }
