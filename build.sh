@@ -2,4 +2,4 @@
 
 VERSION=$(cat version)
 
-docker build -t eu.gcr.io/e8-gke/botfront:$VERSION .
+docker build -t ghcr.io/epoch8/botfront/botfront:$VERSION .

@@ -106,7 +106,7 @@ export const getExamples = async ({
                 },
             },
         },
-    ]);
+    ]).allowDiskUse(true);
 
     const cursorIndex = !cursor
         ? 0
