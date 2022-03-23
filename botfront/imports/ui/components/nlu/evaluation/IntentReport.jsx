@@ -1,9 +1,11 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Tab } from 'semantic-ui-react';
+import { Tab, Button, Icon } from 'semantic-ui-react';
 import KeyMetrics from './KeyMetrics';
 import ReportTable from './ReportTable';
 import PredictionTable from './PredictionTable';
+
+import { reportToCsv } from '../../../../lib/nlu.utils';
 
 export default class IntentReport extends React.Component {
     getPanes() {
@@ -23,6 +25,11 @@ export default class IntentReport extends React.Component {
         return tabs;
     }
 
+    exportReport() {
+        const { predictions } = this.props;
+        console.log(reportToCsv(predictions));
+    }
+
     render() {
         const { accuracy, precision, f1_score: f1 } = this.props;
         return (
@@ -35,6 +42,11 @@ export default class IntentReport extends React.Component {
                 />
                 <br />
                 <br />
+                <Button type='submit' basic fluid color='blue' onClick={() => this.exportReport()} data-cy='export-evaluation-results'>
+                    <Icon name='download' />
+                    Download report
+                </Button>
+                <br />
                 <Tab
                     menu={{ pointing: true, secondary: true }}
                     panes={this.getPanes()}
@@ -45,7 +57,7 @@ export default class IntentReport extends React.Component {
 }
 
 IntentReport.propTypes = {
-    report: PropTypes.string.isRequired,
+    report: PropTypes.object.isRequired,
     accuracy: PropTypes.number.isRequired,
     precision: PropTypes.number.isRequired,
     f1_score: PropTypes.number.isRequired,

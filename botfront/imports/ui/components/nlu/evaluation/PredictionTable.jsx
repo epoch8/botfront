@@ -84,6 +84,6 @@ export default function PredictionTable(props) {
 }
 
 PredictionTable.propTypes = {
-    predictions: PropTypes.object.isRequired,
+    predictions: PropTypes.array.isRequired,
     labelType: PropTypes.string.isRequired,
 };
