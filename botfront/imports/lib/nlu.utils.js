@@ -1,3 +1,4 @@
+import { stringify as csvStringify } from 'csv-stringify/lib/sync';
 
 /**
  * @param {string} rawText
@@ -37,4 +38,23 @@ export function readNluFromCsv(rawText) {
     });
 
     return { rasa_nlu_data: { common_examples: commonExamples } };
+}
+
+
+/**
+ * @param {Array<Object>} predictions
+ * @returns {string}
+ */
+export function reportToCsv(predictions) {
+    const rows = predictions.map((pred) => {
+        const {
+            text, intent, predicted, confidence,
+        } = pred;
+
+        return [text, intent, predicted, confidence, (intent === predicted) ? 1 : 0];
+    });
+    return csvStringify(rows, {
+        columns: ['text', 'category', 'prediction', 'score', 'is_correct'],
+        header: true,
+    });
 }
