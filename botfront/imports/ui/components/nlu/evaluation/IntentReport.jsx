@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Tab, Button, Icon } from 'semantic-ui-react';
+import { saveAs } from 'file-saver';
+
 import KeyMetrics from './KeyMetrics';
 import ReportTable from './ReportTable';
 import PredictionTable from './PredictionTable';
+
 
 import { reportToCsv } from '../../../../lib/nlu.utils';
 
@@ -27,7 +30,9 @@ export default class IntentReport extends React.Component {
 
     exportReport() {
         const { predictions } = this.props;
-        console.log(reportToCsv(predictions));
+        const csvData = reportToCsv(predictions);
+        const date = (new Date()).toISOString();
+        saveAs(new Blob([csvData]), `intent_report_${date}.csv`);
     }
 
     render() {

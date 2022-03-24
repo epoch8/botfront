@@ -1,4 +1,4 @@
-import { stringify as csv_stringify } from 'csv/sync';
+import { stringify as csvStringify } from 'csv-stringify/lib/sync';
 
 /**
  * @param {string} rawText
@@ -53,5 +53,8 @@ export function reportToCsv(predictions) {
 
         return [text, intent, predicted, confidence, (intent === predicted) ? 1 : 0];
     });
-    return csv_stringify(rows, { columns: ['text', 'category', 'prediction', 'score', 'is_correct'] });
+    return csvStringify(rows, {
+        columns: ['text', 'category', 'prediction', 'score', 'is_correct'],
+        header: true,
+    });
 }
