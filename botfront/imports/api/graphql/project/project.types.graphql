@@ -4,6 +4,7 @@ type Query {
         cursor: String
         pageSize: Int = 20
     ): ProjectGitHistoryPage
+    exportProject(projectId: String!): exportData
 }
 
 type ProjectGitHistoryPage {
@@ -47,5 +48,10 @@ type FileMessage{
     info: [ImportSummaryEntry]
     conflicts: Boolean
     filename: String
+}
+
+type exportData{
+    projectId: String
+    data: Any
 }
 

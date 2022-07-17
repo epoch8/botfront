@@ -18,6 +18,16 @@ export default {
                 },
             };
         },
+        exportProject: async (_, args, context) => {
+            const zipData = await addMeteorUserToCall(
+                context.user,
+                () => Meteor.callWithPromise('exportRasa', args.projectId, 'all', {}),
+            );
+            return {
+                projectId: args.projectId,
+                data: zipData,
+            };
+        },
     },
     Mutation: {
         async import(_, args, context) {
