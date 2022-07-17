@@ -1,5 +1,12 @@
 type Query {
     getForms(projectId: String!, ids: [String]): [Form]
+    getFormResults(
+        projectId: String!,
+        environment: Environement,
+        formName: String,
+        dateStart: String,
+        dateEnd: String,
+    ): [FormResult]
 }
 
 type Subscription {
@@ -40,6 +47,19 @@ type Form {
     pinned: Boolean
     graph_elements: Any
     updatedAt: Float
+}
+
+type FormResult {
+     _id: String
+    projectId: String
+    environment: String
+    language: String
+    results: Any
+    conversationId: String
+    userId: String
+    formName: String
+    latestInputChannel: String
+    date: Any
 }
 
 type SlotToFill {

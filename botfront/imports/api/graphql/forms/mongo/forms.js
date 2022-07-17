@@ -22,6 +22,24 @@ export const deleteForms = async ({ projectId, ids }) => {
     return [];
 };
 
+export const getFormResults = async (
+    projectId,
+    environment = null,
+    formName = null,
+    dateStart = null,
+    dateEnd = null,
+) => {
+    const filter = { projectId };
+    if (environment) filter.environment = environment;
+    if (formName) filter.formName = formName;
+    if (dateStart || dateEnd) {
+        filter.date = {};
+        if (dateStart) filter.date.$gte = new Date(dateStart);
+        if (dateEnd) filter.date.$lt = new Date(dateEnd);
+    }
+    return FormResults.find(filter, {}, { sort: { date: 1 } }).lean();
+};
+
 const addNewSlots = async (projectId, slots) => {
     slots.forEach(({ name }) => {
         const slotData = { name, type: 'unfeaturized', projectId };

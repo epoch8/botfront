@@ -1,6 +1,7 @@
 import { RegularExpression } from 'graphql-scalars';
 import {
     getForms,
+    getFormResults,
     upsertForm,
     deleteForms,
     submitForm,
@@ -49,6 +50,16 @@ export default {
         getForms: async (_, args, context) => {
             checkIfCan('stories:r', args.projectId, context.user._id);
             return getForms(args.projectId, args.ids);
+        },
+        getFormResults: async (_, args, context) => {
+            checkIfCan('stories:r', args.projectId, context.user._id);
+            return getFormResults(
+                args.projectId,
+                args.environment,
+                args.formName,
+                args.dateStart,
+                args.dateEnd,
+            );
         },
     },
     Mutation: {
