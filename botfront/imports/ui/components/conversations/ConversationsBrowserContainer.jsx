@@ -29,6 +29,7 @@ const ConversationsBrowserContainer = (props) => {
         setFiltersInRedux,
         filtersFromRedux,
         changeWorkingEnv,
+        labeling,
     } = props;
     if (!router) {
         return <></>;
@@ -252,6 +253,7 @@ const ConversationsBrowserContainer = (props) => {
         setActiveFilters,
         handleDownloadConversations,
         changeFilters,
+        labeling,
     };
 
     if (activeFilters && !loading && !error) {
@@ -307,12 +309,14 @@ ConversationsBrowserContainer.propTypes = {
     setFiltersInRedux: PropTypes.func.isRequired,
     filtersFromRedux: PropTypes.object,
     changeWorkingEnv: PropTypes.func.isRequired,
+    labeling: PropTypes.bool,
 };
 
 ConversationsBrowserContainer.defaultProps = {
     environment: 'development',
     filtersFromRedux: {},
     conversationFilters: '',
+    labeling: false,
 };
 
 const mapStateToProps = state => ({

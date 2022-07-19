@@ -4,6 +4,7 @@ import { useMutation } from '@apollo/react-hooks';
 import Alert from 'react-s-alert';
 import { browserHistory } from 'react-router';
 import {
+    Button,
     Grid, Icon, Menu, Message, Pagination,
 } from 'semantic-ui-react';
 
@@ -26,12 +27,14 @@ function ConversationsBrowser(props) {
         changeFilters,
         handleDownloadConversations,
         projectId,
+        labeling,
     } = props;
 
     const [deleteConv, { data }] = useMutation(DELETE_CONV);
     const [optimisticRemoveReadMarker, setOptimisticRemoveReadMarker] = useState(
         new Set(),
     );
+    const [convLabel, setConvLabel] = useState(null);
 
     useEffect(() => {
         if (data && !data.delete.success) {
@@ -147,6 +150,38 @@ function ConversationsBrowser(props) {
             </Message>
         </Grid.Row>
     );
+    const handleConversationLabelChange = (label, active) => {
+        console.log('handleConversationLabelButtonClick');
+        console.log(label);
+        setConvLabel(active ? null : label);
+    };
+    const renderConversationLabelButtons = () => {
+        const buttons = [
+            ['Запрос удовлетворён', 'success'],
+            ['Провал', 'fail'],
+            ['Непонятно', '+-'],
+            ['Мусор', 'trash'],
+        ].map(([text, value]) => {
+            const active = value === convLabel;
+            return (
+                <Button
+                    onClick={() => handleConversationLabelChange(value, active)}
+                    key={value}
+                    active={active}
+                    color={active ? 'blue' : null}
+                >
+                    {text}
+                </Button>
+            );
+        });
+        return (
+            <Grid.Row>
+                <Button.Group fluid>
+                    {buttons}
+                </Button.Group>
+            </Grid.Row>
+        );
+    };
     const renderBody = () => (
         <>
             <Grid.Column width={5}>
@@ -177,6 +212,7 @@ function ConversationsBrowser(props) {
                     optimisticlyRemoved={optimisticRemoveReadMarker}
                     onCreateTestCase={createTestCase}
                 />
+                {labeling ? renderConversationLabelButtons() : <></>}
             </Grid.Column>
         </>
     );
@@ -212,12 +248,14 @@ ConversationsBrowser.propTypes = {
     changeFilters: PropTypes.func.isRequired,
     handleDownloadConversations: PropTypes.func.isRequired,
     projectId: PropTypes.string.isRequired,
+    labeling: PropTypes.bool,
 };
 
 ConversationsBrowser.defaultProps = {
     pages: 1,
     trackers: [],
     activeConversationId: null,
+    labeling: false,
 };
 
 export default ConversationsBrowser;

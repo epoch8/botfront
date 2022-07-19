@@ -44,6 +44,10 @@ export default function Incoming(props) {
             return (
                 <ConversationsBrowserContainer />
             );
+        case 'labeling':
+            return (
+                <ConversationsBrowserContainer labeling />
+            );
         case 'forms':
             return (
                 <FormResults />
@@ -59,6 +63,7 @@ export default function Incoming(props) {
         [
             { value: 'newutterances', text: 'New Utterances' },
             { value: 'conversations', text: 'Conversations' },
+            { value: 'labeling', text: 'Conversation labeling' },
             { value: 'forms', text: 'Form results' },
             { value: 'populate', text: 'Populate' },
         ].map(({ value, text }) => (
@@ -83,7 +88,7 @@ export default function Incoming(props) {
                     )}
                 </Menu.Item>
                 <Menu.Item>
-                    {['conversations', 'forms'].includes(activeTab)
+                    {['conversations', 'labeling', 'forms'].includes(activeTab)
                         ? null
                         : <LanguageDropdown />
                     }

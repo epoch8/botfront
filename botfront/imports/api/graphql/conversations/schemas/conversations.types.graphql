@@ -1,7 +1,7 @@
 type Query {
     conversationsPage(
-        
-        projectId: String!, 
+
+        projectId: String!,
         """ Page requested (1 if you want all results)"""
         page: Int,
         """ The number of conversations per page (-1 for all results in one page) """
@@ -38,7 +38,7 @@ type Query {
         userInitiatedConversations: Boolean,
         """" include stories that are start with a trigger intent """
         triggeredConversations: Boolean,
-       
+
     ): Pagination
     conversation(projectId: String!, id: String, senderId: String): ConversationContainer!
     intentsInConversations(projectId: String!): [String]
@@ -63,6 +63,7 @@ type Mutation {
     markAsRead(id: String!): updateResponse!
     updateStatus(id: String!, status: String): updateResponse!
     delete(id: String!): updateResponse!
+    setConversationLabel(id: String!, label: String): updateResponse!
     importConversations(
         conversations: [ConversationContainerInput]!
         projectId: String!

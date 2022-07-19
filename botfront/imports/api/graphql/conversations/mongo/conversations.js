@@ -61,7 +61,7 @@ const createMatchingSteps = ({
         },
         countMatchesPerConversation('$tracker.events'),
         // that part check the order of the elements in the sequence, and store then in a dedicated field if they match
-       
+
         {
             $set: {
                 matching: {
@@ -106,7 +106,7 @@ export const createFilterObject = ({
                 { 'tracker.events.confidence': { [mongo]: confidenceFilter } }],
         }];
     }
-   
+
     if (startDate && endDate) {
         filters.$and = dateRangeCondition(moment(startDate).unix(), moment(endDate).unix());
     }
@@ -156,7 +156,7 @@ export const getConversations = async ({
         },
         'query',
     );
- 
+
 
     const sequenceMatchingSteps = createMatchingSteps({
         eventFilterOperator,
@@ -164,7 +164,7 @@ export const getConversations = async ({
     });
 
     const sortObject = createSortObject(sort);
-    
+
 
     let lengthFilterStages = [];
     if (xThanLength && lengthFilter > 0) {
@@ -293,7 +293,7 @@ export const getIntents = async (projectId) => {
             projectId,
         }, 'intents',
     ).lean();
-    
+
     const intents = intentsOfConversation.map(conversation => conversation.intents);
     return Array.from(new Set(intents.flat()));
 };
@@ -304,4 +304,8 @@ export const updateConversationStatus = async (id, status) => (
 
 export const deleteConversation = async id => (
     Conversations.deleteOne({ _id: id }).exec()
+);
+
+export const updateConversationLabel = async (id, label) => (
+    Conversations.updateOne({ _id: id }, { $set: { label } }).exec()
 );
