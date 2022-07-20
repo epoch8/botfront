@@ -1,5 +1,5 @@
 type Query {
-    getForms(projectId: String!, ids: [String]): [Form]
+    getForms(projectId: String, ids: [String]): [Form]
     getFormResults(
         projectId: String!,
         environment: Environement,

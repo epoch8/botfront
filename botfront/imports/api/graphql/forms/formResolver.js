@@ -49,7 +49,8 @@ export default {
     Query: {
         getForms: async (_, args, context) => {
             checkIfCan('stories:r', args.projectId, context.user._id);
-            return getForms(args.projectId, args.ids);
+            const forms = await getForms(args.projectId, args.ids);
+            return forms.filter(form => checkIfCan('stories:r', form.projectId, context.user._id));
         },
         getFormResults: async (_, args, context) => {
             checkIfCan('stories:r', args.projectId, context.user._id);
