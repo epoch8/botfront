@@ -7,9 +7,11 @@ import { auditLogIfOnServer } from '../../../../lib/utils';
 import { combineSearches } from '../../story/mongo/stories';
 import { deleteResponsesRemovedFromStories } from '../../botResponses/mongo/botResponses';
 
-export const getForms = async (projectId, ids = null) => {
-    if (!ids) return Forms.find({ projectId }, {}, { sort: { name: 1 } }).lean();
-    return Forms.find({ projectId, _id: { $in: ids } }, {}, { sort: { name: 1 } }).lean();
+export const getForms = async (projectId = null, ids = null) => {
+    const filter = {};
+    if (projectId) filter.projectId = projectId;
+    if (ids) filter._id = { $in: ids };
+    return Forms.find(filter, {}, { sort: { projectId: 1, name: 1 } }).lean();
 };
 
 export const deleteForms = async ({ projectId, ids }) => {
