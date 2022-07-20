@@ -10,6 +10,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import {
     AutoForm, ErrorsField, SubmitField, TextField,
 } from 'uniforms-semantic';
+import { withTranslation } from 'react-i18next';
 import { wrapMeteorCallback } from '../utils/Errors';
 import { GlobalSettings } from '../../../api/globalSettings/globalSettings.collection';
 
@@ -30,14 +31,14 @@ class LoginComponent extends React.Component {
 
     constructor(props) {
         super(props);
-       
+
         Meteor.call('users.checkEmpty', wrapMeteorCallback((err, res) => {
             if (res) {
                 browserHistory.push('/setup/welcome');
             }
         }));
-            
-       
+
+
         this.state = {
             loggingIn: false,
             loggedOut: !Meteor.userId,
@@ -85,6 +86,7 @@ class LoginComponent extends React.Component {
     };
 
     render() {
+        const { t } = this.props;
         const reCaptchaRef = (el) => {
             this.reCaptchaRef = el;
         };
@@ -96,18 +98,18 @@ class LoginComponent extends React.Component {
                     <Segment className='account-block'>
                         <AutoForm model={{}} schema={this.loginFormSchemaBridge} onSubmit={this.handleLogin} className='ui large account-form' disabled={loggingIn}>
                             <ErrorsField />
-                            <TextField name='email' iconLeft='user' placeholder='Email' type='email' label={null} data-cy='login-field' />
-                            <TextField name='password' iconLeft='lock' placeholder='Password' type='password' label={null} data-cy='password-field' />
+                            <TextField name='email' iconLeft='user' placeholder={t('Email')} type='email' label={null} data-cy='login-field' />
+                            <TextField name='password' iconLeft='lock' placeholder={t('Password')} type='password' label={null} data-cy='password-field' />
                             {reCatpchaSiteKey && (
                                 <div>
                                     <ReCAPTCHA sitekey={reCatpchaSiteKey} onChange={this.onCaptcha} ref={reCaptchaRef} />
                                     <br />
                                 </div>
                             )}
-                            <SubmitField value='LOGIN' className='black large basic fluid' disabled={reCatpchaSiteKey && !reCaptcha} data-cy='login-button' />
+                            <SubmitField value={t('LOGIN')} className='black large basic fluid' disabled={reCatpchaSiteKey && !reCaptcha} data-cy='login-button' />
                             <br />
                             <Link style={{ color: '#000' }} to='/forgot-password'>
-                                Forgot your password?
+                                {t('Forgot your password?')}
                             </Link>
                         </AutoForm>
                     </Segment>
@@ -138,4 +140,5 @@ const LoginContainer = withTracker(() => {
         settings,
     };
 })(LoginComponent);
-export default LoginContainer;
+export default withTranslation('account')(LoginContainer);
+// export default LoginContainer;
