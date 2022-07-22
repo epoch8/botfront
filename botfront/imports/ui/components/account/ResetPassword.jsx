@@ -11,6 +11,7 @@ import { Meteor } from 'meteor/meteor';
 import ReCAPTCHA from 'react-google-recaptcha';
 import PropTypes from 'prop-types';
 import { passwordComplexityRegex } from '../../../api/user/user.methods';
+import { withTranslation } from 'react-i18next';
 import { wrapMeteorCallback } from '../utils/Errors';
 import { GlobalSettings } from '../../../api/globalSettings/globalSettings.collection';
 
@@ -88,6 +89,7 @@ class ResetPassword extends React.Component {
     );
 
     render() {
+        const { t } = this.props;
         const reCaptchaRef = (el) => {
             this.reCaptchaRef = el;
         };
@@ -97,15 +99,15 @@ class ResetPassword extends React.Component {
             <Segment>
                 <AutoForm model={{}} schema={resetPasswordSchemaBridge} onSubmit={this.handleResetPassword} className='ui large' disabled={loading}>
                     <ErrorsField />
-                    <TextField name='password' iconLeft='lock' placeholder='Password' type='password' label={null} />
-                    <TextField name='passwordVerify' iconLeft='lock' placeholder='Repeat password' type='password' label={null} />
+                    <TextField name='password' iconLeft='lock' placeholder={t('Password')} type='password' label={null} />
+                    <TextField name='passwordVerify' iconLeft='lock' placeholder={t('Repeat password')} type='password' label={null} />
                     {reCatpchaSiteKey && (
                         <div>
                             <ReCAPTCHA sitekey={reCatpchaSiteKey} onChange={this.onCaptcha} ref={reCaptchaRef} />
                             <br />
                         </div>
                     )}
-                    <SubmitField value='RESET YOUR PASSWORD' className='black large basic fluid' disabled={reCatpchaSiteKey && !reCaptcha} />
+                    <SubmitField value={t('RESET YOUR PASSWORD')} className='black large basic fluid' disabled={reCatpchaSiteKey && !reCaptcha} />
                 </AutoForm>
             </Segment>
         );
@@ -125,4 +127,4 @@ export default withTracker(() => {
     return {
         settings,
     };
-})(ResetPassword);
+})(withTranslation('account')(ResetPassword));
