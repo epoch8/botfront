@@ -87,6 +87,7 @@ type ConversationContainer {
     createdAt: String
     env: String
     language: String
+    label: String
 }
 
 input ConversationContainerInput {

@@ -1,7 +1,10 @@
 import React, { useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import ReactJson from 'react-json-view';
-import { Comment, Message } from 'semantic-ui-react';
+import {
+    Button, Comment, Grid, Message,
+} from 'semantic-ui-react';
 import { generateTurns } from './utils';
 
 import UserUtteredEventViewer from '../example_editor/UserUtteredEventViewer';
@@ -36,23 +39,62 @@ BotResponse.defaultProps = {
 };
 
 function Turn({
-    userSays, userId, botResponses, userRef,
+    userSays,
+    userId,
+    botResponses,
+    userRef,
+    trackerIndex,
+    label,
+    labeling,
+    onLabelChange,
 }) {
     if (!userSays && botResponses.length === 0) {
         return null;
     }
 
-    return (
+    const { t } = useTranslation('conversation');
+
+    const renderLabelButtons = () => {
+        const buttons = [
+            [t('полный ответ'), 'full answer'],
+            [t('нет сценария'), 'no story'],
+            [t('ошибка распознавания'), 'misclassification'],
+            [t('сложная формулировка'), 'complicated wording'],
+            [t('мусор'), 'trash'],
+            [t('баг в сценарии'), 'bug in story'],
+        ].map(([text, value]) => {
+            const active = label === value;
+            const labelValue = active ? label : null;
+            return (
+                <Button
+                    onClick={() => onLabelChange && onLabelChange(trackerIndex, labelValue)}
+                    key={value}
+                    active={active}
+                    color={active ? 'blue' : null}
+                >
+                    {text}
+                </Button>
+            );
+        });
+        return (
+            <Button.Group vertical>
+                {buttons}
+            </Button.Group>
+        );
+    };
+
+    const comment = (
         <Comment>
-            {userSays && ([
-                <div ref={userRef} />,
-                <Comment.Avatar src='/images/avatars/matt.jpg' />,
-                <UserUtteredEventViewer
-                    event={userSays}
-                    author={userId}
-                />,
-                
-            ])}
+            {userSays && (
+                <>
+                    <div ref={userRef} />
+                    <Comment.Avatar src='/images/avatars/matt.jpg' />
+                    <UserUtteredEventViewer
+                        event={userSays}
+                        author={userId}
+                    />
+                </>
+            )}
             <Comment.Group>
                 <Comment>
                     <Comment.Avatar src='/images/avatars/mrbot.png' />
@@ -74,6 +116,21 @@ function Turn({
             </Comment.Group>
         </Comment>
     );
+
+    if (labeling) {
+        return (
+            <Grid>
+                <Grid.Column width={12}>
+                    {comment}
+                </Grid.Column>
+                <Grid.Column>
+                    {renderLabelButtons()}
+                </Grid.Column>
+            </Grid>
+        );
+    }
+
+    return comment;
 }
 
 Turn.propTypes = {
@@ -81,21 +138,25 @@ Turn.propTypes = {
     userId: PropTypes.string,
     botResponses: PropTypes.arrayOf(PropTypes.object).isRequired,
     userRef: PropTypes.object,
+    onLabelChange: PropTypes.func,
 };
 
 Turn.defaultProps = {
     userSays: null,
     userId: null,
     userRef: null,
+    onLabelChange: null,
 };
 
 function ConversationDialogueViewer({
     conversation: { tracker, userId },
     mode,
     messageIdInView,
+    labeling,
+    onLabelChange,
 }) {
     const toScrollTo = React.createRef();
-    
+
     const turns = useMemo(() => generateTurns(tracker, mode === 'debug'), [tracker]);
     useEffect(() => {
         if (toScrollTo.current) {
@@ -106,12 +167,18 @@ function ConversationDialogueViewer({
     return (
         <Comment.Group>
             {turns.length > 0 ? (
-                turns.map(({ userSays, botResponses, messageId }, index) => (
+                turns.map(({
+                    userSays, botResponses, messageId, label, trackerIndex,
+                }, index) => (
                     <React.Fragment key={`dialogue-turn-${index}`}>
                         <Turn
                             userSays={userSays}
                             userId={userId}
                             botResponses={botResponses}
+                            trackerIndex={trackerIndex}
+                            label={label}
+                            labeling={labeling}
+                            onLabelChange={onLabelChange}
                             // eslint-disable-next-line camelcase
                             userRef={messageId === messageIdInView ? toScrollTo : null}
                         />
@@ -139,11 +206,15 @@ ConversationDialogueViewer.propTypes = {
     conversation: PropTypes.object.isRequired,
     mode: PropTypes.string,
     messageIdInView: PropTypes.string,
+    labeling: PropTypes.bool,
+    onLabelChange: PropTypes.func,
 };
 
 ConversationDialogueViewer.defaultProps = {
     mode: 'text',
     messageIdInView: '',
+    labeling: false,
+    onLabelChange: null,
 };
 
 export default ConversationDialogueViewer;

@@ -139,6 +139,5 @@ export default {
         createdAt: (parent, _, __) => parent.createdAt,
         env: (parent, _, __) => parent.env,
         language: (parent, _, __) => parent.language,
-        label: (parent, _, __) => parent.label,
     },
 };

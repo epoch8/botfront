@@ -13,3 +13,10 @@ mutation deleteConv($id: String!) {
       success
     }
 }`;
+
+export const LABEL_CONV = gql`
+mutation setConversationLabel($id: String!, $label: String) {
+    setConversationLabel(id: $id, label: $label){
+      success
+    }
+}`;

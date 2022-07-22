@@ -5,9 +5,10 @@ export function generateTurns(tracker, debug = false, tzOffset = null) {
     let currentTurn = {
         userSays: null,
         botResponses: [],
+        label: null,
     };
     const buttonValues = {};
-    tracker.events.forEach((event) => {
+    tracker.events.forEach((event, index) => {
         const type = event.event;
 
         if (type === 'user' && !!event.text) {
@@ -36,6 +37,8 @@ export function generateTurns(tracker, debug = false, tzOffset = null) {
                     ...currentTurn,
                     userSays,
                     messageId: event.message_id,
+                    label: event.metadata ? event.metadata.label || null : null,
+                    trackerIndex: index,
                 };
             } else {
                 // Finish previous turn and init a new one
@@ -44,6 +47,8 @@ export function generateTurns(tracker, debug = false, tzOffset = null) {
                     userSays,
                     botResponses: [],
                     messageId: event.message_id,
+                    label: null,
+                    trackerIndex: null,
                 };
             }
         } else if (type === 'bot') {

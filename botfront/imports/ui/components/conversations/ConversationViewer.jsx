@@ -12,7 +12,7 @@ import ConversationJsonViewer from './ConversationJsonViewer';
 import ConversationDialogueViewer from './ConversationDialogueViewer';
 import Can from '../roles/Can';
 
-function ConversationViewer (props) {
+function ConversationViewer(props) {
     const [active, setActive] = useState('Text');
     const [savedTest, setSavedTest] = useState(false);
 
@@ -21,7 +21,14 @@ function ConversationViewer (props) {
     useEffect(() => (() => clearTimeout(timeout.current)), []);
 
     const {
-        tracker, ready, onDelete, removeReadMark, optimisticlyRemoved, onCreateTestCase,
+        tracker,
+        ready,
+        onDelete,
+        removeReadMark,
+        optimisticlyRemoved,
+        onCreateTestCase,
+        labeling,
+        onLabelChange,
     } = props;
 
     const [markRead, { data }] = useMutation(MARK_READ);
@@ -87,8 +94,22 @@ function ConversationViewer (props) {
 
         return (
             <Segment style={style} attached>
-                {active === 'Text' && <ConversationDialogueViewer conversation={tracker} mode='text' />}
-                {active === 'Debug' && <ConversationDialogueViewer conversation={tracker} mode='debug' />}
+                {active === 'Text' && (
+                    <ConversationDialogueViewer
+                        conversation={tracker}
+                        labeling={labeling}
+                        onLabelChange={onLabelChange}
+                        mode='text'
+                    />
+                )}
+                {active === 'Debug' && (
+                    <ConversationDialogueViewer
+                        conversation={tracker}
+                        labeling={labeling}
+                        onLabelChange={onLabelChange}
+                        mode='debug'
+                    />
+                )}
                 {active === 'JSON' && <ConversationJsonViewer tracker={tracker.tracker} />}
             </Segment>
         );
@@ -110,7 +131,7 @@ function ConversationViewer (props) {
         }
     }, [data]);
 
-    
+
     return (
         <div className='conversation-wrapper'>
             <Menu compact attached='top'>
@@ -156,6 +177,7 @@ function ConversationViewer (props) {
 ConversationViewer.defaultProps = {
     tracker: null,
     optimisticlyRemoved: new Set(),
+    labeling: false,
 };
 
 ConversationViewer.propTypes = {
@@ -165,15 +187,22 @@ ConversationViewer.propTypes = {
     removeReadMark: PropTypes.func.isRequired,
     optimisticlyRemoved: PropTypes.instanceOf(Set),
     onCreateTestCase: PropTypes.func.isRequired,
+    labeling: PropTypes.bool,
 };
 
 const ConversationViewerContainer = (props) => {
     const {
-        conversationId, projectId, onDelete, removeReadMark, optimisticlyRemoved, onCreateTestCase,
+        conversationId,
+        projectId,
+        onDelete,
+        removeReadMark,
+        optimisticlyRemoved,
+        onCreateTestCase,
+        labeling,
     } = props;
 
     const tracker = useRef(null);
-    
+
     const { loading, error, data } = useQuery(GET_CONVERSATION, {
         variables: { projectId, conversationId },
         pollInterval: 1000,
@@ -186,7 +215,9 @@ const ConversationViewerContainer = (props) => {
     )) {
         tracker.current = newTracker;
     }
-    
+
+    const onLabelChange = () => { };
+
     const componentProps = {
         ready: !!tracker.current,
         onDelete,
@@ -194,6 +225,8 @@ const ConversationViewerContainer = (props) => {
         removeReadMark,
         optimisticlyRemoved,
         onCreateTestCase,
+        labeling,
+        onLabelChange,
     };
 
     return (<ConversationViewer {...componentProps} />);

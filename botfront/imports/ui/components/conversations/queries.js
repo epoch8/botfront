@@ -23,7 +23,7 @@ query retreiveConversations(
     ) {
     conversationsPage(
         projectId: $projectId,
-        page: $page, 
+        page: $page,
         pageSize: $pageSize,
         status: ["new", "read", "flagged"],
         sort: updatedAt_DESC,
@@ -48,6 +48,7 @@ query retreiveConversations(
             status
             projectId
             userId
+            label
             tracker @include(if: $fetchTrackers)
             createdAt @include(if: $fetchTrackers)
             env @include(if: $fetchTrackers)
