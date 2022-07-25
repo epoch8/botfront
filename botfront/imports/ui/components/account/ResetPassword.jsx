@@ -7,11 +7,11 @@ import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
 import {
     AutoForm, ErrorsField, SubmitField, TextField,
 } from 'uniforms-semantic';
+import { withTranslation } from 'react-i18next';
 import { Meteor } from 'meteor/meteor';
 import ReCAPTCHA from 'react-google-recaptcha';
 import PropTypes from 'prop-types';
 import { passwordComplexityRegex } from '../../../api/user/user.methods';
-import { withTranslation } from 'react-i18next';
 import { wrapMeteorCallback } from '../utils/Errors';
 import { GlobalSettings } from '../../../api/globalSettings/globalSettings.collection';
 

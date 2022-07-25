@@ -6,6 +6,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import {
     AutoForm, ErrorsField, SubmitField, TextField,
 } from 'uniforms-semantic';
+import { withTranslation } from 'react-i18next';
 import { Meteor } from 'meteor/meteor';
 import ReCAPTCHA from 'react-google-recaptcha';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
@@ -38,13 +39,14 @@ class ForgotPassword extends React.Component {
     };
 
     renderForm = (loading, ready, reCatpchaSiteKey, reCaptcha) => {
+        const { t } = this.props;
         const reCaptchaRef = (el) => {
             this.reCaptchaRef = el;
         };
         return (
             <Segment>
                 <AutoForm model={{}} schema={this.forgotPasswordFormSchemaBridge} onSubmit={this.handlePasswordLost} className='ui large' disabled={loading}>
-                    <TextField name='email' iconLeft='user' placeholder='Email' label={null} />
+                    <TextField name='email' iconLeft='user' placeholder={t('Email')} label={null} />
                     <ErrorsField />
                     {reCatpchaSiteKey && (
                         <div>
@@ -52,7 +54,7 @@ class ForgotPassword extends React.Component {
                             <br />
                         </div>
                     )}
-                    <SubmitField value='Continue' className='black large basic fluid' disabled={reCatpchaSiteKey && !reCaptcha} />
+                    <SubmitField value={t('Continue')} className='black large basic fluid' disabled={reCatpchaSiteKey && !reCaptcha} />
                     <br />
                     <Link style={{ color: '#000' }} to='/login'>
                         Back to Sign in
@@ -62,7 +64,10 @@ class ForgotPassword extends React.Component {
         );
     };
 
-    renderSent = () => <Message positive header='Check your email inbox' content='If you have an account with us, you will find the instructions to reset your password in your inbox' />;
+    renderSent  = () => {
+        const { t } = this.props;
+        <Message positive header={t('Check your email inbox')} content={t('If you have an account with us, you will find the instructions to reset your password in your inbox')} />;
+    };
 
     onCaptcha = (reCaptcha) => {
         Meteor.call(
@@ -101,4 +106,4 @@ export default withTracker(() => {
     return {
         settings,
     };
-})(ForgotPassword);
+})(withTranslation('account')(ForgotPassword));
