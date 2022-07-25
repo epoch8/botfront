@@ -3,6 +3,7 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
     Container, Segment, Button, Message,
 } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { browserHistory } from 'react-router';
 import SimpleSchema from 'simpl-schema';
@@ -23,6 +24,7 @@ const children = new SimpleSchema({
 const rolesDataSchemaWithChildren = children.extend(rolesDataSchema);
 
 const Role = (props) => {
+    const { t } = this.props;
     const { params } = props;
     const { role_name: roleName } = params;
     const [roleData, setRoleData] = useState(null);
@@ -147,7 +149,7 @@ const Role = (props) => {
                                         <Button
                                             data-cy='delete-role'
                                             negative
-                                            content='Delete'
+                                            content={t('Delete')}
                                             disabled={disabled}
                                             floated='right'
                                             onClick={handleDeletion}
@@ -169,4 +171,4 @@ Role.propTypes = {
     }).isRequired,
 };
 
-export default Role;
+export default withTranslation('admin')(Role);

@@ -1,6 +1,7 @@
 import {
     Modal, Button, Dropdown, Message,
 } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 
@@ -17,6 +18,7 @@ const DeleteRoleModal = (props) => {
             onConfirm(fallback);
         }
     };
+    const { t } = this.props;
     return (
         <Modal open>
             <Modal.Header>{`Delete ${roleName}`}</Modal.Header>
@@ -31,14 +33,14 @@ const DeleteRoleModal = (props) => {
                     }}
                     options={roles}
                     selection
-                    placeholder='Select a fallback role'
+                    placeholder={t('Select a fallback role')}
                     fluid
                     data-cy='select-fallback-role'
                 />
                 <br />
                 {error && (
                     <Message negative>
-                        {error}
+                        {t({error})}
                     </Message>
                 )}
                 <br />
@@ -56,4 +58,4 @@ DeleteRoleModal.propTypes = {
     roles: PropTypes.array.isRequired,
 };
 
-export default DeleteRoleModal;
+export default withTranslation('admin')(DeleteRoleModal);

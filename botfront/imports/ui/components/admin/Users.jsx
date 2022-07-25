@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import {
     Container, Table, Menu, Button, Icon, Popup,
 } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 import React from 'react';
 import ReactTable from 'react-table-v6';
 import { Link, browserHistory } from 'react-router';
@@ -73,6 +74,7 @@ class UsersList extends React.Component {
 
 
     render() {
+        const { t } = this.props;
         const { loading, users } = this.props;
        
 
@@ -92,7 +94,7 @@ class UsersList extends React.Component {
                                         primary
                                         disabled={loading}
                                         icon='add'
-                                        content='Add user'
+                                        content={t('Add user')}
                                         labelPosition='left'
                                     />
                                 </div>
@@ -133,4 +135,4 @@ export default withTracker(() => {
         users: users || {},
         loading,
     };
-})(UsersList);
+})(withTranslation('admin')(UsersList));

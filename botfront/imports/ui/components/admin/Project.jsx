@@ -10,6 +10,7 @@ import { browserHistory } from 'react-router';
 import {
     AutoField, ErrorsField, SubmitField, AutoForm,
 } from 'uniforms-semantic';
+import { withTranslation } from 'react-i18next';
 import InfoField from '../utils/InfoField';
 import { Projects } from '../../../api/project/project.collection';
 import { wrapMeteorCallback } from '../utils/Errors';
@@ -55,6 +56,7 @@ class Project extends React.Component {
         const { project, loading } = this.props;
         const { confirmOpen } = this.state;
         const { namespace } = project || {};
+        const { t } = this.props;
         return (
             <>
                 <PageMenu icon='sitemap' title={project._id ? project.name : 'New project'} />
@@ -69,12 +71,12 @@ class Project extends React.Component {
                                 <AutoField name='name' data-cy='project-name' />
                                 <InfoField
                                     name='namespace'
-                                    label='Namespace'
+                                    label={t('Namespace')}
                                     data-cy='project-namespace'
-                                    info='The namespace to be used for Kubernetes and Google Cloud. Must be composed of only lower case letters, dashes, and underscores.'
+                                    info={t('The namespace to be used for Kubernetes and Google Cloud. Must be composed of only lower case letters, dashes, and underscores.')}
                                     disabled={!!namespace}
                                 />
-                                <SelectField name='defaultLanguage' label={null} placeholder='Select the default language of your project' />
+                                <SelectField name='defaultLanguage' label={null} placeholder={t('Select the default language of your project')} />
                                 <br />
                                
                                 <AutoField name='disabled' data-cy='disable' />
@@ -86,14 +88,14 @@ class Project extends React.Component {
                     {!loading && project._id && (
                         <Can I='global-admin'>
                             <Segment>
-                                <Header content='Delete project' />
-                                {!project.disabled && <Message info content='A project must be disabled to be deletable' />}
+                                <Header content={t('Delete project')} />
+                                {!project.disabled && <Message info content={t('A project must be disabled to be deletable')} />}
                                 <br />
-                                <Button icon='trash' disabled={!project.disabled} negative content='Delete project' onClick={() => this.setState({ confirmOpen: true })} data-cy='delete-project' />
+                                <Button icon='trash' disabled={!project.disabled} negative content={t('Delete project')} onClick={() => this.setState({ confirmOpen: true })} data-cy='delete-project' />
                                 <Confirm
                                     open={confirmOpen}
-                                    header={`Delete project ${project.name}?`}
-                                    content='This cannot be undone!'
+                                    header={t(`Delete project ${project.name}?`)}
+                                    content={t('This cannot be undone!')}
                                     onCancel={() => this.setState({ confirmOpen: false })}
                                     onConfirm={() => this.deleteProject()}
                                 />
@@ -140,4 +142,4 @@ const ProjectContainer = withTracker(({ params }) => {
     };
 })(Project);
 
-export default ProjectContainer;
+export default withTranslation('admin')(ProjectContainer);

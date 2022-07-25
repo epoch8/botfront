@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import ReactTable from 'react-table-v6';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 
 import { Projects } from '../../../api/project/project.collection';
 import PageMenu from '../utils/PageMenu';
@@ -56,10 +57,11 @@ class ProjectsList extends React.Component {
     ];
 
     render() {
+        const { t } = this.props;
         const { loading, projects } = this.props;
         return (
             <div>
-                <PageMenu icon='sitemap' title='Projects' headerDataCy='projects-page-header'>
+                <PageMenu icon='sitemap' title={t('Projects')} headerDataCy='projects-page-header'>
                     <Menu.Menu position='right'>
                         {can('projects:w') && (
                             <Menu.Item>
@@ -73,7 +75,7 @@ class ProjectsList extends React.Component {
                                         primary
                                         disabled={loading}
                                         icon='add'
-                                        content='Add project'
+                                        content={t('Add project')}
                                         labelPosition='left'
                                     />
                                 </div>
@@ -114,4 +116,4 @@ const ProjectsListContainer = withTracker(() => {
     };
 })(ProjectsList);
 
-export default ProjectsListContainer;
+export default withTranslation('admin')(ProjectsListContainer);

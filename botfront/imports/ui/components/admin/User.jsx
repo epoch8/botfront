@@ -17,6 +17,7 @@ import {
     ListItemField,
     NestField,
 } from 'uniforms-semantic';
+import { withTranslation } from 'react-i18next';
 import { browserHistory } from 'react-router';
 
 import { UserEditSchema, UserCreateSchema } from '../../../api/user/user.schema';
@@ -60,6 +61,7 @@ class User extends React.Component {
     }
 
     renderRoles = () => {
+        const { t } = this.props;
         const { projectOptions } = this.props;
         return (
             <ListField name='roles' data-cy='user-roles-field'>
@@ -70,7 +72,7 @@ class User extends React.Component {
                                 <Grid.Column>
                                     <SelectField
                                         name='project'
-                                        placeholder='Select a project'
+                                        placeholder={t('Select a project')}
                                         options={projectOptions}
                                     />
                                 </Grid.Column>
@@ -85,25 +87,28 @@ class User extends React.Component {
         );
     };
 
-    renderPreferredLanguage = () => (
-        <SelectField
-            name='profile.preferredLanguage'
-            placeholder='Select a prefered language'
-            data-cy='preferred-language'
-            options={[
-                {
-                    text: 'English',
-                    value: 'en',
-                    key: 'en',
-                },
-                {
-                    text: 'French',
-                    value: 'fr',
-                    key: 'fr',
-                },
-            ]}
-        />
-    )
+    renderPreferredLanguage = () => {
+        const { t } = this.props;
+        (
+            <SelectField
+                name='profile.preferredLanguage'
+                placeholder={t('Select a prefered language')}
+                data-cy='preferred-language'
+                options={[
+                    {
+                        text: 'English',
+                        value: 'en',
+                        key: 'en',
+                    },
+                    {
+                        text: 'French',
+                        value: 'fr',
+                        key: 'fr',
+                    },
+                ]}
+            />
+        )
+    };
 
     getPanes = () => {
         const { confirmOpen } = this.state;
@@ -157,18 +162,18 @@ class User extends React.Component {
                 menuItem: 'User deletion',
                 render: () => (
                     <Segment>
-                        <Header content='Delete user' />
+                        <Header content={t('Delete user')} />
                         <br />
                         <Button
                             icon='trash'
                             negative
-                            content='Delete user'
+                            content={t('Delete user')}
                             onClick={() => this.setState({ confirmOpen: true })}
                         />
                         <Confirm
                             open={confirmOpen}
                             header={`Delete user ${this.getUserEmail()}`}
-                            content='This cannot be undone!'
+                            content={t('This cannot be undone!')}
                             onCancel={() => this.setState({ confirmOpen: false })}
                             onConfirm={() => this.removeUser(user._id)}
                         />
@@ -182,10 +187,11 @@ class User extends React.Component {
 
     render() {
         // noinspection JSAnnotator
+        const { t } = this.props;
         const { user, ready } = this.props;
         return (
             <>
-                <PageMenu icon='users' title={!!user ? 'Edit user' : 'New user'} />
+                <PageMenu icon='users' title={t(!!user ? 'Edit user' : 'New user')} />
                 {ready && (
                     <Container>
                         {!!user ? (
@@ -208,7 +214,7 @@ class User extends React.Component {
                                     {this.renderRoles()}
                                     <AutoField name='sendEmail' />
                                     <ErrorsField />
-                                    <SubmitField label='Create user' className='primary' />
+                                    <SubmitField label={t('Create user')} className='primary' />
                                 </AutoForm>
                             </Segment>
                         )}
@@ -271,4 +277,4 @@ const UserContainer = withTracker(({ params }) => {
     };
 })(User);
 
-export default UserContainer;
+export default withTranslation('admin')(UserContainer);

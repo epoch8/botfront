@@ -6,6 +6,7 @@ import React from 'react';
 import {
     Button, Header,
 } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 
 import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
@@ -39,7 +40,7 @@ changePasswordSchema.messageBox.messages({
 
 const changePasswordSchemaBridge = new SimpleSchema2Bridge(changePasswordSchema);
 
-export default class ChangePassword extends React.Component {
+class ChangePassword extends React.Component {
     constructor(props) {
         super(props);
         this.state = this.getInitialState();
@@ -85,11 +86,12 @@ export default class ChangePassword extends React.Component {
     };
 
     render () {
+        const { t } = this.props;
         return (
             <AutoForm schema={changePasswordSchemaBridge} onSubmit={this.handleChangePassword}>
                 <Header>Change Password</Header>
-                <AutoField name='password' placeholder='password' type='password' label={null} />
-                <AutoField name='passwordVerify' placeholder='password' type='password' label={null} />
+                <AutoField name='password' placeholder={t('password')} type='password' label={null} />
+                <AutoField name='passwordVerify' placeholder={t('password')} type='password' label={null} />
                 <Button data-cy='change-password'>Change</Button>
                 <ErrorsField />
             </AutoForm>
@@ -100,3 +102,5 @@ export default class ChangePassword extends React.Component {
 ChangePassword.propTypes = {
     userId: PropTypes.string.isRequired,
 };
+
+export default withTranslation('admin')(ChangePassword);

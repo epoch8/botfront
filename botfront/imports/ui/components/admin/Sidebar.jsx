@@ -1,12 +1,14 @@
 /* eslint-disable react/prefer-stateless-function */
 import React from 'react';
 import { Menu } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { withTracker } from 'meteor/react-meteor-data';
 import { can } from '../../../lib/scopes';
 
 class AdminSidebar extends React.Component {
     render() {
+        const { t } = this.props;
         const style = {
             position: 'fixed',
             top: '0px',
@@ -60,4 +62,4 @@ class AdminSidebar extends React.Component {
 }
 
 export default withTracker(() => ({
-}))(AdminSidebar);
+}))(withTranslation('admin')(AdminSidebar));

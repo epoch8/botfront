@@ -1,5 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import { Menu, Button, Container } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 import { Link, browserHistory } from 'react-router';
 import { useQuery } from '@apollo/react-hooks';
 import ReactTable from 'react-table-v6';
@@ -20,6 +21,7 @@ const columns = [
     { id: 'description', accessor: 'description', Header: 'Description' },
 ];
 const RolesList = () => {
+    const { t } = this.props;
     const { loading, data } = useQuery(GET_ROLES_DATA, { fetchPolicy: 'cache-and-network' });
     return (
         <div>
@@ -31,7 +33,7 @@ const RolesList = () => {
                                 primary
                                 data-cy='create-role'
                                 icon='add'
-                                content='Create Role'
+                                content={t('Create Role')}
                                 onClick={() => {
                                     browserHistory.push('/admin/role/');
                                 }}
@@ -47,4 +49,4 @@ const RolesList = () => {
     );
 };
 
-export default RolesList;
+export default withTranslation('admin')(RolesList);
