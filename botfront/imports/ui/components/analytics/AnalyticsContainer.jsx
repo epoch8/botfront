@@ -6,6 +6,7 @@ import moment from 'moment';
 import {
     Menu, Dropdown, Icon, Header, Button,
 } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 import { useDrop } from 'react-dnd-cjs';
 import { connect } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -23,6 +24,7 @@ import { AnalyticsContext } from './AnalyticsContext';
 const Dashboard = React.lazy(() => import('./AnalyticsDashboard'));
 
 function AnalyticsContainer(props) {
+    const { t } = this.props;
     const {
         workingDashboard,
         workingEnvironment,
@@ -182,7 +184,7 @@ function AnalyticsContainer(props) {
     const renderAddCard = () => (
         <Dropdown
             className='icon'
-            text='Add card'
+            text={t('Add card')}
             icon='plus'
             floating
             labeled
@@ -218,7 +220,7 @@ function AnalyticsContainer(props) {
                 </div>
             )}
             <div>
-                <PageMenu title='Analytics' icon='chart bar'>
+                <PageMenu title={t('Analytics')} icon='chart bar'>
                     <Menu.Item>
                         <EnvSelector
                             value={dashboard.envs[0]} // multi env not supported
