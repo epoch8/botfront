@@ -24,7 +24,7 @@ import { AnalyticsContext } from './AnalyticsContext';
 const Dashboard = React.lazy(() => import('./AnalyticsDashboard'));
 
 function AnalyticsContainer(props) {
-    const { t } = this.props;
+    const { t } = props;
     const {
         workingDashboard,
         workingEnvironment,

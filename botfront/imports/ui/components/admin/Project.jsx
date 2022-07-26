@@ -95,7 +95,7 @@ class Project extends React.Component {
                                 <Confirm
                                     open={confirmOpen}
                                     header={t(`Delete project ${project.name}?`)}
-                                    content={t('This cannot be undone!')}
+                                    content='This cannot be undone!'
                                     onCancel={() => this.setState({ confirmOpen: false })}
                                     onConfirm={() => this.deleteProject()}
                                 />

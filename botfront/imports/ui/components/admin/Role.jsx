@@ -24,7 +24,7 @@ const children = new SimpleSchema({
 const rolesDataSchemaWithChildren = children.extend(rolesDataSchema);
 
 const Role = (props) => {
-    const { t } = this.props;
+    const { t } = props;
     const { params } = props;
     const { role_name: roleName } = params;
     const [roleData, setRoleData] = useState(null);

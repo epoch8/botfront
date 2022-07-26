@@ -111,6 +111,7 @@ class User extends React.Component {
     };
 
     getPanes = () => {
+        const { t } = this.props;
         const { confirmOpen } = this.state;
         const { user } = this.props;
         const hasWritePermission = can('users:w', { anyScope: true });

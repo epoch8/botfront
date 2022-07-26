@@ -20,8 +20,8 @@ const columns = [
     },
     { id: 'description', accessor: 'description', Header: 'Description' },
 ];
-const RolesList = () => {
-    const { t } = this.props;
+const RolesList = (props) => {
+    const { t } = props;
     const { loading, data } = useQuery(GET_ROLES_DATA, { fetchPolicy: 'cache-and-network' });
     return (
         <div>
