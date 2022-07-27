@@ -258,6 +258,9 @@ const ConversationsBrowserContainer = (props) => {
         const { conversations, pages } = data.conversationsPage;
 
         // If for some reason the conversation is not in the current page, discard it.
+        if (activeConversationId === 'last' && conversations.length > 0) {
+            activeConversationId = conversations.at(-1)._id;
+        }
         if (!conversations.some(c => c._id === activeConversationId)) { activeConversationId = null; }
         if (!activeConversationId && conversations.length > 0) {
             const url = updateIncomingPath({

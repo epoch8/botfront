@@ -43,7 +43,7 @@ function Turn({
     userId,
     botResponses,
     userRef,
-    trackerIndex,
+    eventIndex,
     label,
     labeling,
     onLabelChange,
@@ -64,10 +64,10 @@ function Turn({
             [t('баг в сценарии'), 'bug in story'],
         ].map(([text, value]) => {
             const active = label === value;
-            const labelValue = active ? label : null;
+            const labelValue = active ? null : value;
             return (
                 <Button
-                    onClick={() => onLabelChange && onLabelChange(trackerIndex, labelValue)}
+                    onClick={() => onLabelChange && onLabelChange(eventIndex, labelValue)}
                     key={value}
                     active={active}
                     color={active ? 'blue' : null}
@@ -123,7 +123,7 @@ function Turn({
                 <Grid.Column width={12}>
                     {comment}
                 </Grid.Column>
-                <Grid.Column>
+                <Grid.Column textAlign='center'>
                     {renderLabelButtons()}
                 </Grid.Column>
             </Grid>
@@ -168,14 +168,14 @@ function ConversationDialogueViewer({
         <Comment.Group>
             {turns.length > 0 ? (
                 turns.map(({
-                    userSays, botResponses, messageId, label, trackerIndex,
+                    userSays, botResponses, messageId, label, eventIndex,
                 }, index) => (
                     <React.Fragment key={`dialogue-turn-${index}`}>
                         <Turn
                             userSays={userSays}
                             userId={userId}
                             botResponses={botResponses}
-                            trackerIndex={trackerIndex}
+                            eventIndex={eventIndex}
                             label={label}
                             labeling={labeling}
                             onLabelChange={onLabelChange}

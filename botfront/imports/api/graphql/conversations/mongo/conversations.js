@@ -9,7 +9,7 @@ import { createEventsStep } from './eventFilter';
 const createSortObject = (sort) => {
     let fieldName;
     let order;
-    const sortObject = { };
+    const sortObject = {};
     switch (sort) {
     case 'updatedAt_ASC':
         fieldName = 'updatedAt';
@@ -223,10 +223,41 @@ export const getConversations = async ({
         ];
     }
 
+    const firstFilters = () => {
+        const filters = { projectId };
+        if (status.length > 0) filters.status = { $in: status };
+        if (env) filters.env = env;
+        if (env === 'development') {
+            filters.env = { $in: ['development', null] };
+        }
+        if (startDate && endDate) {
+            const startDateM = moment(startDate);
+            const endDateM = moment(endDate);
+            filters.$and = [
+                {
+                    $or: [
+                        { 'tracker.events.0.timestamp': { $lte: startDateM.unix() } },
+                        { 'tracker.events.0.timestamp': { $lte: endDateM.unix() } },
+                    ],
+                },
+                {
+                    $or: [
+                        { updatedAt: { $gte: startDateM.toDate() } },
+                        { updatedAt: { $gte: endDateM.toDate() } },
+                    ],
+                },
+            ];
+        }
+        return filters;
+    };
+
     const pages = pageSize > -1 ? pageSize : 1;
     const boundedPageNb = Math.min(pages, page);
     const limit = pageSize > -1 ? [{ $limit: pageSize }] : [];
     const aggregation = [
+        {
+            $match: firstFilters(),
+        },
         ...addFieldsForDateRange(),
         addFirstIntentField([], true),
         {
@@ -251,6 +282,13 @@ export const getConversations = async ({
                         $skip: (boundedPageNb - 1) * pageSize,
                     },
                     ...limit,
+                    {
+                        $addFields: {
+                            hasLabeledEvent: {
+                                $anyElementTrue: '$tracker.events.metadata.label.value',
+                            },
+                        },
+                    },
                 ],
                 pages: [
                     {
@@ -306,6 +344,35 @@ export const deleteConversation = async id => (
     Conversations.deleteOne({ _id: id }).exec()
 );
 
-export const updateConversationLabel = async (id, label) => (
-    Conversations.updateOne({ _id: id }, { $set: { label } }).exec()
+export const updateConversationLabel = async (id, label, userId) => (
+    Conversations.updateOne(
+        { _id: id },
+        {
+            $set: {
+                label: {
+                    value: label,
+                    labeledAt: Date.now(),
+                    userId,
+                },
+            },
+        },
+    ).exec()
 );
+
+export const labelEvent = async (id, eventIndex, label, userId) => {
+    const index = parseInt(eventIndex, 10);
+    if (!index) return null;
+    const labeKkey = `tracker.events.${index}.metadata.label`;
+    return Conversations.updateOne(
+        { _id: id },
+        {
+            $set: {
+                [labeKkey]: {
+                    value: label,
+                    labeledAt: Date.now(),
+                    userId,
+                },
+            },
+        },
+    ).exec();
+};

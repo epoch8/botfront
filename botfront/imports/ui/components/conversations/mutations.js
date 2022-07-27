@@ -20,3 +20,10 @@ mutation setConversationLabel($id: String!, $label: String) {
       success
     }
 }`;
+
+export const LABEL_EVENT = gql`
+mutation labelEvent($id: String!, $eventIndex: Int!, $label: String) {
+  labelEvent(id: $id, eventIndex: $eventIndex, label: $label){
+      success
+    }
+}`;

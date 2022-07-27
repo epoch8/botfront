@@ -37,8 +37,8 @@ export function generateTurns(tracker, debug = false, tzOffset = null) {
                     ...currentTurn,
                     userSays,
                     messageId: event.message_id,
-                    label: event.metadata ? event.metadata.label || null : null,
-                    trackerIndex: index,
+                    label: (event.metadata && event.metadata.label && event.metadata.label.value) || null,
+                    eventIndex: index,
                 };
             } else {
                 // Finish previous turn and init a new one
@@ -48,7 +48,7 @@ export function generateTurns(tracker, debug = false, tzOffset = null) {
                     botResponses: [],
                     messageId: event.message_id,
                     label: null,
-                    trackerIndex: null,
+                    eventIndex: null,
                 };
             }
         } else if (type === 'bot') {
@@ -117,4 +117,8 @@ export function formatConversationInMd(conversation, tzOffset = null) {
 
 export function formatConversationsInMd(conversations, tzOffset = null) {
     return conversations.map(conv => formatConversationInMd(conv, tzOffset)).join('\n\n');
+}
+
+export function getEventLabel(event) {
+    return (event && event.metadata && event.metadata.label && event.metadata.label.value) || null;
 }

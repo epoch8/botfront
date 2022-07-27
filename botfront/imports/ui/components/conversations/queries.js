@@ -48,7 +48,12 @@ query retreiveConversations(
             status
             projectId
             userId
-            label
+            label {
+                value
+                labeledAt
+                userId
+            }
+            hasLabeledEvent
             tracker @include(if: $fetchTrackers)
             createdAt @include(if: $fetchTrackers)
             env @include(if: $fetchTrackers)

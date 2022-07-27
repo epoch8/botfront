@@ -64,6 +64,7 @@ type Mutation {
     updateStatus(id: String!, status: String): updateResponse!
     delete(id: String!): updateResponse!
     setConversationLabel(id: String!, label: String): updateResponse!
+    labelEvent(id: String!, eventIndex: Int!, label: String): updateResponse!
     importConversations(
         conversations: [ConversationContainerInput]!
         projectId: String!
@@ -87,7 +88,14 @@ type ConversationContainer {
     createdAt: String
     env: String
     language: String
-    label: String
+    label: Label
+    hasLabeledEvent: Boolean
+}
+
+type Label {
+    value: Any
+    labeledAt: Float
+    userId: String
 }
 
 input ConversationContainerInput {
