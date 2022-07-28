@@ -6,7 +6,7 @@ import moment from 'moment';
 import {
     Menu, Dropdown, Icon, Header, Button,
 } from 'semantic-ui-react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useDrop } from 'react-dnd-cjs';
 import { connect } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -24,7 +24,7 @@ import { AnalyticsContext } from './AnalyticsContext';
 const Dashboard = React.lazy(() => import('./AnalyticsDashboard'));
 
 function AnalyticsContainer(props) {
-    const { t } = props;
+    const { t } = useTranslation('analytics');
     const {
         workingDashboard,
         workingEnvironment,
@@ -172,7 +172,7 @@ function AnalyticsContainer(props) {
     });
 
     const cardTypes = [
-        ['conversationLengths', 'Conversation Length'],
+        ['conversationLengths', {t('Conversation Length')}],
         ['conversationDurations', 'Conversation Duration'],
         ['intentFrequencies', 'Top Intents'],
         ['triggerFrequencies', 'Top Triggers'],
@@ -215,7 +215,7 @@ function AnalyticsContainer(props) {
                 >
                     <Header as='h3' color='red' textAlign='center'>
                         <Icon name='trash' />
-                        Drop here to delete
+                        {t("Drop here to delete")}
                     </Header>
                 </div>
             )}
@@ -252,7 +252,7 @@ function AnalyticsContainer(props) {
                                 data-cy='export-all'
                             >
                                 <Icon name='download' />
-                                Export to Excel
+                                {t("Export to Excel")}
                             </Button>
                         </Menu.Item>
                         <Menu.Item>{renderAddCard()}</Menu.Item>

@@ -92,7 +92,7 @@ class ChangePassword extends React.Component {
                 <Header>Change Password</Header>
                 <AutoField name='password' placeholder={t('password')} type='password' label={null} />
                 <AutoField name='passwordVerify' placeholder={t('password')} type='password' label={null} />
-                <Button data-cy='change-password'>Change</Button>
+                <Button data-cy='change-password'>{t("Change")}</Button>
                 <ErrorsField />
             </AutoForm>
         );

@@ -113,11 +113,11 @@ const Role = (props) => {
     
     return (
         <>
-            <PageMenu icon='shield alternate' title={roleName || 'New Role'} />
+            <PageMenu icon='shield alternate' title={t(roleName || 'New Role')} />
             <Container>
                 {disabled && (
                     <Message info>
-                        This role is a default role and thus cannot be modified.
+                        {t("This role is a default role and thus cannot be modified.")}
                     </Message>
                 )}
                 <Segment>

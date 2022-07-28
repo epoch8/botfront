@@ -77,7 +77,7 @@ class User extends React.Component {
                                     />
                                 </Grid.Column>
                                 <Grid.Column>
-                                    <SelectField name='roles' placeholder='Select roles' />
+                                    <SelectField name='roles' placeholder={t('Select roles')} />
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>
@@ -174,7 +174,7 @@ class User extends React.Component {
                         <Confirm
                             open={confirmOpen}
                             header={`Delete user ${this.getUserEmail()}`}
-                            content={t('This cannot be undone!')}
+                            content='This cannot be undone!'
                             onCancel={() => this.setState({ confirmOpen: false })}
                             onConfirm={() => this.removeUser(user._id)}
                         />

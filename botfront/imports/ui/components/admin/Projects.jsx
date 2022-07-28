@@ -21,40 +21,43 @@ class ProjectsList extends React.Component {
         return false;
     }
 
-    getColumns = () => [
-        {
-            id: 'name',
-            accessor: 'name',
-            filterable: true,
-            filterMethod: (filter, rows) => (this.filterItem(filter, rows, 'name')),
-            Header: 'Name',
-            Cell: props => (
-                <Link to={`/project/${props.original._id}/nlu/models`}>{props.value}</Link>
-            ),
-        },
-        {
-            id: 'id',
-            accessor: '_id',
-            filterable: true,
-            filterMethod: (filter, rows) => (this.filterItem(filter, rows, 'id')),
-            Header: 'ID',
-        },
-        ...(can('projects:w')
-            ? [{
-                id: 'edit',
-                accessor: '_id',
-                width: 55,
-                Header: 'Edit',
+    getColumns = () => {
+        const { t } = this.props;
+        [
+            {
+                id: 'name',
+                accessor: 'name',
+                filterable: true,
+                filterMethod: (filter, rows) => (this.filterItem(filter, rows, 'name')),
+                Header: t('Name'),
                 Cell: props => (
-                    <div className='center'>
-                        <Link to={`/admin/project/${props.value}`}>
-                            <Icon name='edit' color='grey' link size='small' data-cy='edit-projects' />
-                        </Link>
-                    </div>
+                    <Link to={`/project/${props.original._id}/nlu/models`}>{props.value}</Link>
                 ),
-            }]
-            : []),
-    ];
+            },
+            {
+                id: 'id',
+                accessor: '_id',
+                filterable: true,
+                filterMethod: (filter, rows) => (this.filterItem(filter, rows, 'id')),
+                Header: t('ID'),
+            },
+            ...(can('projects:w')
+                ? [{
+                    id: 'edit',
+                    accessor: '_id',
+                    width: 55,
+                    Header: t('Edit'),
+                    Cell: props => (
+                        <div className='center'>
+                            <Link to={`/admin/project/${props.value}`}>
+                                <Icon name='edit' color='grey' link size='small' data-cy='edit-projects' />
+                            </Link>
+                        </div>
+                    ),
+                }]
+                : []),
+        ];
+    }
 
     render() {
         const { t } = this.props;

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import {
     Container, Table, Menu, Button, Icon, Popup,
 } from 'semantic-ui-react';
-import { withTranslation } from 'react-i18next';
+import { withTranslationm, useTranslation } from 'react-i18next';
 import React from 'react';
 import ReactTable from 'react-table-v6';
 import { Link, browserHistory } from 'react-router';

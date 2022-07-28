@@ -57,7 +57,7 @@ class ForgotPassword extends React.Component {
                     <SubmitField value={t('Continue')} className='black large basic fluid' disabled={reCatpchaSiteKey && !reCaptcha} />
                     <br />
                     <Link style={{ color: '#000' }} to='/login'>
-                        Back to Sign in
+                        {t("Back to Sign in")}
                     </Link>
                 </AutoForm>
             </Segment>

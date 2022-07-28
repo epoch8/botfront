@@ -15,33 +15,6 @@ import { passwordComplexityRegex } from '../../../api/user/user.methods';
 import { wrapMeteorCallback } from '../utils/Errors';
 import { GlobalSettings } from '../../../api/globalSettings/globalSettings.collection';
 
-const resetPasswordSchema = new SimpleSchema(
-    {
-        password: {
-            type: String,
-            custom() {
-                return !this.value.match(passwordComplexityRegex) ? 'passwordTooSimple' : null;
-            },
-        },
-        passwordVerify: {
-            type: String,
-            custom() {
-                return this.value !== this.field('password').value ? 'passwordMismatch' : null;
-            },
-        },
-    },
-    { tracker: Tracker },
-);
-
-const resetPasswordSchemaBridge = new SimpleSchema2Bridge(resetPasswordSchema);
-
-resetPasswordSchema.messageBox.messages({
-    en: {
-        passwordMismatch: 'The passwords are not matching. Make sure you enter the same password in both fields',
-        passwordTooSimple: 'Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters',
-    },
-});
-
 class ResetPassword extends React.Component {
     constructor(props) {
         super(props);
@@ -95,6 +68,32 @@ class ResetPassword extends React.Component {
         };
         const { loading, reCaptcha } = this.state;
         const { settings: { settings: { public: { reCatpchaSiteKey } = { reCatpchaSiteKey: null } } = {} } = {} } = this.props;
+        const resetPasswordSchema = new SimpleSchema(
+            {
+                password: {
+                    type: String,
+                    custom() {
+                        return !this.value.match(passwordComplexityRegex) ? 'passwordTooSimple' : null;
+                    },
+                },
+                passwordVerify: {
+                    type: String,
+                    custom() {
+                        return this.value !== this.field('password').value ? 'passwordMismatch' : null;
+                    },
+                },
+            },
+            { tracker: Tracker },
+        );
+        
+        const resetPasswordSchemaBridge = new SimpleSchema2Bridge(resetPasswordSchema);
+        
+        resetPasswordSchema.messageBox.messages({
+            en: {
+                passwordMismatch: 'The passwords are not matching. Make sure you enter the same password in both fields',
+                passwordTooSimple: 'Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters',
+            },
+        });
         return (
             <Segment>
                 <AutoForm model={{}} schema={resetPasswordSchemaBridge} onSubmit={this.handleResetPassword} className='ui large' disabled={loading}>

@@ -23,7 +23,7 @@ const DeleteRoleModal = (props) => {
         <Modal open>
             <Modal.Header>{`Delete ${roleName}`}</Modal.Header>
             <Modal.Content data-cy='delete-role-modal'>
-                There might be users with that role, what role do you want them to fallback to ?
+                {t("There might be users with that role, what role do you want them to fallback to ?")}
                 <br />
                 <br />
                 <Dropdown
@@ -44,8 +44,8 @@ const DeleteRoleModal = (props) => {
                     </Message>
                 )}
                 <br />
-                <Button onClick={onCancel}>Cancel</Button>
-                <Button onClick={handleSubmit} negative>Delete</Button>
+                <Button onClick={onCancel}>{t("Cancel")}</Button>
+                <Button onClick={handleSubmit} negative>{t("Delete")}</Button>
             </Modal.Content>
         </Modal>
     );
