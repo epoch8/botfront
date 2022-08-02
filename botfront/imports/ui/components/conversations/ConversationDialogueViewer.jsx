@@ -124,7 +124,7 @@ function Turn({
                     {comment}
                 </Grid.Column>
                 <Grid.Column textAlign='center'>
-                    {renderLabelButtons()}
+                    {(eventIndex !== null) ? renderLabelButtons() : <></>}
                 </Grid.Column>
             </Grid>
         );

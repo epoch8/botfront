@@ -1,11 +1,16 @@
 import moment from 'moment';
 
+export function getEventLabel(event) {
+    return (event && event.metadata && event.metadata.label && event.metadata.label.value) || null;
+}
+
 export function generateTurns(tracker, debug = false, tzOffset = null) {
     const turns = [];
     let currentTurn = {
         userSays: null,
         botResponses: [],
         label: null,
+        eventIndex: null,
     };
     const buttonValues = {};
     tracker.events.forEach((event, index) => {
@@ -37,7 +42,7 @@ export function generateTurns(tracker, debug = false, tzOffset = null) {
                     ...currentTurn,
                     userSays,
                     messageId: event.message_id,
-                    label: (event.metadata && event.metadata.label && event.metadata.label.value) || null,
+                    label: getEventLabel(event),
                     eventIndex: index,
                 };
             } else {
@@ -47,8 +52,8 @@ export function generateTurns(tracker, debug = false, tzOffset = null) {
                     userSays,
                     botResponses: [],
                     messageId: event.message_id,
-                    label: null,
-                    eventIndex: null,
+                    label: getEventLabel(event),
+                    eventIndex: index,
                 };
             }
         } else if (type === 'bot') {
@@ -117,8 +122,4 @@ export function formatConversationInMd(conversation, tzOffset = null) {
 
 export function formatConversationsInMd(conversations, tzOffset = null) {
     return conversations.map(conv => formatConversationInMd(conv, tzOffset)).join('\n\n');
-}
-
-export function getEventLabel(event) {
-    return (event && event.metadata && event.metadata.label && event.metadata.label.value) || null;
 }
