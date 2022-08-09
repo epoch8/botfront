@@ -9,6 +9,7 @@ import filterDOMProps from 'uniforms/filterDOMProps';
 import {
     Dropdown, Label, Icon, Popup,
 } from 'semantic-ui-react';
+import { useTranslation } from "react-i18next";
 import ConfirmPopup from '../common/ConfirmPopup';
 
 const getOptions = (allowedValues, props = {}) => {
@@ -23,6 +24,7 @@ const renderCheckboxes = ({
     const [popupOpen, setPopupOpen] = useState(null);
     const renderLabel = (props, i) => {
         const { text, value: labelValue } = props;
+        const { t } = useTranslation('conversations');
         return (
             <Label key={`label-${labelValue}-${i}`}>
                 {text}
@@ -31,8 +33,8 @@ const renderCheckboxes = ({
                     on='click'
                     content={(
                         <ConfirmPopup
-                            title={`Remove ${text} from this form?`}
-                            description='This will delete all the slot settings associated with this form'
+                            title={t(`Remove ${text} from this form?`)}
+                            description={t('This will delete all the slot settings associated with this form')}
                             onYes={() => {
                                 setPopupOpen(null);
                                 if (!Array.isArray()) onChange([labelValue]);

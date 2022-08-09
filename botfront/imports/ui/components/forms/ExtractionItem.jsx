@@ -8,6 +8,7 @@ import IconButton from '../common/IconButton';
 import SequenceSelector from '../common/SequenceSelector';
 import EntityDropdown from '../nlu/common/EntityDropdown';
 import EntityValueEditor from '../stories/common/EntityValueEditor';
+import { useTranslation } from "react-i18next";
 
 const ExtractionItem = (props) => {
     const {
@@ -29,6 +30,7 @@ const ExtractionItem = (props) => {
     } = props;
 
     const canEdit = can('stories:w', projectId);
+    const { t } = useTranslation('forms');
     const intentCondition = useMemo(() => {
         if (Array.isArray(intent)) return 'include';
         if (Array.isArray(notIntent)) return 'exclude';
@@ -105,7 +107,7 @@ const ExtractionItem = (props) => {
                 data-cy='category-value-dropdown'
                 className='extraction-dropdown'
                 selection
-                placeholder='select a category'
+                placeholder={t('select a category')}
                 options={categories.map(category => ({ value: category, text: category }))}
                 value={value}
                 onChange={handleChangeValue}
@@ -133,7 +135,7 @@ const ExtractionItem = (props) => {
             disabled={!canEdit}
             data-cy='slot-value-input'
             className='extraction-field'
-            placeholder='enter a value'
+            placeholder={t('enter a value')}
             type={inputType}
             value={value || ''}
             onChange={handleChangeValue}
@@ -160,12 +162,12 @@ const ExtractionItem = (props) => {
                 disabled={!canEdit}
                 data-cy='intent-condition-dropdown'
                 clearable={type !== 'from_intent'}
-                placeholder='add an intent condition'
+                placeholder={t('add an intent condition')}
                 className='extraction-dropdown condition-dropdown'
                 selection
                 options={[
-                    { value: 'include', text: 'if the intent is one of' },
-                    { value: 'exclude', text: 'if the intent is NOT one of' },
+                    { value: 'include', text: t('if the intent is one of') },
+                    { value: 'exclude', text: t('if the intent is NOT one of') },
                 ]}
                 value={intentCondition}
                 onChange={handleIntentConditionChange}
@@ -213,9 +215,9 @@ const ExtractionItem = (props) => {
                     className='extraction-dropdown'
                     inline
                     options={[
-                        { value: 'from_text', text: 'from the user message' },
-                        { value: 'from_intent', text: 'conditionally on the intent' },
-                        { value: 'from_entity', text: 'from the entity' },
+                        { value: 'from_text', text: t('from the user message') },
+                        { value: 'from_intent', text: t('conditionally on the intent') },
+                        { value: 'from_entity', text: t('from the entity') },
                     ]}
                     value={type || 'from_text'}
                     onChange={handleValueSourceChange}

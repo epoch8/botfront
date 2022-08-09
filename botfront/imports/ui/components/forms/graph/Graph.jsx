@@ -15,6 +15,7 @@ import StartNode from './StartNode';
 import SlotNode from './SlotNode';
 import SlotSetNode from './SlotSetNode';
 import FormEditorContainer from '../FormEditorContainer';
+import { useTranslation } from "react-i18next";
 
 const nodeTypes = {
     start: StartNode,
@@ -53,6 +54,7 @@ const SlotsGraph = (props) => {
     const [selectedNode, setSelectedNode] = useState(null);
     const [formSettings, setFormSettings] = useState(incomingFormSettings);
     const [slotChoiceModalOpen, setSlotChoiceModalOpen] = useState(null);
+    const { t } = useTranslation('forms');
     
     // This lets us update the position of the grid canvas ourself.
     const setTransform = useStoreActions(actions => actions.setInitTransform);
@@ -109,7 +111,7 @@ const SlotsGraph = (props) => {
 
     const handleRemoveSlot = (id) => {
         // eslint-disable-next-line no-alert
-        if (!window.confirm('Are you sure you want to delete this slot ?')) return;
+        if (!window.confirm(t('Are you sure you want to delete this slot ?'))) return;
         setElements((els) => {
             const newElements = els.filter((elm) => {
                 if (

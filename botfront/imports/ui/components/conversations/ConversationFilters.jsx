@@ -2,6 +2,7 @@ import React, {
     useState, useEffect, useContext, useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from "react-i18next";
 import {
     Segment,
     Input,
@@ -26,6 +27,7 @@ const ConversationFilters = ({
 }) => {
     const [filtersErrors, setFiltersErrors] = useState(activeFilters);
     const { slots, dialogueActions } = useContext(ProjectContext);
+    const { t } = useTranslation('conversations');
 
     const actionOptions = useMemo(() => dialogueActions.map(
         action => ({
@@ -131,7 +133,7 @@ const ConversationFilters = ({
                         <Button
                             data-cy='apply-filters'
                             onClick={() => applyFilters()}
-                            content='Apply'
+                            content={t('Apply')}
                         />
                         <Dropdown
                             className='button icon'
@@ -139,7 +141,7 @@ const ConversationFilters = ({
                             trigger={<React.Fragment />}
                         >
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => onDownloadConversations({ format: 'json' })} icon='download' text='Download results (JSON)' />
+                                <Dropdown.Item onClick={() => onDownloadConversations({ format: 'json' })} icon='download' text={t('Download results (JSON)')} />
                             </Dropdown.Menu>
                         </Dropdown>
                     </Button.Group>
@@ -224,7 +226,7 @@ const ConversationFilters = ({
                         <Segment.Group horizontal>
                             <Popup
                                 inverted
-                                content='time elapsed between the first and last message in seconds'
+                                content={t('time elapsed between the first and last message in seconds')}
                                 trigger={(
                                     <Segment className='x-than-filter'>
                                         <Label> Duration</Label>
@@ -316,7 +318,7 @@ const ConversationFilters = ({
                                         'userId',
                                         value.trim(),
                                     )}
-                                    placeholder='unique identifier'
+                                    placeholder={t('unique identifier')}
                                 />
                             </Segment>
                         </Segment.Group>

@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { defaultTemplate } from '../../../lib/botResponse.utils';
 import { ProjectContext } from '../../layouts/context';
 import { can } from '../../../lib/scopes';
+import { useTranslation } from "react-i18next";
 
 const ChangeResponseType = (props) => {
     const {
@@ -14,6 +15,7 @@ const ChangeResponseType = (props) => {
     const [selectedType, setSelectedType] = useState();
 
     const { upsertResponse } = useContext(ProjectContext);
+    const { t } = useTranslation('forms');
 
     const options = [
         { value: 'TextPayload', text: 'text' },
@@ -41,7 +43,7 @@ const ChangeResponseType = (props) => {
                 data-cy='change-response-type'
                 icon=''
                 className='change-response-type'
-                text='Change response type'
+                text={t('Change response type')}
                 onChange={handleSelectType}
             >
                 <Dropdown.Menu>
@@ -57,8 +59,8 @@ const ChangeResponseType = (props) => {
             </Dropdown>
             <Confirm
                 open={!!selectedType}
-                header='Warning!'
-                content='Are you sure you want to change the response type? The current response will be deleted.'
+                header={t('Warning!')}
+                content={t('Are you sure you want to change the response type? The current response will be deleted.')}
                 onConfirm={handleChangeResponseType}
                 onCancel={() => setSelectedType(null)}
                 confirmButton={

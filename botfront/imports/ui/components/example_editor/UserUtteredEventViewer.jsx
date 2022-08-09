@@ -4,10 +4,12 @@ import { Comment, Confirm, Popup } from 'semantic-ui-react';
 
 import UserUtteranceViewer from '../nlu/common/UserUtteranceViewer';
 import { ConversationBrowserContext } from '../conversations/context';
+import { useTranslation } from "react-i18next";
 
 export default function UserUtteredEventViewer({ event, author }) {
     const [open, setOpen] = useState(false);
     const { modifyFilters } = useContext(ConversationBrowserContext);
+    const { t } = useTranslation('example_editor');
     return (
         <Comment.Content>
             <Confirm
@@ -29,7 +31,7 @@ export default function UserUtteredEventViewer({ event, author }) {
                             </Comment.Author>
                         )}
                         inverted
-                        content='No user id is associated with this utterance'
+                        content={t('No user id is associated with this utterance')}
                     />
                 )}
                 onConfirm={() => {
@@ -37,8 +39,8 @@ export default function UserUtteredEventViewer({ event, author }) {
                     setOpen(false);
                 }}
                 onCancel={() => setOpen(false)}
-                header='Change Filters'
-                content='Show all conversations with this user'
+                header={t('Change Filters')}
+                content={t('Show all conversations with this user')}
                 confirmButton='Apply filter'
                 data-cy='filter-by-user-id-modal'
             />

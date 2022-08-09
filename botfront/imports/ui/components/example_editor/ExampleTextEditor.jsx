@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'semantic-ui-react';
 import TextArea from 'react-textarea-autosize';
+import { useTranslation } from "react-i18next";
 import { sortBy, isNull } from 'lodash';
 
 import getColor from '../../../lib/getColors';
@@ -161,11 +162,12 @@ export class ExampleTextEditor extends React.Component {
         const {
             highlightEntities, onSave,
         } = this.props;
+        const { t } = useTranslation('example_editor');
         return (
             <Form className='example-editor-container' data-cy='example-editor-container'>
                 <TextArea
                     id='example-text-area'
-                    placeholder='User says...'
+                    placeholder={t('User says...')}
                     minRows={1}
                     maxRows={999}
                     value={text}

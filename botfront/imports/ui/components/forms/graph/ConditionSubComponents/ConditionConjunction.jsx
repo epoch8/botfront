@@ -1,18 +1,21 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ToggleButtonGroup from '../../../common/ToggleButtonGroup';
+import { useTranslation } from "react-i18next";
 
 const ConditionConjunction = (props) => {
     const {
         selectedConjunction, not, setNot, setConjunction,
     } = props;
 
+    const { t } = useTranslation('forms');
+
     return (
         <div className='conjunction-container'>
             <ToggleButtonGroup
                 className='condition-conjunction-buttons'
                 options={[
-                    { value: 'NOT', text: 'Not' },
+                    { value: 'NOT', text: t('Not') },
                 ]}
                 onChange={() => setNot(!not)}
                 value={{
@@ -23,8 +26,8 @@ const ConditionConjunction = (props) => {
             <ToggleButtonGroup
                 className='condition-conjunction-buttons'
                 options={[
-                    { value: 'AND', text: 'And' },
-                    { value: 'OR', text: 'Or' },
+                    { value: 'AND', text: t('And') },
+                    { value: 'OR', text: t('Or') },
                 ]}
                 onChange={conjunction => setConjunction(conjunction)}
                 optionsAreExclusive

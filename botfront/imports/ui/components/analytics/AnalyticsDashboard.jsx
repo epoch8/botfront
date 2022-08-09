@@ -1,6 +1,7 @@
 import React, {
     useContext, useMemo, forwardRef, useImperativeHandle,
 } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Container } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
@@ -22,6 +23,7 @@ import { clearTypenameField } from '../../../lib/client.safe.utils';
 
 
 const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
+    const { t } = useTranslation('analytics');
     const {
         cards,
         languages,
@@ -42,7 +44,7 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
     const cardTypes = {
         conversationLengths: {
             chartTypeOptions: ['bar', 'pie', 'table'],
-            titleDescription: 'The number of conversations that contain a given number of user utterances.',
+            titleDescription: t('The number of conversations that contain a given number of user utterances.'),
             queryParams: {
                 envs, queryName: 'conversationLengths', langs,
             },
@@ -53,13 +55,13 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
                 formats: {
                     length: v => `${v} utterance${v !== 1 ? 's' : ''}`,
                 },
-                axisTitleX: '# Utterances',
-                axisTitleY: 'Conversations',
+                axisTitleX: t('# Utterances'),
+                axisTitleY: t('Conversations'),
             },
         },
         conversationDurations: {
             chartTypeOptions: ['bar', 'pie', 'table'],
-            titleDescription: 'The number of conversations with a given number of seconds elapsed between the first and last message.',
+            titleDescription: t('The number of conversations with a given number of seconds elapsed between the first and last message.'),
             queryParams: {
                 envs, queryName: 'conversationDurations', cutoffs: [30, 60, 90, 120, 180], langs,
             },
@@ -70,13 +72,13 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
                 formats: {
                     duration: v => `${v}s`,
                 },
-                axisTitleX: 'Duration (seconds)',
-                axisTitleY: 'Conversations',
+                axisTitleX: t('Duration (seconds)'),
+                axisTitleY: t('Conversations'),
             },
         },
         intentFrequencies: {
             chartTypeOptions: ['bar', 'pie', 'table'],
-            titleDescription: 'The number of user utterances classified as having a given intent.',
+            titleDescription: t('The number of user utterances classified as having a given intent.'),
             queryParams: {
                 envs, queryName: 'intentFrequencies', langs, intentTypeFilter: 'utterance',
             },
@@ -84,8 +86,8 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
             graphParams: {
                 x: 'name',
                 y: { absolute: 'count', relative: 'frequency' },
-                axisTitleY: 'Utterances',
-                axisTitleX: 'Intent',
+                axisTitleY: t('Utterances'),
+                axisTitleX: t('Intent'),
                 noXLegend: true,
                 axisBottom: {
                     tickRotation: -25,
@@ -98,7 +100,7 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
         },
         triggerFrequencies: {
             chartTypeOptions: ['bar', 'pie', 'table'],
-            titleDescription: 'The number of user utterances classified as having a given intent.',
+            titleDescription: t('The number of user utterances classified as having a given intent.'),
             queryParams: {
                 envs, queryName: 'intentFrequencies', langs, intentTypeFilter: 'trigger',
             },
@@ -106,8 +108,8 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
             graphParams: {
                 x: 'name',
                 y: { absolute: 'count', relative: 'frequency' },
-                axisTitleY: 'Occurrences',
-                axisTitleX: 'Triggered story',
+                axisTitleY: t('Occurrences'),
+                axisTitleX: t('Triggered story'),
                 noXLegend: true,
                 axisBottom: {
                     tickRotation: -25,
@@ -120,7 +122,7 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
         },
         conversationCounts: {
             chartTypeOptions: ['line', 'bar', 'table'],
-            titleDescription: 'Out of the visits (total number of conversations) in a given temporal window, the conversations that satisfy filters.',
+            titleDescription: t('Out of the visits (total number of conversations) in a given temporal window, the conversations that satisfy filters.'),
             queryParams: {
                 temporal: true, envs, queryName: 'conversationCounts', langs,
             },
@@ -136,13 +138,13 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
                     proportion: v => `${v}%`,
                 },
                 displayAbsoluteRelative: true,
-                axisTitleY: 'Conversations',
+                axisTitleY: t('Conversations'),
                 displayConfigs: ['conversationLength', 'userInitiatedConversations', 'triggerConversations', 'eventFilter'],
             },
         },
         actionCounts: {
             chartTypeOptions: ['line', 'bar', 'table'],
-            titleDescription: 'Out of all conversational events in a given temporal window, the number of actions occurrences that satisfy filters.',
+            titleDescription: t('Out of all conversational events in a given temporal window, the number of actions occurrences that satisfy filters.'),
             queryParams: {
                 temporal: true, envs, queryName: 'actionCounts', langs,
             },
@@ -158,13 +160,13 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
                     proportion: v => `${v}%`,
                 },
                 displayAbsoluteRelative: true,
-                axisTitleY: 'Action occurrences',
+                axisTitleY: t('Action occurrences'),
                 displayConfigs: ['includeActions', 'excludeActions'],
             },
         },
         conversationsFunnel: {
             chartTypeOptions: ['bar'],
-            titleDescription: 'Conversations matching sequence',
+            titleDescription: t('Conversations matching sequence'),
             queryParams: {
                 envs, queryName: 'conversationsFunnel', langs,
             },
@@ -172,8 +174,8 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
             graphParams: {
                 x: 'name',
                 y: { absolute: 'matchCount', relative: 'proportion' },
-                axisTitleY: 'Matching',
-                axisTitleX: 'Step',
+                axisTitleY: t('Matching'),
+                axisTitleX: t('Step'),
                 noXLegend: false,
                 axisBottom: {
                     tickRotation: -25,

@@ -10,6 +10,7 @@ import { ProjectContext } from '../../layouts/context';
 import ChangeResponseType from './ChangeResponseType';
 import { can } from '../../../lib/scopes';
 import StrictNumberInput from '../common/StrictNumberInput';
+import { useTranslation } from "react-i18next";
 
 const validationOptions = [
     { key: 'is_in', value: 'is_in', text: 'be in' },
@@ -44,6 +45,7 @@ const validationOptions = [
 ];
 
 const ValidationTab = (props) => {
+    const { t } = useTranslation('forms');
     const {
         validation,
         onChange,
@@ -147,7 +149,7 @@ const ValidationTab = (props) => {
             <Checkbox
                 disabled={!canEdit}
                 toggle
-                label='Validate the slot'
+                label={t('Validate the slot')}
                 checked={!!validation}
                 onChange={() => handleChange(validation ? null : initialValue)}
             />
@@ -200,7 +202,7 @@ const ValidationTab = (props) => {
             )}
             <div className='response-form'>
                 <Checkbox
-                    label='Display a message when the slot is set and valid'
+                    label={t('Display a message when the slot is set and valid')}
                     checked={utterOnNewValidSlot}
                     disabled={!canEdit}
                     onChange={onToggleUtterValidSlot}

@@ -17,6 +17,7 @@ import { can } from '../../../lib/scopes';
 import ToggleField from '../common/ToggleField';
 import { clearTypenameField } from '../../../lib/client.safe.utils';
 import { useMethod } from '../utils/hooks.js';
+import { useTranslation } from "react-i18next";
 
 const CreateForm = (props) => {
     const {
@@ -25,6 +26,7 @@ const CreateForm = (props) => {
         projectId,
     } = props;
 
+    const { t } = useTranslation('forms');
     const { data: allowContextualQuestionsDB, call: getAllowContextualQuestions } = useMethod('project.checkAllowContextualQuestions');
     const { call: setAllowContextualQuestionsInDb } = useMethod('project.setAllowContextualQuestions');
     const [allowContextualQuestions, setAllowContextualQuestions] = useState(null);
@@ -83,7 +85,7 @@ const CreateForm = (props) => {
                     // we force it to boolean so that the value is never null
                     // This way, it's always a controlled component.
                         checked={!!(allowContextualQuestions !== null ? allowContextualQuestions : allowContextualQuestionsDB)}
-                        label='Allow contextual side questions'
+                        label={t('Allow contextual side questions')}
                         toggle
                         onChange={handleToggleContextualQuestions}
                         className='contextual-side-questions'
@@ -92,7 +94,7 @@ const CreateForm = (props) => {
                     <Popup
                         size='small'
                         inverted
-                        content='This will enable contextual side questions in all forms and may increase training time. This setting also requires TEDPolicy in your policies'
+                        content={t('This will enable contextual side questions in all forms and may increase training time. This setting also requires TEDPolicy in your policies')}
                         trigger={<Icon name='question' circular inverted color='grey' className='side-question-tooltips' />}
                     />
                     <ToggleField name='collect_in_botfront' data-cy='form-collection-togglefield' />

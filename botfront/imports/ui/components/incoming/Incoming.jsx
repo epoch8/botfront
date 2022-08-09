@@ -13,10 +13,12 @@ import ConversationsBrowserContainer from '../conversations/ConversationsBrowser
 import FormResults from './FormResults';
 import { updateIncomingPath } from './incoming.utils';
 import { ProjectContext } from '../../layouts/context';
+import { useTranslation } from "react-i18next";
 
 export default function Incoming(props) {
     const { router } = props;
     const [activeTab, setActiveTab] = useState(router.params.tab || 'newutterances');
+    const { t } = useTranslation('incoming');
     const {
         project: { _id: projectId },
         language: workingLanguage,
@@ -57,13 +59,13 @@ export default function Incoming(props) {
 
     const renderTabs = () => (
         [
-            { value: 'newutterances', text: 'New Utterances' },
-            { value: 'conversations', text: 'Conversations' },
-            { value: 'forms', text: 'Form results' },
-            { value: 'populate', text: 'Populate' },
+            { value: 'newutterances', text: t('New Utterances') },
+            { value: 'conversations', text: t('Conversations') },
+            { value: 'forms', text: t('Form results') },
+            { value: 'populate', text: t('Populate') },
         ].map(({ value, text }) => (
             <Menu.Item
-                content={text}
+                content={t(text)}
                 key={value}
                 data-cy={value}
                 active={value === activeTab}

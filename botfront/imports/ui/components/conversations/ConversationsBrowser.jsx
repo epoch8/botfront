@@ -13,6 +13,7 @@ import ConversationFilters from './ConversationFilters';
 import { updateIncomingPath } from '../incoming/incoming.utils';
 import { ConversationBrowserContext } from './context';
 import { wrapMeteorCallback } from '../utils/Errors';
+import { useTranslation } from "react-i18next";
 
 function ConversationsBrowser(props) {
     const {
@@ -28,6 +29,7 @@ function ConversationsBrowser(props) {
         projectId,
     } = props;
 
+    const { t } = useTranslation('conversations');
     const [deleteConv, { data }] = useMutation(DELETE_CONV);
     const [optimisticRemoveReadMarker, setOptimisticRemoveReadMarker] = useState(
         new Set(),
@@ -35,7 +37,7 @@ function ConversationsBrowser(props) {
 
     useEffect(() => {
         if (data && !data.delete.success) {
-            Alert.warning('Something went wrong, the conversation was not deleted', {
+            Alert.warning(t('Something went wrong, the conversation was not deleted'), {
                 position: 'top-right',
                 timeout: 5000,
             });

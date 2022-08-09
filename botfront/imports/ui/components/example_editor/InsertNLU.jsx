@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { Form, Segment } from 'semantic-ui-react';
 import TextArea from 'react-textarea-autosize';
+import { useTranslation } from "react-i18next";
 import { debounce } from 'lodash';
 import UserUtteranceViewer from '../nlu/common/UserUtteranceViewer';
 import { ProjectContext } from '../../layouts/context';
@@ -12,6 +13,7 @@ function InsertNlu(props) {
     const { language, instance } = useContext(ProjectContext);
     const [value, setValue] = useState('');
     const [parsedExample, setParsedExample] = useState(null);
+    const { t } = useTranslation('example_editor');
 
     const handleParse = (func, v) => Meteor.call(
         'rasa.parse',
@@ -78,7 +80,7 @@ function InsertNlu(props) {
             <div id='playground'>
                 <Form>
                     <TextArea
-                        placeholder='User says...'
+                        placeholder={t('User says...')}
                         minRows={1}
                         maxRows={999}
                         value={value}

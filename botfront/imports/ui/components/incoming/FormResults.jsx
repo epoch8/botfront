@@ -8,12 +8,14 @@ import { saveAs } from 'file-saver';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_FORMS } from '../stories/graphql/queries';
 import { Loading } from '../utils/Utils';
+import { useTranslation } from "react-i18next";
 
 const FormResults = (props) => {
     const { projectId, environment } = props;
     const environments = [environment];
 
     const [counts, setCounts] = useState(null);
+    const { t } = useTranslation('incoming');
 
     const { data: { getForms = [] } = {}, loading } = useQuery(GET_FORMS, {
         variables: { projectId, onlySlotList: true },
@@ -51,9 +53,9 @@ const FormResults = (props) => {
         const disabled = count < 1;
         const content = disabled
             ? !form.collect_in_botfront
-                ? 'Form not set to receive submissions'
-                : 'No submissions for this form'
-            : `Export ${count} submission${count > 1 ? 's' : ''} to CSV format`;
+                ? t('Form not set to receive submissions')
+                : t('No submissions for this form')
+            : t(`Export ${count} submission${count > 1 ? 's' : ''} to CSV format`);
         return (
             <Segment key={form.name}>
                 <Header>
@@ -87,7 +89,7 @@ const FormResults = (props) => {
             <Loading loading={loading || !counts}>
                 {!forms.length ? (
                     <>
-                        <Message info content='No forms found' />
+                        <Message info content={t('No forms found')} />
                         <br />
                     </>
                 ) : (

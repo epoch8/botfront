@@ -1,6 +1,7 @@
 import {
     Modal, Dropdown, TextArea, Input, Message,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import React, { useState, useContext } from 'react';
 import { throttle } from 'lodash';
@@ -11,6 +12,7 @@ import SequenceSelector from '../common/SequenceSelector';
 import { validateEventFilters } from '../../../lib/eventFilter.utils';
 
 const SettingsPortal = (props) => {
+    const { t } = useTranslation('analytics');
     const {
         text,
         value,
@@ -34,7 +36,7 @@ const SettingsPortal = (props) => {
     const renderDefaultDropdown = () => (
         <Dropdown
             data-cy='settings-portal-dropdown'
-            placeholder={text}
+            placeholder={t(text)}
             options={newValue}
             search
             selection
@@ -61,7 +63,7 @@ const SettingsPortal = (props) => {
     
     const renderIntentAndActionSelector = () => (
         <>
-            {errors && errors.length > 0 && <Message negative header='Errors' list={errors} />}
+            {errors && errors.length > 0 && <Message negative header={t('Errors')} list={errors} />}
             <IntentAndActionSelector
                 data-cy='settings-portal-sequence-selector'
                 sequence={newValue.selection}
@@ -133,7 +135,7 @@ const SettingsPortal = (props) => {
             return (
                 <TextArea
                     data-cy='settings-portal-textarea'
-                    value={value}
+                    value={t(value)}
                     style={{ width: '100%' }}
                     onChange={handleModifyText}
                     rows={7}

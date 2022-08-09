@@ -172,13 +172,13 @@ function AnalyticsContainer(props) {
     });
 
     const cardTypes = [
-        ['conversationLengths', {t('Conversation Length')}],
-        ['conversationDurations', 'Conversation Duration'],
-        ['intentFrequencies', 'Top Intents'],
-        ['triggerFrequencies', 'Top Triggers'],
-        ['conversationCounts', 'Conversations over time'],
-        ['actionCounts', 'Action occurrences over time'],
-        ['conversationsFunnel', 'Conversations Funnel'],
+        ['conversationLengths', t('Conversation Length')],
+        ['conversationDurations', t('Conversation Duration')],
+        ['intentFrequencies', t('Top Intents')],
+        ['triggerFrequencies', t('Top Triggers')],
+        ['conversationCounts', t('Conversations over time')],
+        ['actionCounts', t('Action occurrences over time')],
+        ['conversationsFunnel', t('Conversations Funnel')],
     ];
 
     const renderAddCard = () => (

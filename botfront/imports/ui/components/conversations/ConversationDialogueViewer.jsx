@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from "react-i18next";
 import ReactJson from 'react-json-view';
 import { Comment, Message } from 'semantic-ui-react';
 import { generateTurns } from './utils';
@@ -16,9 +17,10 @@ function BotResponse({
     if (data) Object.keys(data).forEach(key => (data[key] == null) && delete data[key]);
 
     const dataEmpty = !data || !Object.keys(data).length;
+    const { t } = useTranslation('conversations');
     return (
         <div className='bot-response-message'>
-            {text && <p className='bot-response-text'>{text}</p>}
+            {text && <p className='bot-response-text'>{t(text)}</p>}
             {!dataEmpty && <ReactJson className='bot-response-json' src={data} collapsed name={type} />}
         </div>
     );
@@ -95,6 +97,7 @@ function ConversationDialogueViewer({
     messageIdInView,
 }) {
     const toScrollTo = React.createRef();
+    const { t } = useTranslation('conversations');
     
     const turns = useMemo(() => generateTurns(tracker, mode === 'debug'), [tracker]);
     useEffect(() => {
@@ -121,13 +124,13 @@ function ConversationDialogueViewer({
                 <Message
                     info
                     icon='warning'
-                    header='No events to show'
+                    header={t('No events to show')}
                     content={(() => {
                         if (mode !== 'debug') {
-                            return 'check debug mode for non-dialogue events.';
+                            return t('check debug mode for non-dialogue events.');
                         }
 
-                        return 'check JSON mode to view the full tracker object.';
+                        return t('check JSON mode to view the full tracker object.');
                     })()}
                 />
             )}

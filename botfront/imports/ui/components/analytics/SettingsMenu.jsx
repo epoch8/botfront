@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import {
     Dropdown, Icon, Button, Popup,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import SettingsPortal from './SettingsPortal';
 
 export const filters = ['includeActions', 'excludeAction', 'includeActions', 'excludeIntents', 'selectedSequence', 'conversationLength', 'limit', 'eventFilter'];
 export const conversationTypes = ['userInitiatedConversations', 'triggeredConversations'];
 
 const SettingsMenu = (props) => {
+    const { t } = useTranslation('analytics');
     const {
         settings,
         titleDescription,
@@ -34,7 +36,7 @@ const SettingsMenu = (props) => {
                 data-cy={`edit-${setting}`}
                 className='toggle-item'
                 onClick={() => onChangeSettings({ [setting]: !value })}
-                content={<>{text}{value && <Icon name='check' className='card-settings-checkmark' />}</>}
+                content={<>{t(text)}{value && <Icon name='check' className='card-settings-checkmark' />}</>}
             />
         </React.Fragment>
     );
@@ -44,30 +46,30 @@ const SettingsMenu = (props) => {
         const valueText = `(${values.length})`;
         switch (setting) {
         case 'includeActions':
-            return { text: 'Included actions', valueText, values };
+            return { text: t('Included actions'), valueText, values };
         case 'excludeActions':
-            return { text: 'Excluded actions', valueText, values };
+            return { text: t('Excluded actions'), valueText, values };
         case 'includeIntents':
-            return { text: 'Included intents', valueText, values };
+            return { text: t('Included intents'), valueText, values };
         case 'excludeIntents':
-            return { text: 'Excluded intents', valueText, values };
+            return { text: t('Excluded intents'), valueText, values };
         case 'selectedSequence':
-            return { text: 'Selected sequence', valueText, values };
+            return { text: t('Selected sequence'), valueText, values };
         case 'conversationLength':
             return {
-                text: 'Minimum number of utterances',
+                text: t('Minimum number of utterances'),
                 valueText: settings[setting] ? `: ${settings[setting]}` : '',
                 values,
             };
         case 'limit':
             return {
-                text: 'Display limit',
+                text: t('Display limit'),
                 valueText: settings[setting] ? `: ${settings[setting]}` : '',
                 values: settings[setting],
             };
         case 'eventFilter':
             return {
-                text: 'Filter conversation events',
+                text: t('Filter conversation events'),
                 valueText,
                 values: { selection: settings[setting] || [], operator: settings.eventFilterOperator || 'or' },
             };
@@ -82,7 +84,7 @@ const SettingsMenu = (props) => {
         return (
             <React.Fragment key={setting}>
                 <SettingsPortal
-                    text={text}
+                    text={t(text)}
                     setting={setting}
                     onClose={() => setSettingsOpen(false)}
                     open={settingsOpen === setting}
@@ -97,7 +99,7 @@ const SettingsMenu = (props) => {
                     }
                 />
                 <Dropdown.Item
-                    text={`${text}${valueText}`}
+                    text={t(`${text}${valueText}`)}
                     data-cy={`edit-${setting}`}
                     onClick={() => setSettingsOpen(setting)}
                 />
@@ -118,41 +120,41 @@ const SettingsMenu = (props) => {
             basic
         >
             <Dropdown.Menu>
-                <Dropdown.Header content='Appearance' onClick={e => e.stopPropagation()} />
+                <Dropdown.Header content={t('Appearance')} onClick={e => e.stopPropagation()} />
                 <Dropdown.Item
-                    text={settings.wide ? 'Shrink to half width' : 'Expand to full width'}
+                    text={settings.wide ? t('Shrink to half width') : t('Expand to full width')}
                     data-cy='toggle-wide'
                     onClick={() => onChangeSettings({ wide: !settings.wide })}
                 />
                 <React.Fragment key='edit-description'>
                     <SettingsPortal
-                        text='Edit description'
+                        text={t('Edit description')}
                         onClose={() => setSettingsOpen(false)}
                         open={settingsOpen === 'description'}
                         values={titleDescription}
                         onChange={newVal => onChangeSettings({ description: newVal })}
                     />
                     <Dropdown.Item
-                        text='Edit description'
+                        text={t('Edit description')}
                         data-cy='edit-description'
                         onClick={() => setSettingsOpen('description')}
                     />
                 </React.Fragment>
                 {denominatorLine && (
                     <Dropdown.Item
-                        text={settings.showDenominator ? 'Hide total conversations' : 'Show total conversations'}
+                        text={settings.showDenominator ? t('Hide total conversations') : t('Show total conversations')}
                         data-cy='toggle-denominator'
                         onClick={() => onChangeSettings({ showDenominator: !settings.showDenominator })}
                     />
                 )}
-                {displayTypeHeader && <Dropdown.Header content='Types of conversations' onClick={e => e.stopPropagation()} /> }
+                {displayTypeHeader && <Dropdown.Header content={t('Types of conversations')} onClick={e => e.stopPropagation()} /> }
                 {displayConfigs.includes('userInitiatedConversations') && renderCheckOption('User initiated conversations', 'userInitiatedConversations', settings.userInitiatedConversations)}
                 {displayConfigs.includes('triggerConversations') && renderCheckOption('Triggered conversations', 'triggerConversations', settings.triggerConversations)}
-                {displayFiltersHeader && <Dropdown.Header content='Filters' onClick={e => e.stopPropagation()} />}
+                {displayFiltersHeader && <Dropdown.Header content={t('Filters')} onClick={e => e.stopPropagation()} />}
                 {(displayConfigs || []).map(renderExtraOptionsLink)}
-                <Dropdown.Header content='Extras' onClick={e => e.stopPropagation()} />
+                <Dropdown.Header content={t('Extras')} onClick={e => e.stopPropagation()} />
                 <Popup
-                    content='There is no data in this card to download'
+                    content={t('There is no data in this card to download')}
                     inverted
                     disabled={canExport}
                     trigger={(
