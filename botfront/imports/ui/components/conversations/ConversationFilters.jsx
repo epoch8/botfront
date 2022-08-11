@@ -266,8 +266,8 @@ const ConversationFilters = ({
                             </Segment>
                         </Segment.Group>
                     </div>
-                        
-                    
+
+
                     {/* conversation confidence filter */}
                     <div className='conversation-filter' data-cy='confidence-filter'>
                         <Segment.Group
@@ -314,6 +314,28 @@ const ConversationFilters = ({
                                     value={newFilters.userId || ''}
                                     onChange={(_e, { value }) => setFilter(
                                         'userId',
+                                        value.trim(),
+                                    )}
+                                    placeholder='unique identifier'
+                                />
+                            </Segment>
+                        </Segment.Group>
+                    </div>
+                    {/* conversation id filter */}
+                    <div className='conversation-filter conversation-id-filter' data-cy='conversation-id-filter'>
+                        <Segment.Group
+                            horizontal
+                            data-cy='conversation-id-filter'
+                            className='conversation-filter'
+                        >
+                            <Segment className='conversation-id-label'>
+                                <Label>Conversation ID</Label>
+                            </Segment>
+                            <Segment className='conversation-id-filter'>
+                                <Input
+                                    value={newFilters.conversationId || ''}
+                                    onChange={(_e, { value }) => setFilter(
+                                        'conversationId',
                                         value.trim(),
                                     )}
                                     placeholder='unique identifier'

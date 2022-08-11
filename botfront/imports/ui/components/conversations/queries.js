@@ -15,6 +15,7 @@ query retreiveConversations(
     $startDate: String
     $endDate: String
     $userId: String
+    $conversationId: String
     $eventFilterOperator: String
     $eventFilter: [StepInput]
     $userInitiatedConversations: Boolean
@@ -37,6 +38,7 @@ query retreiveConversations(
         startDate: $startDate,
         endDate: $endDate,
         userId: $userId
+        conversationId: $conversationId
         eventFilterOperator: $eventFilterOperator,
         eventFilter: $eventFilter
         userInitiatedConversations: $userInitiatedConversations,
