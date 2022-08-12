@@ -10,6 +10,7 @@ import { Slots } from '../../../api/slots/slots.collection';
 import { ConversationOptionsContext } from './Context';
 import { formNameIsValid } from '../../../lib/client.safe.utils';
 import { tooltipWrapper } from '../utils/Utils';
+import { withTranslation } from "react-i18next";
 
 class StoryGroupNavigation extends React.Component {
     constructor(props) {
@@ -78,6 +79,7 @@ class StoryGroupNavigation extends React.Component {
         const {
             modals, storyMode, onSwitchStoryMode, allowAddition,
         } = this.props;
+        const { t } = this.props;
         return (
             <div className='navigation'>
                 <Button.Group fluid>
@@ -90,7 +92,7 @@ class StoryGroupNavigation extends React.Component {
                             style={{ textAlign: 'center' }}
                             onClick={() => this.setState({ addMode: true })}
                         />,
-                        'Create group',
+                        t('Create group'),
                     )}
                     {tooltipWrapper(
                         <Button
@@ -98,7 +100,7 @@ class StoryGroupNavigation extends React.Component {
                             onClick={() => modals.setSlotsModal(true)}
                             data-cy='slots-modal'
                         />,
-                        'Manage slots',
+                        t('Manage slots'),
                     )}
                     {tooltipWrapper(
                         <Button
@@ -106,7 +108,7 @@ class StoryGroupNavigation extends React.Component {
                             onClick={() => modals.setPoliciesModal(true)}
                             data-cy='policies-modal'
                         />,
-                        'Edit Policies',
+                        t('Edit Policies'),
                     )}
                     {tooltipWrapper(
                         <Button
@@ -139,7 +141,7 @@ class StoryGroupNavigation extends React.Component {
                     open
                     trigger={(
                         <Input
-                            placeholder='Choose a group name'
+                            placeholder={t('Choose a group name')}
                             onChange={this.handleChangeNewItemName}
                             value={newItemName}
                             onKeyDown={this.handleKeyDownInput}
@@ -182,11 +184,11 @@ const mapDispatchToProps = {
 
 const BrowserWithState = connect(mapStateToProps, mapDispatchToProps)(StoryGroupNavigation);
 
-export default withTracker(props => ({
+export default withTranslation('stories')(withTracker(props => ({
     ...props,
     slots: Slots.find({}).fetch(),
 }))(props => (
     <ConversationOptionsContext.Consumer>
         {value => <BrowserWithState {...props} {...value} />}
     </ConversationOptionsContext.Consumer>
-));
+)));

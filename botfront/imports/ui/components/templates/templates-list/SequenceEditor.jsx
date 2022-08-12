@@ -10,6 +10,7 @@ import BotResponsesContainer from '../../stories/common/BotResponsesContainer';
 import CustomResponseEditor from '../common/CustomResponseEditor';
 import IconButton from '../../common/IconButton';
 import ButtonTypeToggle from '../common/ButtonTypeToggle';
+import { withTranslation } from "react-i18next";
 
 import { addContentType, defaultTemplate } from '../../../../lib/botResponse.utils';
 
@@ -89,6 +90,7 @@ const SequenceEditor = (props) => {
             </Segment>
         );
     };
+    // Todo: translate
     return (
         <>
             {sequence.some(s => getContent(s).__typename === 'CustomPayload') && (
@@ -122,4 +124,4 @@ SequenceEditor.defaultProps = {
     editable: true,
 };
 
-export default SequenceEditor;
+export default withTranslation('templates')(SequenceEditor);

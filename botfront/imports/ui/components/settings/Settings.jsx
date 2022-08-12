@@ -1,4 +1,5 @@
 import { Container, Menu, Tab } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 import React from 'react';
 import 'react-s-alert/dist/s-alert-default.css';
 import { connect } from 'react-redux';
@@ -34,6 +35,7 @@ class Settings extends React.Component {
 
     getSettingsPanes = () => {
         const { projectId } = this.props;
+        const { t } = this.props;
         const canViewProjects = can('projects:r', projectId);
         const canViewResources = can('resources:r', projectId);
         const canExport = can('export:x', projectId);
@@ -43,59 +45,59 @@ class Settings extends React.Component {
             ...(canViewProjects ? [
                 {
                     name: 'info',
-                    menuItem: <Menu.Item icon='info' content='Project Info' key='Project Info' />,
+                    menuItem: <Menu.Item icon='info' content={t('Project Info')} key='Project Info' />,
                     render: () => <Tab.Pane><ProjectInfo /></Tab.Pane>,
                 },
                 {
                     name: 'credentials',
-                    menuItem: <Menu.Item icon='key' content='Credentials' key='Credentials' />,
+                    menuItem: <Menu.Item icon='key' content={t('Credentials')} key='Credentials' />,
                     render: () => <Tab.Pane><Credentials /></Tab.Pane>,
                 },
             ] : []),
             ...(canViewResources ? [
                 {
                     name: 'instance',
-                    menuItem: <Menu.Item icon='server' content='Instance' key='Instances' />,
+                    menuItem: <Menu.Item icon='server' content={t('Instance')} key='Instances' />,
                     render: () => <Tab.Pane><Instances /></Tab.Pane>,
                 },
             ] : []),
             ...(canViewProjects ? [
                 {
                     name: 'endpoints',
-                    menuItem: <Menu.Item icon='code' content='Endpoints' key='Endpoints' />,
+                    menuItem: <Menu.Item icon='code' content={t('Endpoints')} key='Endpoints' />,
                     render: () => <Tab.Pane><Endpoints /></Tab.Pane>,
                 },
                 {
                     name: 'appearance',
-                    menuItem: <Menu.Item icon='eye' content='Appearance' key='Appearance' />,
+                    menuItem: <Menu.Item icon='eye' content={t('Appearance')} key='Appearance' />,
                     render: () => <Tab.Pane><Appearance /></Tab.Pane>,
                 },
                 {
                     name: 'widget',
-                    menuItem: <Menu.Item icon='chat' name='Chat widget settings' content='Chat widget' key='Chat widget' />,
+                    menuItem: <Menu.Item icon='chat' name='Chat widget settings' content={t('Chat widget')} key='Chat widget' />,
                     render: () => <Tab.Pane><ChatWidgetForm /></Tab.Pane>,
                 },
                 {
                     name: 'default-domain',
-                    menuItem: <Menu.Item icon='globe' content='Default Domain' key='Default Domain' />,
+                    menuItem: <Menu.Item icon='globe' content={t('Default Domain')} key='Default Domain' />,
                     render: () => <Tab.Pane><DefaultDomain /></Tab.Pane>,
                 },
                 {
                     name: 'integration',
-                    menuItem: <Menu.Item icon='cogs' content='Integration' key='Integration' />,
+                    menuItem: <Menu.Item icon='cogs' content={t('Integration')} key='Integration' />,
                     render: () => <Tab.Pane><Integration /></Tab.Pane>,
                 },
             ] : []),
             ...(canImport || canExport ? [
                 {
                     name: 'import-export',
-                    menuItem: <Menu.Item icon='download' content='Import/Export' key='Import/Export' />,
+                    menuItem: <Menu.Item icon='download' content={t('Import/Export')} key='Import/Export' />,
                     render: () => <Tab.Pane><ImportExportProject /></Tab.Pane>,
                 }] : []),
 
             ...(canViewGitCredentials ? [{
                 name: 'git-credentials',
-                menuItem: <Menu.Item icon='git' content='Git credentials' key='Git credentials' />,
+                menuItem: <Menu.Item icon='git' content={t('Git credentials')} key='Git credentials' />,
                 render: () => <Tab.Pane><GitSettings /></Tab.Pane>,
             }] : []),
                 
@@ -105,10 +107,11 @@ class Settings extends React.Component {
     };
 
     render() {
+        const { t } = this.props;
         const { params: { setting } = {} } = this.props;
         return (
             <>
-                <PageMenu title='Settings' icon='setting' />
+                <PageMenu title={t('Settings')} icon='setting' />
                 <Container>
                     <Tab
                         menu={{ vertical: true, 'data-cy': 'settings-menu' }}
@@ -135,4 +138,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(Settings);
+export default withTranslation('settings')(connect(mapStateToProps)(Settings));

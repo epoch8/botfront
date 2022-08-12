@@ -1,11 +1,12 @@
 /* THIS FILE SHOULD NOT BE EDITED ON EE */
 import React from 'react';
+import { withTranslation } from "react-i18next";
 import {
     AutoForm,
 } from 'uniforms-semantic';
 import ToggleField from '../common/ToggleField';
 import ButtonSelectField from '../form_fields/ButtonSelectField';
-
+// Todo: translate. не совсем понял тут надо оборачивать text или value ?
 
 // force open affect force close and vice versa
 export class AutoFormMetadata extends AutoForm {

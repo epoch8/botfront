@@ -7,6 +7,7 @@ import { ProjectContext } from '../../../layouts/context';
 
 import IntentLabel from './IntentLabel';
 import EntityLabel from './EntityLabel';
+import {withTranslation} from "react-i18next";
 
 function UserUtteranceViewer(props) {
     const {
@@ -20,6 +21,7 @@ function UserUtteranceViewer(props) {
     const setMouseDown = (v) => { mouseDown.current = v; };
     const utteranceViewerRef = useRef();
     const { hasNoWhitespace } = useContext(ProjectContext);
+    const { t } = this.props;
     const textContent = useMemo(() => {
         // We add the original index to entities for onChange and onDelete methods, then we sort them by order of appearance.
         const sortedEntities = entities
@@ -217,7 +219,7 @@ function UserUtteranceViewer(props) {
     }
 
     const color = disabled ? { color: 'grey' } : {};
-
+    // Todo: translate
     return (
         <div
             className={`utterance-viewer ${onClick ? 'cursor pointer' : ''}`}
@@ -379,4 +381,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(UserUtteranceViewer);
+export default withTranslation('nlu')(connect(mapStateToProps)(UserUtteranceViewer));

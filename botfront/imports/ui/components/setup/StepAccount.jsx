@@ -6,11 +6,13 @@ import {
 import PropTypes from 'prop-types';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
 import { accountSetupSchema } from '../../../api/setup';
+import { withTranslation } from "react-i18next";
 
 // eslint-disable-next-line react/prefer-stateless-function
 class StepAccountComponent extends React.Component {
     render() {
         const { onSubmit, data } = this.props;
+        const { t } = this.props;
         const bridge = new SimpleSchema2Bridge(accountSetupSchema);
         return (
             <AutoForm model={data} schema={bridge} onSubmit={onSubmit}>
@@ -19,13 +21,13 @@ class StepAccountComponent extends React.Component {
                 <AutoField name='email' placeholder='Your email' label={null} />
                 <AutoField
                     name='password'
-                    placeholder='Choose a password'
+                    placeholder={t('Choose a password')}
                     label={null}
                     type='password'
                 />
                 <AutoField
                     name='passwordVerify'
-                    placeholder='Confirm your password'
+                    placeholder={t('Confirm your password')}
                     label={null}
                     type='password'
                 />
@@ -52,4 +54,4 @@ StepAccountComponent.defaultProps = {
     data: undefined,
 };
 
-export default StepAccountComponent;
+export default withTranslation('setup')(StepAccountComponent);

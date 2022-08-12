@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import moment from 'moment-timezone';
+import { withTranslation } from "react-i18next";
 import {
     Form, Dropdown, Input, Checkbox,
 } from 'semantic-ui-react';
@@ -11,7 +12,7 @@ import { debounce } from 'lodash';
 import queryString from 'query-string';
 import { ProjectContext } from '../../../layouts/context';
 
-export default class API extends React.Component {
+class API extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -94,6 +95,7 @@ export default class API extends React.Component {
         const tzOptions = moment.tz.names().map(n => ({ value: n, text: n }));
 
         const codeString = this.getCodeString();
+        const { t } = this.props;
         return (
             <div className='glow-box extra-padding no-margin'>
                 <br />
@@ -101,7 +103,7 @@ export default class API extends React.Component {
                     <Form>
                         <Form.Field>
                             <TextArea
-                                placeholder='User says...'
+                                placeholder={t('User says...')}
                                 minRows={1}
                                 maxRows={999}
                                 value={query}
@@ -111,7 +113,7 @@ export default class API extends React.Component {
                         <br />
                         <Checkbox
                             slider
-                            label='Show Duckling params'
+                            label={t('Show Duckling params')}
                             onChange={this.handleDucklingOptionsChange}
                         />
                         <br />
@@ -121,7 +123,7 @@ export default class API extends React.Component {
                                 <label>Timezone: </label>
                                 <Dropdown
                                     name='tz'
-                                    placeholder='Select timezone'
+                                    placeholder={t('Select timezone')}
                                     search
                                     selection
                                     value={tz}
@@ -155,3 +157,5 @@ export default class API extends React.Component {
         );
     }
 }
+
+export default withTranslation('nlu')(API);

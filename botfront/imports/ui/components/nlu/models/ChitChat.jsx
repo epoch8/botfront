@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Alert from 'react-s-alert';
 import { Meteor } from 'meteor/meteor';
+import { withTranslation } from "react-i18next";
 import {
     Dropdown, Confirm, Button,
     Loader, Message, Icon,
@@ -11,7 +12,7 @@ import 'react-s-alert/dist/s-alert-default.css';
 
 import { wrapMeteorCallback } from '../../utils/Errors';
 
-export default class ChitChat extends React.Component {
+class ChitChat extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -70,11 +71,12 @@ export default class ChitChat extends React.Component {
         const {
             notConfiguredError, chitChatIntents, confirmOpen, selectedIntents,
         } = this.state;
+        const { t } = this.props;
         
         return (
             <div className='glow-box extra-padding no-margin'>
                 {notConfiguredError && <Message error content={notConfiguredError} />}
-                {chitChatIntents && chitChatIntents.length === 0 && <Message info content="Chitchat intents are not available in your model's language." />}
+                {chitChatIntents && chitChatIntents.length === 0 && <Message info content={t("Chitchat intents are not available in your model's language.")} />}
                 {chitChatIntents && chitChatIntents.length > 0 && (
                     <div className='chitchat' style={{ minHeight: 300 }}>
                         {/* minHeight to make sure there is enough space for the dropdown */}
@@ -86,7 +88,7 @@ export default class ChitChat extends React.Component {
 
                         <Dropdown
                             data-cy='select-chit-chat'
-                            placeholder='Select chit chat intents'
+                            placeholder={t('Select chit chat intents')}
                             multiple
                             selection
                             fluid
@@ -100,13 +102,13 @@ export default class ChitChat extends React.Component {
                         <Button
                             primary
                             disabled={selectedIntents.length === 0}
-                            content='Add to training data'
+                            content={t('Add to training data')}
                             onClick={this.open}
                             data-cy='add-chit-chat'
                         />
                         <Confirm
-                            header='Add to training data?'
-                            content={`This will add chitchat examples to your training data matching the following intents: ${selectedIntents.join(' ')}`}
+                            header={t('Add to training data?')}
+                            content={t(`This will add chitchat examples to your training data matching the following intents: ${selectedIntents.join(' ')}`)}
                             open={confirmOpen}
                             onCancel={this.close}
                             onConfirm={this.addToTrainingData}
@@ -123,3 +125,5 @@ export default class ChitChat extends React.Component {
 ChitChat.propTypes = {
     model: PropTypes.object.isRequired,
 };
+
+export default withTranslation('nlu')(ChitChat);

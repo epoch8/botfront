@@ -4,6 +4,7 @@ import React, {
 import {
     Popup, Checkbox, Icon, Confirm, Button,
 } from 'semantic-ui-react';
+import { withTranslation } from "react-i18next";
 import PropTypes from 'prop-types';
 import DataTable from '../../common/DataTable';
 import 'react-s-alert/dist/s-alert-default.css';
@@ -40,6 +41,7 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
     const { intents, entities, project: { _id: projectId } } = useContext(ProjectContext);
     const [editExampleId, setEditExampleId] = useState([]);
     const canEdit = can('nlu-data:w', projectId);
+    const { t } = this.props;
 
     const tableRef = useRef(null);
     const nluCommandBarRef = useRef(null);
@@ -319,14 +321,14 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
         if (selectionWithFullData.some(d => !d.intent || !d?.metadata?.draft)) {
             return null;
         }
-        const message = `Remove draft status of  ${ids.length} NLU examples`;
+        const message = t(`Remove draft status of  ${ids.length} NLU examples`);
         const examplesToUpdate = ids.map(_id => ({ _id, metadata: { draft: false } }));
         const action = () => updateExamples(examplesToUpdate);
         return ids.length > 1 ? setConfirm({ message, action }) : action();
     }
 
     function handleSetIntent(ids, intent) {
-        const message = `Change intent to ${intent} for ${ids.length} NLU examples?`;
+        const message = t(`Change intent to ${intent} for ${ids.length} NLU examples?`);
         const examplesToUpdate = ids.map(_id => ({ _id, intent }));
         const action = () => updateExamples(examplesToUpdate);
         return ids.length > 1 ? setConfirm({ message, action }) : action();
@@ -375,11 +377,11 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
     });
 
     const rowClassName = (datum) => {
-        if (datum?.metadata?.draft && !noDrafts) return 'yellow';
-        if (datum?.deleted) return 'grey';
-        if (datum?.invalid) return 'red';
-        if (datum?.isNew) return 'yellow';
-        if (datum?.edited) return 'olive';
+        if (datum?.metadata?.draft && !noDrafts) return t('yellow');
+        if (datum?.deleted) return t('grey');
+        if (datum?.invalid) return t('red');
+        if (datum?.isNew) return t('yellow');
+        if (datum?.edited) return t('olive');
         return '';
     };
 
@@ -391,7 +393,7 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
                     className='with-shortcuts'
                     cancelButton='No'
                     confirmButton='Yes'
-                    content={confirm.message}
+                    content={t(confirm.message)}
                     onCancel={() => {
                         setConfirm(null);
                         return tableRef?.current?.focusTable();
@@ -432,7 +434,7 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
                                 color={filters.onlyCanonicals ? 'black' : 'grey'}
                             />
                         )}
-                        content='Only show canonicals examples'
+                        content={t('Only show canonicals examples')}
                         position='top center'
                         inverted
                     />
@@ -493,4 +495,4 @@ NluTable.defaultProps = {
     renderLabelColumn: null,
     additionalIntentOption: '',
 };
-export default NluTable;
+export default withTranslation('nlu')(NluTable);

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
 import IconButton from '../../common/IconButton';
 import IntentLabel from '../common/IntentLabel';
+import { withTranslation } from "react-i18next";
 
 const NluCommandBar = React.forwardRef((props, ref) => {
     const {
@@ -14,6 +15,7 @@ const NluCommandBar = React.forwardRef((props, ref) => {
     const selectionIncludesNonDraft = selection.some(d => !d.metadata?.draft);
     const selectionIncludesNullIntent = selection.some(d => !d.intent);
     const selectionIncludesDeleted = selection.some(d => d.deleted);
+    const { t } = this.props;
 
     useImperativeHandle(ref, () => ({
         openIntentPopup: () => intentLabelRef.current.openPopup(),
@@ -39,9 +41,9 @@ const NluCommandBar = React.forwardRef((props, ref) => {
                             size='mini'
                             inverted
                             content={(() => { // IFFE to avoid a mess with nested ternary condition
-                                if (selectionIncludesCanonical) return 'Cannot change intent as the selection contains canonicals';
-                                if (selectionIncludesDeleted) return 'Cannot change intent as the selection contains deleted examples';
-                                return 'Change intent';
+                                if (selectionIncludesCanonical) return t('Cannot change intent as the selection contains canonicals');
+                                if (selectionIncludesDeleted) return t('Cannot change intent as the selection contains deleted examples');
+                                return t('Change intent');
                             })()}
                             trigger={(
                                 <div>
@@ -66,7 +68,7 @@ const NluCommandBar = React.forwardRef((props, ref) => {
                         size='mini'
                         inverted
                         disabled={!selectionIncludesCanonical}
-                        content='Cannot delete with a selection containing canonicals'
+                        content={t('Cannot delete with a selection containing canonicals')}
                         trigger={(
                             <div>
                                 <IconButton
@@ -88,7 +90,7 @@ const NluCommandBar = React.forwardRef((props, ref) => {
                         <Popup
                             size='mini'
                             inverted
-                            content={!selectionIncludesNullIntent ? 'Save' : 'Cannot save as some examples do not have intents'}
+                            content={t(!selectionIncludesNullIntent ? 'Save' : 'Cannot save as some examples do not have intents')}
                             trigger={(
                                 <div>
                                     <IconButton
@@ -127,4 +129,4 @@ NluCommandBar.defaultProps = {
 
 };
 
-export default NluCommandBar;
+export default withTranslation('nlu')(NluCommandBar);

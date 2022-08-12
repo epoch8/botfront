@@ -9,6 +9,7 @@ import { ProjectContext } from '../../../layouts/context';
 import UtteranceInput from '../../utils/UtteranceInput';
 import NluModalContent from './nlu_editor/NluModalContent';
 import { USER_LINE_EDIT_MODE } from '../../../../lib/story.utils';
+import { withTranslation } from "react-i18next";
 
 const UtteranceContainer = (props) => {
     const {
@@ -21,6 +22,7 @@ const UtteranceContainer = (props) => {
     const closeModal = useCallback(() => setModalOpen(false), []);
     const containerBody = useRef();
     const modalContentRef = useRef();
+    const { t } = this.props;
 
     useEffect(() => {
         if (value.text || !value.intent) setStateValue(value);
@@ -111,7 +113,7 @@ const UtteranceContainer = (props) => {
                         primary
                         onClick={saveInput}
                         disabled={stateValue.intent === OOS_LABEL}
-                        content='Save'
+                        content={t('Save')}
                         size='small'
                         data-cy='save-new-user-input'
                     />
@@ -174,4 +176,4 @@ UtteranceContainer.defaultProps = {
     allowEmptyIntent: false,
 };
 
-export default UtteranceContainer;
+export default withTranslation('stories')(UtteranceContainer);

@@ -10,6 +10,7 @@ function TemplatesTableItemContent({ rawContent }) {
     const { text, image } = content;
     const type = parseContentType(content);
     const showLabel = !['TextPayload', 'ImagePayload'].includes(type);
+    // Todo: translate
     return (
         <div>
             {showLabel && <Label color='blue' basic size='tiny' content={type} />}

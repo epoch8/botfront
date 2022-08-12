@@ -30,6 +30,7 @@ import { UPSERT_FORM, GET_FORMS, DELETE_FORMS } from './graphql/queries';
 import { FORMS_MODIFIED, FORMS_DELETED, FORMS_CREATED } from './graphql/subscriptions';
 import FormEditors from '../forms/FormEditors';
 import { clearTypenameField } from '../../../lib/client.safe.utils';
+import { withTranslation } from "react-i18next";
 
 const callbackCaller = (args, afterAll = () => {}) => async (res) => {
     const callback = args[args.length - 1];
@@ -44,27 +45,28 @@ const isDeletionPossible = (node = {}, nodes, tree) => {
     const isDestination = s1 => ((nodes.find(s2 => s2._id === s1.id) || {}).checkpoints || []).length;
     const isOrigin = s1 => nodes.some(s2 => (s2.checkpoints || []).some(c => c[0] === s1.id));
     const isDestinationOrOrigin = s => isDestination(s) || isOrigin(s);
+    const { t } = this.props;
     let deletable = false;
     let message = null;
     if (['story', 'rule'].includes(node.type)) {
         deletable = !isDestinationOrOrigin(node);
-        message = deletable
+        message = t(deletable
             ? `'${node.title}' will be deleted. This action cannot be undone.`
-            : `'${node.title}' cannot be deleted as it is linked to another story.`;
+            : `'${node.title}' cannot be deleted as it is linked to another story.`);
     }
     if (node.type === 'story-group') {
         deletable = !(node.children || []).some(c => isDestinationOrOrigin(tree.items[c]));
-        message = deletable
+        message = t(deletable
             ? `The group ${node.title} and all its content in it will be deleted. This action cannot be undone.`
-            : `The group ${node.title} cannot be deleted as it contains links.`;
+            : `The group ${node.title} cannot be deleted as it contains links.`);
     }
     if (node.type === 'form') {
         deletable = true;
-        message = `The form ${node.title} will be deleted. This action cannot be undone.`;
+        message = t(`The form ${node.title} will be deleted. This action cannot be undone.`);
     }
     if (node.type === 'test_case') {
         deletable = true;
-        message = `The test ${node.title} will be deleted. This action cannot be undone.`;
+        message = t(`The test ${node.title} will be deleted. This action cannot be undone.`);
     }
     return [deletable, message];
 };
@@ -425,6 +427,6 @@ const mapStateToProps = state => ({
     selectedLanguage: state.settings.get('workingLanguage'),
 });
 
-export default connect(mapStateToProps, { setStoryMenuSelection: setStoriesCurrent })(
+export default withTranslation('stories')(connect(mapStateToProps, { setStoryMenuSelection: setStoriesCurrent })(
     StoriesWithTracker,
-);
+));

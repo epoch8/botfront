@@ -16,6 +16,7 @@ import AceField from '../utils/AceField';
 import { can } from '../../../lib/scopes';
 import { ENVIRONMENT_OPTIONS } from '../constants.json';
 import restartRasa from './restartRasa';
+import { withTranslation } from "react-i18next";
 
 class Credentials extends React.Component {
     constructor(props) {
@@ -224,4 +225,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(CredentialsContainer);
+export default withTranslation('settings')(connect(mapStateToProps)(CredentialsContainer));

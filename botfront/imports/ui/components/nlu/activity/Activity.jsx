@@ -29,6 +29,7 @@ import ActivityCommandBar from './ActivityCommandBar';
 import CanonicalPopup from '../common/CanonicalPopup';
 import ConversationSidePanel from './ConversationSidePanel';
 import ConversationIcon from './ConversationIcon';
+import { withTranslation } from "react-i18next";
 
 function Activity(props) {
     const [sortType, setSortType] = useState('Newest');
@@ -36,6 +37,7 @@ function Activity(props) {
         intents,
         entities,
     } = useContext(ProjectContext);
+    const { t } = this.props;
     const getSortFunction = () => {
         switch (sortType) {
         case 'Newest':
@@ -51,7 +53,7 @@ function Activity(props) {
         case '% decending':
             return { sortKey: 'confidence', sortDesc: true };
         default:
-            throw new Error('No such sort type');
+            throw new Error(t('No such sort type'));
         }
     };
 
@@ -166,7 +168,7 @@ function Activity(props) {
     const handleDelete = (utterances) => {
         const ids = utterances.map(u => u._id);
         const fallbackUtterance = getFallbackUtterance(ids);
-        const message = `Delete ${utterances.length} incoming utterances?`;
+        const message = t(`Delete ${utterances.length} incoming utterances?`);
         const action = () => deleteActivity({
             variables: { ids },
             optimisticResponse: {
@@ -178,25 +180,25 @@ function Activity(props) {
     };
 
     const handleSetValidated = (utterances, val = true) => {
-        const message = `Mark ${utterances.length} incoming utterances as ${
+        const message = t(`Mark ${utterances.length} incoming utterances as ${
             val ? 'validated' : 'invalidated'
-        } ?`;
+        } ?`);
         const action = () => handleUpdate(utterances.map(({ _id }) => ({ _id, validated: val })));
         return utterances.length > 1 ? setConfirm({ message, action }) : action();
     };
 
     const handleMarkOoS = (utterances, ooS = true) => {
         const fallbackUtterance = getFallbackUtterance(utterances.map(u => u._id));
-        const message = `Mark ${utterances.length} incoming utterances as out of scope?`;
+        const message = t(`Mark ${utterances.length} incoming utterances as out of scope?`);
         const action = () => handleUpdate(utterances.map(({ _id }) => ({ _id, ooS })))
             .then(mutationCallback(fallbackUtterance, 'upsertActivity'));
         return utterances.length > 1 ? setConfirm({ message, action }) : action();
     };
 
     const handleSetIntent = (utterances, intent) => {
-        const message = intent
+        const message = t(intent
             ? `Set intent of ${utterances.length} incoming utterances to ${intent}?`
-            : `Reset intent of ${utterances.length} incoming utterances?`;
+            : `Reset intent of ${utterances.length} incoming utterances?`);
         const action = () => handleUpdate(
             utterances.map(({ _id }) => ({
                 _id,
@@ -406,7 +408,7 @@ function Activity(props) {
                     className='with-shortcuts'
                     cancelButton='No'
                     confirmButton='Yes'
-                    content={confirm.message}
+                    content={t(confirm.message)}
                     onCancel={() => {
                         setConfirm(null);
                         return tableRef?.current?.focusTable();
@@ -425,11 +427,11 @@ function Activity(props) {
                         basic
                         color='green'
                         icon
-                        labelPosition='left'
+                        labelPosition={t('left')}
                         data-cy='run-evaluation'
                         onClick={() => setConfirm({
                             message:
-                                'This will evaluate the model using the validated examples as a validation set and overwrite your current evaluation results.',
+                                t('This will evaluate the model using the validated examples as a validation set and overwrite your current evaluation results.'),
                             action: linkRender,
                         })
                         }
@@ -441,11 +443,11 @@ function Activity(props) {
                     <Button
                         color='green'
                         icon
-                        labelPosition='right'
+                        labelPosition={t('right')}
                         data-cy='add-to-training-data'
                         onClick={() => setConfirm({
                             message:
-                                'The validated utterances will be added to the training data.',
+                                t('The validated utterances will be added to the training data.'),
                             action: () => handleAddToTraining(validated),
                         })
                         }
@@ -460,12 +462,12 @@ function Activity(props) {
                 selection={sortType}
                 updateSelection={option => setSortType(option.value)}
                 options={[
-                    { value: 'Newest', text: 'Newest' },
-                    { value: 'Oldest', text: 'Oldest' },
-                    { value: 'Validated first', text: 'Validated first' },
-                    { value: 'Validated last', text: 'Validated last' },
-                    { value: '% ascending', text: '% ascending' },
-                    { value: '% decending', text: '% decending' },
+                    { value: 'Newest', text: t('Newest') },
+                    { value: 'Oldest', text: t('Oldest') },
+                    { value: 'Validated first', text: t('Validated first') },
+                    { value: 'Validated last', text: t('Validated last') },
+                    { value: '% ascending', text: t('% ascending') },
+                    { value: '% decending', text: t('% decending') },
                 ]}
                 prefix='Sort by'
             />
@@ -517,7 +519,7 @@ function Activity(props) {
                     icon='check'
                     header='No activity'
                     data-cy='no-activity'
-                    content='No activity was found for the given criteria.'
+                    content={t('No activity was found for the given criteria.')}
                 />
             )}
         </>
@@ -530,4 +532,4 @@ Activity.propTypes = {
 
 Activity.defaultProps = {};
 
-export default Activity;
+export default withTranslation('nlu')(Activity);

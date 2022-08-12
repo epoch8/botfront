@@ -6,6 +6,7 @@ import {
 import HoverablePopup from '../../common/HoverablePopup';
 import { ConversationOptionsContext } from '../Context';
 import { generateRenamingErrorMessage } from '../../../../lib/botResponse.utils';
+import { withTranslation } from "react-i18next";
 
 const BotResponseName = (props) => {
     const {
@@ -22,13 +23,14 @@ const BotResponseName = (props) => {
     const [nameInputValue, setNameInputValue] = useState(name);
     const [renameError, setRenameError] = useState(null);
     const [saving, setSaving] = useState(false);
+    const { t } = this.props;
 
     const handleSaveName = (e) => {
         setSaving(true);
         const newName = e.target.value;
         if (!/^utter_/.test(newName)) {
             e.preventDefault();
-            setRenameError('Response names must start with utter_ and not contain spaces or /');
+            setRenameError(t('Response names must start with utter_ and not contain spaces or /'));
             setSaving(false);
             return;
         }
@@ -142,4 +144,4 @@ BotResponseName.defaultProps = {
     editable: true,
 };
 
-export default BotResponseName;
+export default withTranslation('stories')(BotResponseName);

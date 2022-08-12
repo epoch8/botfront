@@ -5,6 +5,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 import TextareaAutosize from 'react-autosize-textarea';
+import { withTranslation } from "react-i18next";
 import ImageThumbnail from './ImageThumbnail';
 import CarouselEditor from './CarouselEditor';
 import QuickReplies from './QuickReplies';
@@ -45,6 +46,7 @@ const BotResponseContainer = (props) => {
 
     const setText = () => onChange({ ...value, text: formatNewlines(input) }, false);
     const setImage = image => onChange({ ...value, image }, false);
+    const { t } = this.props;
 
     function handleTextBlur(e) {
         const tagRegex = new RegExp(tag);
@@ -68,7 +70,7 @@ const BotResponseContainer = (props) => {
     const renderText = () => (
         <TextareaAutosize
             ref={focusGrabber}
-            placeholder='Type a message'
+            placeholder={t('Type a message')}
             role='button'
             tabIndex={0}
             value={input}
@@ -168,4 +170,4 @@ BotResponseContainer.defaultProps = {
     disableEnterKey: false,
 };
 
-export default BotResponseContainer;
+export default withTranslation('stories')(BotResponseContainer);

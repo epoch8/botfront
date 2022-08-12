@@ -11,6 +11,7 @@ import IntentLabel from '../common/IntentLabel';
 import DataTable from '../../common/DataTable';
 import { ProjectContext } from '../../../layouts/context';
 import { GET_INTENT_STATISTICS, GET_EXAMPLE_COUNT } from './graphql';
+import {withTranslation} from "react-i18next";
 
 
 const Statistics = (props) => {
@@ -22,6 +23,7 @@ const Statistics = (props) => {
     const { data, loading, refetch } = useQuery(
         GET_INTENT_STATISTICS, { variables: { projectId, language: workingLanguage } },
     );
+    const { t } = this.props;
 
     // always refetch on first page load
     useEffect(() => { if (refetch) refetch(); }, [refetch, workingLanguage]);
@@ -51,12 +53,12 @@ const Statistics = (props) => {
 
     const renderCards = () => {
         const cards = [
-            { label: 'Examples', value: examples },
-            { label: 'Intents', value: intents.length },
-            { label: 'Entities', value: entities.length },
-            { label: 'Synonyms', value: synonyms },
-            { label: 'Gazettes', value: gazettes },
-            { label: 'Stories', value: storyCount },
+            { label: t('Examples'), value: examples },
+            { label: t('Intents'), value: intents.length },
+            { label: t('Entities'), value: entities.length },
+            { label: t('Synonyms'), value: synonyms },
+            { label: t('Gazettes'), value: gazettes },
+            { label: t('Stories'), value: storyCount },
         ];
 
         return cards.map(d => (
@@ -101,7 +103,7 @@ const Statistics = (props) => {
         },
         ...countColumns,
     ];
-
+    // Todo: translate
     return (
         <Loading loading={!ready || loading}>
             <div className='side-by-side'>{renderCards()}</div>
@@ -156,4 +158,4 @@ const mapStateToProps = state => ({
     workingLanguage: state.settings.get('workingLanguage'),
 });
 
-export default connect(mapStateToProps)(StatisticsWithStoryCount);
+export default withTranslation('nlu')(connect(mapStateToProps)(StatisticsWithStoryCount));

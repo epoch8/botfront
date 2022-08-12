@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import matchSorter from 'match-sorter';
 import ReactTable from 'react-table-v6';
 import { Popup, Icon } from 'semantic-ui-react';
+import { withTranslation } from "react-i18next";
 
-export default function ReportTable(props) {
+function ReportTable(props) {
     const { labelType } = props;
+    const { t } = this.props;
 
     const getReportData = () => {
         const { report } = props;
@@ -31,7 +33,7 @@ export default function ReportTable(props) {
                     F1-Score{' '}
                     <Popup
                         trigger={<Icon name='question circle' color='grey' />}
-                        content='A general measure of the quality of your model based on precision and accuracy'
+                        content={t('A general measure of the quality of your model based on precision and accuracy')}
                     />
                 </div>
             ),
@@ -45,7 +47,7 @@ export default function ReportTable(props) {
                     Precision{' '}
                     <Popup
                         trigger={<Icon name='question circle' color='grey' />}
-                        content='On 100 predictions for label, how many were actually labeled as such in test set'
+                        content={t('On 100 predictions for label, how many were actually labeled as such in test set')}
                     />
                 </div>
             ),
@@ -59,7 +61,7 @@ export default function ReportTable(props) {
                     Recall{' '}
                     <Popup
                         trigger={<Icon name='question circle' color='grey' />}
-                        content='On 100 instances of label in test set, how many were actually predicted'
+                        content={t('On 100 instances of label in test set, how many were actually predicted')}
                     />
                 </div>
             ),
@@ -73,7 +75,7 @@ export default function ReportTable(props) {
                     Support{' '}
                     <Popup
                         trigger={<Icon name='question circle' color='grey' />}
-                        content='The number of examples for that label'
+                        content={t('The number of examples for that label')}
                     />
                 </div>
             ),
@@ -97,3 +99,5 @@ ReportTable.propTypes = {
     report: PropTypes.object.isRequired,
     labelType: PropTypes.string.isRequired,
 };
+
+export default withTranslation('nlu')(ReportTable);

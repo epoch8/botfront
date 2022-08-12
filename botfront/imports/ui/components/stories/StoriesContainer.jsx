@@ -4,14 +4,16 @@ import PropTypes from 'prop-types';
 import LanguageDropdown from '../common/LanguageDropdown';
 import SearchBar from './search/SearchBar';
 import PageMenu from '../utils/PageMenu';
+import { withTranslation } from "react-i18next";
 
 const Stories = React.lazy(() => import('./Stories'));
 
 const StoriesContainer = (props) => {
     const { params } = props;
+    const { t } = this.props;
     return (
         <>
-            <PageMenu title='Stories' icon='book' withTraining>
+            <PageMenu title={t('Stories')} icon='book' withTraining>
                 <Menu.Item>
                     <LanguageDropdown />
                 </Menu.Item>
@@ -30,4 +32,4 @@ StoriesContainer.propTypes = {
     params: PropTypes.object.isRequired,
 };
 
-export default StoriesContainer;
+export default withTranslation('stories')(StoriesContainer);

@@ -17,6 +17,7 @@ export default function PageMenu(props) {
         project: { _id: projectId, training: { endTime, status } = {} } = {},
         instance,
     } = useContext(ProjectContext);
+    //Todo: translate. Контенты внутри контентов
     return (
         <Menu borderless className={`top-menu ${className}`}>
             <Menu.Item>

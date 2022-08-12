@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { Button, Popup, Icon } from 'semantic-ui-react';
 import IconButton from '../../common/IconButton';
 import SmartTip from './SmartTip';
+import { withTranslation } from "react-i18next";
 
-export default function ActivityActionsColumn(props) {
+function ActivityActionsColumn(props) {
     const {
         datum,
         data,
@@ -14,6 +15,7 @@ export default function ActivityActionsColumn(props) {
         onMarkOoS,
         onDelete,
     } = props;
+    const { t } = this.props;
 
     const renderDeleteAllButton = utterances => mainAction => (
         <Button
@@ -55,7 +57,7 @@ export default function ActivityActionsColumn(props) {
             size='mini'
             basic
             fluid={mainAction}
-            content='Validate anyway'
+            content={t('Validate anyway')}
             onClick={() => handleSetValidated([u], true)}
             key={`${u._id}-validate`}
         />
@@ -123,7 +125,7 @@ export default function ActivityActionsColumn(props) {
         action = (
             <Popup
                 inverted
-                content='Mark this utterance OoS'
+                content={t('Mark this utterance OoS')}
                 trigger={(
                     <div>
                         <IconButton
@@ -142,7 +144,7 @@ export default function ActivityActionsColumn(props) {
             <Popup
                 inverted
                 disabled={outdated || !datum.intent}
-                content='Mark this utterance valid'
+                content={t('Mark this utterance valid')}
                 trigger={(
                     <div>
                         <IconButton
@@ -188,3 +190,5 @@ ActivityActionsColumn.propTypes = {
 };
 
 ActivityActionsColumn.defaultProps = {};
+
+export default withTranslation('nlu')(ActivityActionsColumn);

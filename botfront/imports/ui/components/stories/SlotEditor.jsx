@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { slotSchemas } from '../../../api/slots/slots.schema';
 import ConfirmPopup from '../common/ConfirmPopup';
 import SaveButton from '../utils/SaveButton';
+import { withTranslation } from "react-i18next";
 
 function SlotEditor(props) {
     const {
@@ -16,6 +17,7 @@ function SlotEditor(props) {
     const [deletePopupOpen, setDeletePopup] = useState(false);
     const [hover, setHover] = useState(false);
     const [successTimeout, setSuccessTimeout] = useState(0);
+    const { t } = this.props;
 
     // This effect cleans up the timeout in case the component dismounts
     useEffect(
@@ -53,7 +55,7 @@ function SlotEditor(props) {
                 {type !== 'unfeaturized' && (
                     <AutoField
                         name='initialValue'
-                        placeholder='Leave empty for no initial value'
+                        placeholder={t('Leave empty for no initial value')}
                     />
                 )}
                 {type === 'float' && (
@@ -92,7 +94,7 @@ function SlotEditor(props) {
                             )}
                             content={(
                                 <ConfirmPopup
-                                    title='Delete Slot ?'
+                                    title={t('Delete Slot ?')}
                                     onYes={() => onDelete(slot)}
                                     onNo={() => setDeletePopup(false)}
                                 />
@@ -128,4 +130,4 @@ SlotEditor.defaultProps = {
     deletable: true,
 };
 
-export default SlotEditor;
+export default withTranslation('stories')(SlotEditor);

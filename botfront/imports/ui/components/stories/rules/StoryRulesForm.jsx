@@ -14,8 +14,9 @@ import SelectField from '../../form_fields/SelectField';
 import { can } from '../../../../api/roles/roles';
 import URLIsSequence from './URLIsSequence';
 import ButtonSelectField from '../../form_fields/ButtonSelectField';
+import { withTranslation } from "react-i18next";
 
-
+//Todo: translate
 class RulesForm extends AutoForm {
     resetOptionalArray = (displayIfPath, fieldName) => {
         const resetPath = [...displayIfPath];
@@ -533,4 +534,4 @@ StoryRulesForm.defaultProps = {
     rules: { rules: [] },
 };
 
-export default StoryRulesForm;
+export default withTranslation('stories')(StoryRulesForm);

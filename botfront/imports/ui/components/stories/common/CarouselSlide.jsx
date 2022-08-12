@@ -6,8 +6,9 @@ import TextareaAutosize from 'react-autosize-textarea';
 import QuickReplies from './QuickReplies';
 import ImageThumbnail from './ImageThumbnail';
 import ResponseButtonEditor from './ResponseButtonEditor';
+import { withTranslation } from "react-i18next";
 
-export default function CarouselSlide(props) {
+function CarouselSlide(props) {
     const {
         parentId, slideIndex, onDelete, onReorder, value, onChange,
     } = props;
@@ -21,6 +22,7 @@ export default function CarouselSlide(props) {
     useEffect(() => doSetNewValue(value), [value]);
     const setNewValue = (update = {}) => doSetNewValue({ ...newValue, ...update });
     const [modalOpen, setModalOpen] = useState(false);
+    const { t } = this.props;
 
     const setValue = (update = {}) => onChange({ ...newValue, ...update });
 
@@ -46,7 +48,7 @@ export default function CarouselSlide(props) {
             {(defaultAction || { type: 'web_url' }).type !== 'web_url' && (
                 <Message
                     warning
-                    content='Facebook Messenger only supports default actions with a Web URL payload. Carousels that have slides with Postback default actions will not render.'
+                    content={t('Facebook Messenger only supports default actions with a Web URL payload. Carousels that have slides with Postback default actions will not render.')}
                 />
             )}
             <ResponseButtonEditor
@@ -92,7 +94,7 @@ export default function CarouselSlide(props) {
                         setValue();
                         setModalOpen(false);
                     }}
-                    content={renderDefaultActionModal()}
+                    content={t(renderDefaultActionModal())}
                 />
             )}
             <Header as='h3'>
@@ -138,3 +140,6 @@ CarouselSlide.defaultProps = {
     onDelete: null,
     onReorder: () => {},
 };
+
+export default withTranslation('stories')(CarouselSlide);
+

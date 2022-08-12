@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd-cjs';
+import { withTranslation } from "react-i18next";
 import HTML5Backend from 'react-dnd-html5-backend-cjs';
 import Alert from 'react-s-alert';
 import yaml from 'js-yaml';

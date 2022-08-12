@@ -25,6 +25,7 @@ class ProjectSidebar extends React.Component {
             || can('import:x', projectId)
             || can('git-credentials:r', projectId);
 
+        // Todo: translate. Нужно ли здесь переводить <Menu.Item name='Dialogue' и тп
         return (
             <DocumentTitle title={projectName}>
                 <Menu vertical inverted pointing className='project-menu' data-cy='project-menu'>

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Icon, Popup } from 'semantic-ui-react';
 import { insertSmartPayloads } from '../../../lib/client.safe.utils';
 import { runTestCaseStories } from '../utils/runTestCaseStories';
+import { withTranslation } from "react-i18next";
 
 import {
     setShowChat,
@@ -43,9 +44,10 @@ const StoryPlayButton = (props) => {
         changeChatInitPayload(`/${getInitialPayload()}`);
         refreshChat(true);
     };
+    const { t } = this.props;
 
     const runTestCase = () => {
-        if (!storyId) throw new Error('a storyId is required to run a single test');
+        if (!storyId) throw new Error(t('a storyId is required to run a single test'));
         runTestCaseStories(projectId, { ids: [storyId] });
     };
 
@@ -104,4 +106,4 @@ const mapDispatchToProps = {
     refreshChat: setShouldRefreshChat,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(StoryPlayButton);
+export default withTranslation('stories')(connect(mapStateToProps, mapDispatchToProps)(StoryPlayButton));

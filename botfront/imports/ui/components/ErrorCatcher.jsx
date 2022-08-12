@@ -3,8 +3,9 @@ import { Link } from 'react-router';
 import { Container, Header } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import CrashReportButton from './utils/CrashReportButton';
+import { withTranslation } from "react-i18next";
 
-export default class ErrorBoundary extends React.Component {
+class ErrorBoundary extends React.Component {
     constructor(props) {
         super(props);
         this.state = { error: null, reported: false };
@@ -25,6 +26,7 @@ export default class ErrorBoundary extends React.Component {
         const {
             children: { props: { location: { pathname = '' } = {} } = {} } = {},
         } = this.props;
+        const { t } = this.props;
         if (this.isRootUrlError()) {
             /*
                 Users commonly forget to setup the ROOT_URL environment variable which
@@ -71,9 +73,9 @@ export default class ErrorBoundary extends React.Component {
                         </Header.Subheader>
                     </Header>
                     <p>
-                        {reported
+                        {t(reported
                             ? 'We\'re working on it!'
-                            : 'Help the Botfront project by reporting the issue.'}
+                            : 'Help the Botfront project by reporting the issue.')}
                     </p>
                     <p>
                         <CrashReportButton
@@ -100,3 +102,5 @@ export default class ErrorBoundary extends React.Component {
 ErrorBoundary.propTypes = {
     children: PropTypes.any.isRequired,
 };
+
+export default withTranslation('components')(ErrorBoundary);

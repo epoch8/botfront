@@ -4,6 +4,7 @@ import {
     Dropdown, Modal, Button,
 } from 'semantic-ui-react';
 import PayloadEditor from './PayloadEditor';
+import { withTranslation } from "react-i18next";
 
 const UserUtterancePopupContent = (props) => {
     const {
@@ -12,6 +13,7 @@ const UserUtterancePopupContent = (props) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [payload, setPayload] = useState({ intent: null, entities: [] });
     const [menuOpen, setMenuOpen] = useState();
+    const { t } = this.props;
 
     const payloadValid = () => {
         if (!payload.intent) return false;
@@ -32,7 +34,7 @@ const UserUtterancePopupContent = (props) => {
                 </Modal.Content>
                 <Modal.Actions>
                     <Button
-                        content='Save'
+                        content={t('Save')}
                         color='green'
                         disabled={!payloadValid()}
                         onClick={(e) => {
@@ -43,7 +45,7 @@ const UserUtterancePopupContent = (props) => {
                         data-cy='save-user-utterance'
                     />
                     <Button
-                        content='Cancel'
+                        content={t('Cancel')}
                         color='red'
                         basic
                         onClick={(e) => { e.preventDefault(); setModalOpen(false); }}
@@ -82,4 +84,4 @@ UserUtterancePopupContent.defaultProps = {
     trackOpenMenu: () => {},
 };
 
-export default UserUtterancePopupContent;
+export default withTranslation('stories')(UserUtterancePopupContent);

@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import ImportRasaFiles from './ImportRasaFiles.jsx';
 import ExportProject from './ExportProject.jsx';
 import { can } from '../../../lib/scopes';
+import {withTranslation} from "react-i18next";
 
 class ImportExportProject extends React.Component {
     constructor (props) {
@@ -40,7 +41,7 @@ class ImportExportProject extends React.Component {
         const panes = [];
         if (can('import:x', projectId)) {
             panes.push({
-                menuItem: this.renderMenuItem('Import'),
+                menuItem: this.renderMenuItem('Import'), // Todo: translate
                 render: () => (
                     <Tab.Pane loading={loading} key='Import' data-cy='import-project-tab'>
                         <ImportRasaFiles />
@@ -50,7 +51,7 @@ class ImportExportProject extends React.Component {
         }
         if (can('export:x', projectId)) {
             panes.push({
-                menuItem: this.renderMenuItem('Export'),
+                menuItem: this.renderMenuItem('Export'), // Todo: translate
                 render: () => (
                     <Tab.Pane loading={loading} key='Export' data-cy='export-project-tab'>
                         <ExportProject setLoading={this.setLoading} />
@@ -76,4 +77,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(ImportExportProject);
+export default withTranslation('settings')(connect(mapStateToProps)(ImportExportProject));

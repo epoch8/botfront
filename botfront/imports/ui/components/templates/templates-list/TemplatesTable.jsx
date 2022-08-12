@@ -4,6 +4,7 @@ import {
     Icon, Label, Tab, Message, Popup,
 } from 'semantic-ui-react';
 import React from 'react';
+import { withTranslation } from "react-i18next";
 import { find, sortBy } from 'lodash';
 import { connect } from 'react-redux';
 import 'react-s-alert/dist/s-alert-default.css';
@@ -34,6 +35,7 @@ class TemplatesTable extends React.Component {
     getColumns = (lang) => {
         const { projectId } = this.props;
         const { dialogueActions } = this.context;
+        const { t } = this.props;
         const columns = [
             {
                 id: lang,
@@ -93,7 +95,7 @@ class TemplatesTable extends React.Component {
                                     disabled={isInStory || !can('responses:w', projectId)}
                                 />
                             )}
-                            content='This response cannot be deleted because it is used in a story'
+                            content={t('This response cannot be deleted because it is used in a story')}
                             disabled={!isInStory}
                         />
                     );
@@ -101,7 +103,7 @@ class TemplatesTable extends React.Component {
                 width: 25,
             });
         }
-
+        //Todo: translate. Интересная ситуация, t уже зарезервировано accessor: t => t.key,
         columns.unshift({
             id: 'key',
             accessor: t => t.key,
@@ -158,7 +160,7 @@ class TemplatesTable extends React.Component {
         <Message
             info
             icon='warning'
-            header='Create a NLU model first'
+            header={t('Create a NLU model first')}
             content='Templates are multilingual and Botfront determines available languages from NLU models.
             Before adding templates, you must create one NLU model for every language your want to handle'
         />
@@ -169,7 +171,7 @@ class TemplatesTable extends React.Component {
             info
             icon='warning'
             header='You haven&#39;t created bot responses yet'
-            content={(
+            content={t(
                 <div>
                     Click on the&nbsp;
                     <strong>Add Bot Response</strong>
@@ -306,7 +308,7 @@ const mapDispatchToProps = {
     toggleMatch: toggleMatchingTemplatesTable,
 };
 
-export default connect(
+export default withTranslation('templates')(connect(
     mapStateToProps,
     mapDispatchToProps,
-)(TemplatesTable);
+)(TemplatesTable));

@@ -10,8 +10,9 @@ import { useDrop } from 'react-dnd-cjs';
 import { ResponseContext } from './BotResponsesContainer';
 import { ProjectContext } from '../../../layouts/context';
 import { wrapMeteorCallback } from '../../utils/Errors';
+import { withTranslation } from "react-i18next";
 
-export default function ImageThumbnail(props) {
+function ImageThumbnail(props) {
     const {
         value, editable, onChange, otherActions, className,
     } = props;
@@ -65,6 +66,7 @@ export default function ImageThumbnail(props) {
         ['Set image', () => setModalOpen(true), 'set-image'],
         ...otherActions,
     ];
+    const { t } = this.props;
 
     const renderSetImage = () => (
         <div className={`image-modal ${canDrop && isOver ? 'upload-target' : ''}`} ref={drop}>
@@ -81,7 +83,7 @@ export default function ImageThumbnail(props) {
                     <Button
                         primary
                         basic
-                        content='Upload image'
+                        content={t('Upload image')}
                         size='small'
                         onClick={() => fileField.current.click()}
                     />
@@ -163,3 +165,5 @@ ImageThumbnail.defaultProps = {
     value: '',
     className: '',
 };
+
+export default withTranslation('stories')(ImageThumbnail);

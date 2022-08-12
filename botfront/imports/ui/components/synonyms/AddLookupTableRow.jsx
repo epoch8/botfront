@@ -4,8 +4,9 @@ import { Button, Grid } from 'semantic-ui-react';
 import LookupTableValueEditor from './LookupTableValueEditor';
 import LookupTableListEditor from './LookupTableListEditor';
 import LookupTableStringEditor from './LookupTableStringEditor';
+import { withTranslation } from "react-i18next";
 
-export default class AddLookupTableRow extends React.Component {
+class AddLookupTableRow extends React.Component {
     constructor(props) {
         super(props);
         this.state = this.emptyState();
@@ -47,6 +48,7 @@ export default class AddLookupTableRow extends React.Component {
             multiple,
         } = this.props;
         const { item } = this.state;
+        const { t } = this.props;
         return (
             <Grid data-cy='add-item-row'>
                 <Grid.Row>
@@ -54,7 +56,7 @@ export default class AddLookupTableRow extends React.Component {
                         <LookupTableValueEditor
                             listAttribute={listAttribute}
                             keyAttribute={keyAttribute}
-                            placeholder={valuePlaceholder}
+                            placeholder={t(valuePlaceholder)}
                             entitySynonym={item}
                             onEdit={this.onItemChanged}
                             autoFocus={false}
@@ -64,7 +66,7 @@ export default class AddLookupTableRow extends React.Component {
                         { multiple ? (
                             <LookupTableListEditor
                                 listAttribute={listAttribute}
-                                placeholder={listPlaceholder}
+                                placeholder={t(listPlaceholder)}
                                 entitySynonym={item}
                                 onEdit={this.onItemChanged}
                                 autoFocus={false}
@@ -72,7 +74,7 @@ export default class AddLookupTableRow extends React.Component {
                         ) : (
                             <LookupTableStringEditor
                                 listAttribute={listAttribute}
-                                placeholder={listPlaceholder}
+                                placeholder={t(listPlaceholder)}
                                 item={item}
                                 onEdit={this.onItemChanged}
                                 autoFocus={false}
@@ -81,7 +83,7 @@ export default class AddLookupTableRow extends React.Component {
                     </Grid.Column>
                     <Grid.Column width={1}>
                         <Button
-                            content='Add'
+                            content={t('Add')}
                             onClick={this.onSave}
                             className='add-row-save-button'
                             // disabling the add button if empty field
@@ -111,3 +113,5 @@ AddLookupTableRow.propTypes = {
 AddLookupTableRow.defaultProps = {
     multiple: true,
 };
+
+export default withTranslation('synonyms')(AddLookupTableRow);

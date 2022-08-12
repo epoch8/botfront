@@ -7,6 +7,7 @@ import LookupTable from './LookupTable';
 import InlineSearch from '../utils/InlineSearch';
 import MinScoreEdit from './MinScoreEdit';
 import { can } from '../../../lib/scopes';
+import {withTranslation} from "react-i18next";
 
 function ModeEdit({ gazette, onEdit }) {
     function onUpdateText(value, callback) {
@@ -74,6 +75,7 @@ class GazetteEditor extends React.Component {
 
     render() {
         const { projectId, model } = this.props;
+        // Todo: translate
         return (
             <LookupTable
                 data={model.training_data.fuzzy_gazette}
@@ -97,6 +99,6 @@ GazetteEditor.propTypes = {
     projectId: PropTypes.string.isRequired,
 };
 
-export default withTracker(props => ({
+export default withTranslation('synonyms')(withTracker(props => ({
     model: props.model,
-}))(GazetteEditor);
+}))(GazetteEditor));

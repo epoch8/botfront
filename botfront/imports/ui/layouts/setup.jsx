@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DocumentTitle from 'react-document-title';
 import { withTracker } from 'meteor/react-meteor-data';
+import { withTranslation } from "react-i18next";
 
 // eslint-disable-next-line react/prefer-stateless-function
 class SetupLayout extends React.Component {

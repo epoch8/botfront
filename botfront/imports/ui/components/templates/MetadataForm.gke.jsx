@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { GraphQLBridge } from 'uniforms-bridge-graphql';
 import { buildASTSchema, parse, extendSchema } from 'graphql';
+import { withTranslation } from "react-i18next";
 import {
     Message, Tab,
 } from 'semantic-ui-react';
@@ -24,6 +25,8 @@ import DisplayIf from '../DisplayIf';
 import {
     basicSchemaString, defaultModel, schemaData, AutoFormMetadata, panes,
 } from './MetadataForm';
+
+// Todo: translate. не совсем понял тут надо оборачивать text или value ?
 
 function ResponseMetadataForm({
     responseMetadata, onChange, editable, projectId,
@@ -466,4 +469,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(ResponseMetadataForm);
+export default withTranslation('templates')(connect(mapStateToProps)(ResponseMetadataForm));

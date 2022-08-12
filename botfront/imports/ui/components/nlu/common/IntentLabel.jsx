@@ -9,6 +9,7 @@ import UserUtteranceViewer from './UserUtteranceViewer';
 import { ProjectContext } from '../../../layouts/context';
 import { OOS_LABEL } from '../../constants.json';
 import DataTable from '../../common/DataTable';
+import { withTranslation } from "react-i18next";
 
 const Intent = React.forwardRef((props, ref) => {
     const {
@@ -30,6 +31,7 @@ const Intent = React.forwardRef((props, ref) => {
     const [typeInput, setTypeInput] = useState('');
     const labelRef = useRef();
     const tableRef = useRef();
+    const { t } = this.props;
     const showReset = allowEditing && enableReset && ((value && value !== OOS_LABEL) || detachedModal);
 
     const getIntentsFromValue = () => {
@@ -136,7 +138,7 @@ const Intent = React.forwardRef((props, ref) => {
             <Popup
                 size='mini'
                 inverted
-                content='Reset intent (Shift + Backspace)'
+                content={t('Reset intent (Shift + Backspace)')}
                 trigger={(
                     <Button
                         icon='x'
@@ -157,7 +159,7 @@ const Intent = React.forwardRef((props, ref) => {
 
     const renderInsertNewIntent = () => (
         <Input
-            placeholder='Filter or create'
+            placeholder={t('Filter or create')}
             fluid
             onChange={handleTypeInput}
             onKeyDown={handleKeyDown}
@@ -221,7 +223,7 @@ const Intent = React.forwardRef((props, ref) => {
                 <Button
                     fluid
                     color='purple'
-                    content='Create new intent'
+                    content={t('Create new intent')}
                     onClick={() => handleChange(typeInput)}
                     className='create-intent-button'
                 />
@@ -264,7 +266,7 @@ const Intent = React.forwardRef((props, ref) => {
                 <Popup
                     open
                     basic
-                    content={renderContent()}
+                    content={t(renderContent())}
                     position='bottom right'
                     on='click'
                     context={labelRef.current}
@@ -356,4 +358,4 @@ Intent.defaultProps = {
     additionalIntentOption: '',
 };
 
-export default Intent;
+export default withTranslation('nlu')(Intent);

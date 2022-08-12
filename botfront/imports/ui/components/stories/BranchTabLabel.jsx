@@ -6,6 +6,7 @@ import { can } from '../../../lib/scopes';
 import ConfirmPopup from '../common/ConfirmPopup';
 import ToolTipPopup from '../common/ToolTipPopup';
 import { ProjectContext } from '../../layouts/context';
+import { withTranslation } from "react-i18next";
 
 class BranchTabLabel extends React.Component {
     constructor(props) {
@@ -105,6 +106,7 @@ class BranchTabLabel extends React.Component {
             onDelete, siblings, isLinked, isParentLinked, value,
         } = this.props;
         const confirmMessage = {};
+        const { t } = this.props;
         if (siblings.length < 3) {
             const strandedBranchName = siblings.filter(s => s.title !== value)[0]?.title;
             confirmMessage.content = (
@@ -117,9 +119,9 @@ class BranchTabLabel extends React.Component {
         if (isLinked) {
             return (
                 <ToolTipPopup
-                    header='This story cannot be deleted'
+                    header={t('This story cannot be deleted')}
                     toolTipText={[
-                        'A story that is linked to another story cannot be deleted',
+                        t('A story that is linked to another story cannot be deleted'),
                     ]}
                     trigger={this.renderDeleteButton()}
                 />
@@ -128,9 +130,9 @@ class BranchTabLabel extends React.Component {
         if (siblings.length < 3 && isParentLinked) {
             return (
                 <ToolTipPopup
-                    header='This story cannot be deleted'
+                    header={t('This story cannot be deleted')}
                     toolTipText={[
-                        'A story that has a only one sibling branch which is linked cannot be deleted',
+                        t('A story that has a only one sibling branch which is linked cannot be deleted'),
                     ]}
                     trigger={this.renderDeleteButton()}
                 />
@@ -141,7 +143,7 @@ class BranchTabLabel extends React.Component {
                 trigger={this.renderDeleteButton()}
                 content={(
                     <ConfirmPopup
-                        title='Delete branch?'
+                        title={t('Delete branch?')}
                         {...confirmMessage}
                         onYes={() => {
                             this.setState({ deletePopupOpened: false });
@@ -218,4 +220,4 @@ BranchTabLabel.defaultProps = {
     errors: 0,
     isLinked: true,
 };
-export default BranchTabLabel;
+export default withTranslation('stories')(BranchTabLabel);

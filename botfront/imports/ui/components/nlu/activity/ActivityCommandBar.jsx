@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
 import IconButton from '../../common/IconButton';
 import IntentLabel from '../common/IntentLabel';
+import { withTranslation } from "react-i18next";
 
 const ActivityCommandBar = React.forwardRef((props, ref) => {
     const {
@@ -14,6 +15,7 @@ const ActivityCommandBar = React.forwardRef((props, ref) => {
     const someLackingIntent = selection.some(d => !d.intent);
     const someHavingIntent = selection.some(d => d.intent);
     const intentLabelRef = useRef();
+    const { t } = this.props;
 
     useImperativeHandle(ref, () => ({
         openIntentPopup: () => intentLabelRef.current.openPopup(),
@@ -26,7 +28,7 @@ const ActivityCommandBar = React.forwardRef((props, ref) => {
                 <Popup
                     size='mini'
                     inverted
-                    content='Mark out of scope'
+                    content={t('Mark out of scope')}
                     disabled={someHavingIntent}
                     trigger={(
                         <div>
@@ -46,7 +48,7 @@ const ActivityCommandBar = React.forwardRef((props, ref) => {
                 <Popup
                     size='mini'
                     inverted
-                    content={someNotValidated ? 'Mark valid' : 'Mark invalid'}
+                    content={t(someNotValidated ? 'Mark valid' : 'Mark invalid')}
                     disabled={someLackingIntent || someOutdated}
                     trigger={(
                         <div>
@@ -75,7 +77,7 @@ const ActivityCommandBar = React.forwardRef((props, ref) => {
                 <Popup
                     size='mini'
                     inverted
-                    content='Change intent'
+                    content={t('Change intent')}
                     disabled={someOutdated}
                     trigger={(
                         <div>
@@ -118,4 +120,4 @@ ActivityCommandBar.defaultProps = {
     selection: [],
 };
 
-export default ActivityCommandBar;
+export default withTranslation('nlu')(ActivityCommandBar);

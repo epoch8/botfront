@@ -22,6 +22,7 @@ import { ProjectContext } from '../../layouts/context';
 import { can, Can } from '../../../lib/scopes';
 import { languages } from '../../../lib/languages';
 import { runTestCaseStories } from './runTestCaseStories';
+import { withTranslation } from "react-i18next";
 
 class TrainButton extends React.Component {
     constructor(props) {
@@ -103,11 +104,12 @@ class TrainButton extends React.Component {
 
     renderCommitModal = () => {
         const { gitWorking } = this.state;
+        const { t } = this.props;
         return (
             <Modal
                 open
                 size='small'
-                header='Commit and push'
+                header={t('Commit and push')}
                 onClick={e => e.stopPropagation()}
                 content={(
                     <div
@@ -116,7 +118,7 @@ class TrainButton extends React.Component {
                     >
                         <input
                             className='ui input'
-                            placeholder='Commit message'
+                            placeholder={t('Commit message')}
                             data-cy='commit-message-input'
                             ref={this.commitMessage}
                             autoFocus // eslint-disable-line jsx-a11y/no-autofocus
@@ -130,7 +132,7 @@ class TrainButton extends React.Component {
                         <Button
                             type='submit'
                             onClick={() => this.commitAndPush()}
-                            content='Push to remote'
+                            content={t('Push to remote')}
                             loading={gitWorking}
                             disabled={gitWorking}
                         />
@@ -145,11 +147,12 @@ class TrainButton extends React.Component {
 
     renderRevertModal = () => {
         const { gitWorking } = this.state;
+        const { t } = this.props;
         return (
             <Modal
                 open
                 size='small'
-                header='Revert to previous'
+                header={t('Revert to previous')}
                 onClick={e => e.stopPropagation()}
                 content={(
                     <RevertTable
@@ -178,6 +181,7 @@ class TrainButton extends React.Component {
         const trainingInProgress = status === 'training' || status === 'notReachable' || !instance;
         const { webhook } = this.state;
         const { modalOpen } = this.state;
+        const { t } = this.props;
         const deployOptions = !webhook?.url
             ? []
             : environments.map(env => ({
@@ -218,7 +222,7 @@ class TrainButton extends React.Component {
                                     this.showModal(opt.value, false);
                                     e.stopPropagation();
                                 }}
-                                content={`Do you really want to deploy your project to ${opt.value}`}
+                                content={t(`Do you really want to deploy your project to ${opt.value}`)}
                             />
                         </React.Fragment>
                     ))}
@@ -233,13 +237,14 @@ class TrainButton extends React.Component {
         } = this.context;
         const { webhook } = this.state;
         const isTest = !!window.Cypress;
+        const { t } = this.props;
 
         try {
             if (!webhook.url || !webhook.method) {
-                throw new Error('Deployment failed: the webhook parameters are missing');
+                throw new Error(t('Deployment failed: the webhook parameters are missing'));
             }
             if (!target) {
-                throw new Error('Deployment failed: the deployment target is missing');
+                throw new Error(t('Deployment failed: the deployment target is missing'));
             }
             Meteor.call('deploy.model', projectId, target, isTest, (err, response) => {
                 if (err || response === undefined || response.status !== 200) {
@@ -271,7 +276,8 @@ class TrainButton extends React.Component {
             const loadModel = target === 'development'; // automaticly load the model only if we are in development
             this.deploy(target);
         } catch (e) {
-            Alert.error('Cannot deploy, training failed', {
+            const { t } = this.props;
+            Alert.error(t('Cannot deploy, training failed'), {
                 position: 'top-right',
                 timeout: 3000,
             });
@@ -307,6 +313,7 @@ class TrainButton extends React.Component {
     renderButton = () => {
         const { instance } = this.context;
         const { popupContent, status, partialTrainning } = this.props;
+        const { t } = this.props;
         return (
             <Popup
                 content={popupContent}
@@ -314,7 +321,7 @@ class TrainButton extends React.Component {
                     <Button.Group color={partialTrainning ? 'yellow' : 'blue'}>
                         <Button
                             icon={partialTrainning ? 'eye' : 'grid layout'}
-                            content='Train'
+                            content={t('Train')}
                             labelPosition='left'
                             disabled={
                                 status === 'training'
@@ -346,6 +353,7 @@ class TrainButton extends React.Component {
         const { status } = this.props;
         const rasaDown = !instance || status === 'notReachable';
         const { modalOpen, gitWorking } = this.state;
+        const { t } = this.props;
         if (!gitString) return null;
         const button = (
             <>
@@ -366,13 +374,13 @@ class TrainButton extends React.Component {
                     <Dropdown.Menu direction='left'>
                         <Dropdown.Item
                             icon='cloud upload'
-                            text='Commit and push'
+                            text={t('Commit and push')}
                             data-cy='commit-and-push'
                             onClick={() => this.showModal('commit-and-push', true)}
                         />
                         <Dropdown.Item
                             icon='step backward'
-                            text='Revert to previous'
+                            text={t('Revert to previous')}
                             data-cy='revert-to-previous'
                             onClick={() => this.showModal('revert-to-previous', true)}
                         />
@@ -388,7 +396,7 @@ class TrainButton extends React.Component {
                 size='tiny'
                 trigger={<div>{button}</div>}
                 inverted
-                content='Rasa instance not reachable'
+                content={t('Rasa instance not reachable')}
             />
         );
     };
@@ -397,6 +405,7 @@ class TrainButton extends React.Component {
         const {
             project: { enableSharing, _id: projectId },
         } = this.context;
+        //Todo: translate. Непонятный content
         return (
             <Popup
                 trigger={(
@@ -479,6 +488,7 @@ export default withTracker((props) => {
     const trainingStatusHandler = Meteor.subscribe('training.status', projectId);
     const storyGroupHandler = Meteor.subscribe('storiesGroup', projectId);
     const ready = storyGroupHandler.ready() && trainingStatusHandler.ready();
+    const { t } = this.props;
 
     let storyGroups;
     let selectedStoryGroups;
@@ -495,11 +505,11 @@ export default withTracker((props) => {
         selectedStoryGroups = storyGroups.filter(storyGroup => storyGroup.selected);
         partialTrainning = selectedStoryGroups.length > 0;
         if (partialTrainning && selectedStoryGroups.length > 1) {
-            popupContent = `Train NLU and stories from ${selectedStoryGroups.length} focused story groups.`;
+            popupContent = t(`Train NLU and stories from ${selectedStoryGroups.length} focused story groups.`);
         } else if (selectedStoryGroups && selectedStoryGroups.length === 1) {
-            popupContent = 'Train NLU and stories from 1 focused story group.';
+            popupContent = t('Train NLU and stories from 1 focused story group.');
         } else if (status === 'notReachable') {
-            popupContent = 'Rasa instance not reachable';
+            popupContent = t('Rasa instance not reachable');
         }
     }
 
@@ -509,4 +519,4 @@ export default withTracker((props) => {
         status,
         partialTrainning,
     };
-})(TrainButton);
+})(withTranslation('utils')(TrainButton));

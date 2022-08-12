@@ -25,6 +25,7 @@ import {
 import BotResponseName from './BotResponseName';
 import { RESP_FROM_LANG } from '../graphql/mutations';
 import ConfirmPopup from '../../common/ConfirmPopup';
+import { withTranslation } from "react-i18next";
 
 export const ResponseContext = React.createContext();
 
@@ -177,6 +178,7 @@ const BotResponsesContainer = (props) => {
     );
 
     const renderThemeTag = () => (<span className='bot-response theme-tag'>{theme}</span>);
+    const { t } = this.props;
 
     return (
         <ResponseContext.Provider value={{ name, uploadImage }}>
@@ -209,7 +211,7 @@ const BotResponsesContainer = (props) => {
                             data-cy='import-from-lang'
                             className='import-from-lang'
                             options={otherLanguages}
-                            text='Copy from'
+                            text={t('Copy from')}
                             onChange={(_, selection) => {
                                 importRespFromLang({
                                     variables: {
@@ -247,10 +249,10 @@ const BotResponsesContainer = (props) => {
                                 content={(
                                     <ConfirmPopup
                                         title='Delete response?'
-                                        description={responseLocations.length > 1
+                                        description={t(responseLocations.length > 1
                                             ? 'Remove this response from the current fragment'
                                             : 'Remove this response from the current fragment and delete it'
-                                        }
+                                        )}
                                         onYes={() => {
                                             setDeletePopupOpen(false);
                                             onDeleteAllResponses();
@@ -305,4 +307,4 @@ BotResponsesContainer.defaultProps = {
     theme: 'default',
 };
 
-export default BotResponsesContainer;
+export default withTranslation('stories')(BotResponsesContainer);

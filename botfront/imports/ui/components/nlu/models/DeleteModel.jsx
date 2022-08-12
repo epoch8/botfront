@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import { withTracker } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
+import { withTranslation } from "react-i18next";
 import {
     Button, Confirm, Icon, Message, Tab,
 } from 'semantic-ui-react';
@@ -76,14 +77,15 @@ class DeleteModel extends React.Component {
     };
 
     renderCannotDeleteMessage = (language) => {
+        const { t } = this.props;
         if (this.cannotDelete()) {
             return (
                 <Message
-                    header='Default language cannot be deleted'
+                    header={t('Default language cannot be deleted')}
                     icon='warning'
-                    content={
+                    content={t(
                         'You can\'t delete the default language, to delete this language change the default language of the project.'
-                    }
+                    )}
                     warning
                 />
             );
@@ -91,9 +93,9 @@ class DeleteModel extends React.Component {
         return (
             <Message
                 negative
-                header={`All the ${language} data of your model will be deleted !`}
+                header={t(`All the ${language} data of your model will be deleted !`)}
                 icon='warning circle'
-                content='Please use the button below to download a backup of your data before proceeding.'
+                content={t('Please use the button below to download a backup of your data before proceeding.')}
             />
         );
     };
@@ -107,12 +109,13 @@ class DeleteModel extends React.Component {
         const { text: languageName } = projectLanguages.find(
             lang => lang.value === language,
         );
+        const { t } = this.props;
         return (
             <Tab.Pane>
                 <Confirm
                     open={confirmOpen}
                     header={`Delete ${languageName} data from your model? (${examples} examples)`}
-                    content='This cannot be undone!'
+                    content={t('This cannot be undone!')}
                     onCancel={this.onCancel}
                     onConfirm={this.onConfirm}
                 />
@@ -132,7 +135,7 @@ class DeleteModel extends React.Component {
                     </div>
                 )}
                 {backupDownloaded && (
-                    <Message success icon='check circle' content='Backup downloaded' />
+                    <Message success icon='check circle' content={t('Backup downloaded')} />
                 )}
                 <br />
                 <br />
@@ -180,4 +183,4 @@ const mapDispatchToProps = {
     changeWorkingLanguage: setWorkingLanguage,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DeleteModelWithTracker);
+export default withTranslation('nlu')(connect(mapStateToProps, mapDispatchToProps)(DeleteModelWithTracker));

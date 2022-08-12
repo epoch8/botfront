@@ -3,6 +3,7 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 
 import { logosSchema } from '../../../api/project/project.schema';
 import { Projects } from '../../../api/project/project.collection';
@@ -43,6 +44,7 @@ class Appearance extends React.Component {
     renderAppearance = () => {
         const { logoUrl, smallLogoUrl, projectId } = this.props;
         const { saved, showConfirmation, saving } = this.state;
+        const { t } = this.props;
         const hasWritePermission = can('projects:w', projectId);
         return (
             <>
@@ -52,8 +54,8 @@ class Appearance extends React.Component {
                     model={{ logoUrl, smallLogoUrl }}
                     onSubmit={this.onSave}
                 >
-                    <AutoField name='logoUrl' label='Logo URL (The logo displayed at the top of the expanded sidebar)' />
-                    <AutoField name='smallLogoUrl' label='Small logo URL (the logo displayed at the top of the collapsed sidebar)' />
+                    <AutoField name='logoUrl' label={t('Logo URL (The logo displayed at the top of the expanded sidebar)')} />
+                    <AutoField name='smallLogoUrl' label={t('Small logo URL (the logo displayed at the top of the collapsed sidebar)')} />
                     <ErrorsField />
                     {showConfirmation && (
                         <ChangesSaved
@@ -102,4 +104,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(DefaultDomainContainer);
+export default withTranslation('settings')(connect(mapStateToProps)(DefaultDomainContainer));

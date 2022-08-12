@@ -8,6 +8,7 @@ import SimpleSchema from 'simpl-schema';
 import PropTypes from 'prop-types';
 import React from 'react';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
+import { withTranslation } from "react-i18next";
 
 import { wrapMeteorCallback } from '../../../utils/Errors';
 import ChangesSaved from '../../../utils/ChangesSaved';
@@ -15,7 +16,7 @@ import AceField from '../../../utils/AceField';
 import SaveButton from '../../../utils/SaveButton';
 import { Can, can } from '../../../../../lib/scopes';
 
-export default class NLUPipeline extends React.Component {
+class NLUPipeline extends React.Component {
     constructor(props) {
         super(props);
         this.state = { saved: false, showConfirmation: false };
@@ -60,11 +61,12 @@ export default class NLUPipeline extends React.Component {
     render() {
         const { saved, showConfirmation } = this.state;
         const { projectId } = this.props;
+        const { t } = this.props;
         return (
             <Tab.Pane>
                 <AutoForm schema={new SimpleSchema2Bridge(new SimpleSchema(this.schema))} model={this.sparseModel()} onSubmit={this.handleSave}>
                     <AceField name='config' label='NLU Pipeline' readOnly={!can('nlu-data:x', projectId)} />
-                    <AutoField name='hasNoWhitespace' label='Enable non-whitespace language mode' data-cy='whitespace-option' />
+                    <AutoField name='hasNoWhitespace' label={t('Enable non-whitespace language mode')} data-cy='whitespace-option' />
                     <ErrorsField />
                     {showConfirmation && (
                         <ChangesSaved
@@ -90,3 +92,5 @@ NLUPipeline.propTypes = {
     model: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
 };
+
+export default withTranslation('nlu')(NLUPipeline);

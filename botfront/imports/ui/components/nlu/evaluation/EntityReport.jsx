@@ -7,6 +7,7 @@ import KeyMetrics from './KeyMetrics';
 import ReportTable from './ReportTable';
 import UserUtteranceViewer from '../common/UserUtteranceViewer';
 import { Info } from '../../common/Info';
+import { withTranslation } from "react-i18next";
 
 function ExampleTextComparison({ example, prediction }) {
     return (
@@ -22,7 +23,7 @@ ExampleTextComparison.propTypes = {
     prediction: PropTypes.object.isRequired,
 };
 
-export default class EntityReport extends React.Component {
+class EntityReport extends React.Component {
     static getErrorCode(entity, prediction) {
         if (!entity) return 3;
 
@@ -82,6 +83,7 @@ export default class EntityReport extends React.Component {
 
     constructor(props) {
         super(props);
+        const { t } = this.props;
         this.state = {
             entities: [],
             expanded: {},
@@ -89,16 +91,16 @@ export default class EntityReport extends React.Component {
 
         this.errorTypes = ['Overlap', 'Mismatch', 'Not Found', 'Surprise'];
         this.errorInfo = [
-            'Correct classification but slightly incorrect token boundary',
-            'Overlapping token boundary but conflicting classification',
-            'Either the entity was missed entirely or it appeared in a non-overlapping position in the text',
-            'An entity was predicted where there was supposed to be none',
+            t('Correct classification but slightly incorrect token boundary'),
+            t('Overlapping token boundary but conflicting classification'),
+            t('Either the entity was missed entirely or it appeared in a non-overlapping position in the text'),
+            t('An entity was predicted where there was supposed to be none'),
         ];
         this.errorMessages = [
-            'Incorrect token boundary for entity',
-            'Incorrect classification for entity',
-            'No corresponding entity in prediction',
-            'Predicted entity not present in test utterance',
+            t('Incorrect token boundary for entity'),
+            t('Incorrect classification for entity'),
+            t('No corresponding entity in prediction'),
+            t('Predicted entity not present in test utterance'),
         ];
     }
 
@@ -362,3 +364,5 @@ EntityReport.propTypes = {
     f1_score: PropTypes.number.isRequired,
     predictions: PropTypes.array.isRequired,
 };
+
+export default withTranslation('nlu')(EntityReport);

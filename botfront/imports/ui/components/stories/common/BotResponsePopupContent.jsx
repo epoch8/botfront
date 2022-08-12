@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
     Dropdown, Search,
 } from 'semantic-ui-react';
+import { withTranslation } from "react-i18next";
 
 const BotResponsePopupContent = (props) => {
     const {
@@ -15,7 +16,7 @@ const BotResponsePopupContent = (props) => {
     useEffect(() => {
         if (closeNext && !modalOpen) onClose();
     }, [closeNext]);
-
+    // Todo: translate
     return (
         <>
             {/* <Modal
@@ -108,4 +109,4 @@ BotResponsePopupContent.defaultProps = {
     trackOpenMenu: () => {},
 };
 
-export default BotResponsePopupContent;
+export default withTranslation('stories')(BotResponsePopupContent);

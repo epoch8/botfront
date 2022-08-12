@@ -2,26 +2,28 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
 import IconButton from '../../common/IconButton';
+import { withTranslation } from "react-i18next";
 
 const ButtonTypeToggle = (props) => {
     const { className, responseType, onToggleButtonType } = props;
+    const { t } = this.props;
 
     const renderPopupContent = () => {
         if (responseType === 'TextWithButtonsPayload') {
-            return 'the button will disappear when a new message is added to the conversation';
+            return t('the button will disappear when a new message is added to the conversation');
         }
         if (responseType === 'QuickRepliesPayload') {
-            return 'the button will remain visible and clickable';
+            return t('the button will remain visible and clickable');
         }
         return <></>;
     };
 
     const renderPopupHeader = () => {
         if (responseType === 'TextWithButtonsPayload') {
-            return 'Disable persistence';
+            return t('Disable persistence');
         }
         if (responseType === 'QuickRepliesPayload') {
-            return 'Enable persistence';
+            return t('Enable persistence');
         }
         return <></>;
     };
@@ -42,8 +44,8 @@ const ButtonTypeToggle = (props) => {
                             />
                         </span>
                     )}
-                    header={renderPopupHeader()}
-                    content={renderPopupContent()}
+                    header={t(renderPopupHeader())}
+                    content={t(renderPopupContent())}
                 />
             )}
         </>
@@ -61,4 +63,4 @@ ButtonTypeToggle.defaultProps = {
     responseType: null,
 };
 
-export default ButtonTypeToggle;
+export default withTranslation('templates')(ButtonTypeToggle);

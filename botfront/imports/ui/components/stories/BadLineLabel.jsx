@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
+import { withTranslation } from "react-i18next";
 
 const BadLineLabel = (props) => {
     const { lineMd, lineIndex } = props;
+    const { t } = this.props;
     return (
         <Popup
             on='click'
@@ -15,8 +17,8 @@ const BadLineLabel = (props) => {
                     </div>
                 </div>
             )}
-            header={`Bad line on line ${lineIndex}`}
-            content={<p>Please fix this line in YAML mode</p>}
+            header={t(`Bad line on line ${lineIndex}`)}
+            content={<p>t(Please fix this line in YAML mode)</p>}
         />
     );
 };
@@ -30,4 +32,4 @@ BadLineLabel.defaultProps = {
     lineMd: '',
 };
 
-export default BadLineLabel;
+export default withTranslation('stories')(BadLineLabel);

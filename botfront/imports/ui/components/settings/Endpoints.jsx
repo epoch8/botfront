@@ -18,6 +18,7 @@ import { can } from '../../../lib/scopes';
 import { ENVIRONMENT_OPTIONS } from '../constants.json';
 import restartRasa from './restartRasa';
 import HttpRequestsForm from '../common/HttpRequestsForm';
+import { withTranslation } from "react-i18next";
 
 class Endpoints extends React.Component {
     constructor(props) {
@@ -276,4 +277,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(EndpointsContainer);
+export default withTranslation('settings')(connect(mapStateToProps)(EndpointsContainer));

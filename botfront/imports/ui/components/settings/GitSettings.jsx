@@ -11,6 +11,7 @@ import {
     Icon,
 } from 'semantic-ui-react';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
+import { withTranslation } from "react-i18next";
 import { GitSettingsSchema } from '../../../api/project/project.schema';
 import { Projects } from '../../../api/project/project.collection';
 import { wrapMeteorCallback } from '../utils/Errors';
@@ -172,4 +173,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(GitSettingsContainer);
+export default withTranslation('settings')(connect(mapStateToProps)(GitSettingsContainer));

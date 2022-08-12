@@ -15,7 +15,8 @@ import StoryGroupTreeNode from './StoryGroupTreeNode';
 import { useEventListener } from '../utils/hooks';
 import { ProjectContext } from '../../layouts/context';
 import { can } from '../../../lib/scopes';
-
+import { withTranslation } from "react-i18next";
+//Todo: translate
 const openFirstStoryIfNoneSelected = (
     storyMenuSelection,
     tree,
@@ -401,4 +402,4 @@ StoryGroupTree.defaultProps = {
     isDeletionPossible: () => [true, 'Delete?'],
 };
 
-export default StoryGroupTree;
+export default withTranslation('stories')(StoryGroupTree);

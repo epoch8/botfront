@@ -12,7 +12,8 @@ import { connect } from 'react-redux';
 import StoryPathPopup from './StoryPathPopup.jsx';
 import { ConversationOptionsContext } from './Context';
 import { can } from '../../../lib/scopes';
-
+import { withTranslation } from "react-i18next";
+//Todo: translate
 class StoryFooter extends React.Component {
     constructor(props) {
         super(props);
@@ -249,4 +250,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(StoryFooter);
+export default withTranslation('stories')(connect(mapStateToProps)(StoryFooter));

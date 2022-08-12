@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Confirm } from 'semantic-ui-react';
+import { withTranslation } from "react-i18next";
+import ChangesSaved from "./ChangesSaved";
 
 const buttonStyle = {
     transitionProperty: 'background-color',
@@ -47,6 +49,7 @@ class SaveButton extends React.PureComponent {
         const {
             saving, saved, disabled, saveText, onSave, confirmText,
         } = this.props;
+        const { t } = this.props;
         const {
             confirmOpen,
         } = this.state;
@@ -61,14 +64,14 @@ class SaveButton extends React.PureComponent {
                         data-cy='save-button'
                         style={buttonStyle}
                         icon={saved ? 'check' : null}
-                        content={saved ? 'Saved' : saveText}
+                        content={t(saved ? 'Saved' : saveText)}
                     />
 
                     <Confirm
                         open={confirmOpen}
                         onCancel={() => { this.setModalOpen(false); }}
                         onConfirm={(e) => { this.handleConfirm(e); }}
-                        content={confirmText}
+                        content={t(confirmText)}
                     />
 
                 </>
@@ -83,7 +86,7 @@ class SaveButton extends React.PureComponent {
                 data-cy='save-button'
                 style={buttonStyle}
                 icon={saved ? 'check' : null}
-                content={saved ? 'Saved' : saveText}
+                content={t(saved ? 'Saved' : saveText)}
             />
 
         );
@@ -109,4 +112,4 @@ SaveButton.defaultProps = {
     confirmText: '',
 };
 
-export default SaveButton;
+export default withTranslation('utils')(SaveButton);

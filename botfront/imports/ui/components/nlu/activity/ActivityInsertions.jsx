@@ -10,6 +10,7 @@ import { upsertActivity as upsertActivityMutation } from './mutations';
 import apolloClient from '../../../../startup/client/apollo';
 import { ProjectContext } from '../../../layouts/context';
 import { cleanDucklingFromExamples } from '../../../../lib/utils';
+import { withTranslation } from "react-i18next";
 
 export async function populateActivity(instance, examples, projectId, language, callback) {
     return Meteor.call('rasa.parse', instance, examples, async (err, activity) => {
@@ -33,7 +34,7 @@ export async function populateActivity(instance, examples, projectId, language, 
     });
 }
 
-export default function ActivityInsertions() {
+function ActivityInsertions() {
     const {
         language,
         project: { _id: projectId },
@@ -42,6 +43,8 @@ export default function ActivityInsertions() {
     const MAX_LINES = 50;
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);
+    // Todo: translate. Какая то странная ошибка с props
+    const { t } = this.props;
 
     const onTextChanged = (e, { value }) => setText(value.split('\n').slice(0, MAX_LINES).join('\n'));
 
@@ -58,7 +61,7 @@ export default function ActivityInsertions() {
 
     return (
         <Tab.Pane>
-            <Message info content='Add utterances below (one per line, 50 max). When you click on Add Utterances, they will be processed and the output will be shown in the New Utterances tab' />
+            <Message info content={t('Add utterances below (one per line, 50 max). When you click on Add Utterances, they will be processed and the output will be shown in the New Utterances tab')} />
             <br />
             <Form>
                 <TextArea
@@ -76,3 +79,5 @@ export default function ActivityInsertions() {
 }
 
 ActivityInsertions.propTypes = {};
+
+export default withTranslation('nlu')(ActivityInsertions);

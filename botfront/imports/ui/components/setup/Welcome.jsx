@@ -1,7 +1,9 @@
 import React from 'react';
 import { Header, Button } from 'semantic-ui-react';
 import { Link } from 'react-router';
+import { withTranslation } from "react-i18next";
 
+// Todo: translate
 export default () => (
     <div style={{ textAlign: 'center' }}>
         <Header as='h1' content='Welcome to Botfront' className='setup-welcome-header' />

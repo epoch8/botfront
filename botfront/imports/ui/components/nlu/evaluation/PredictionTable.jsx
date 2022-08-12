@@ -3,19 +3,21 @@ import PropTypes from 'prop-types';
 import matchSorter from 'match-sorter';
 import ReactTable from 'react-table-v6';
 import { Label, Icon } from 'semantic-ui-react';
+import {withTranslation} from "react-i18next";
 
-export default function PredictionTable(props) {
+function PredictionTable(props) {
     const { labelType } = props;
 
     const getPredictionsData = () => {
         const { predictions } = props;
         return predictions.filter(pred => pred.predicted !== pred[labelType]);
     };
-
+    const { t } = this.props;
+    // Todo: translate
     const getPredictionsColumns = () => [
         {
             accessor: 'text',
-            Header: 'Text',
+            Header: t('Text'),
             Cell: p => (
                 <div>
                     <Icon name='quote left' size='small' />
@@ -27,7 +29,7 @@ export default function PredictionTable(props) {
         {
             id: labelType,
             accessor: r => r[labelType],
-            Header: `Correct ${labelType}`,
+            Header: t(`Correct ${labelType}`),
             filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: [labelType] }),
             Cell: p => (
                 <div>
@@ -40,7 +42,7 @@ export default function PredictionTable(props) {
         {
             id: 'predicted',
             accessor: r => r.predicted,
-            Header: 'Predicted intent',
+            Header: t('Predicted intent'),
             filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['predicted'] }),
             Cell: p => (
                 <div>
@@ -87,3 +89,5 @@ PredictionTable.propTypes = {
     predictions: PropTypes.array.isRequired,
     labelType: PropTypes.string.isRequired,
 };
+
+export default withTranslation('nlu')(PredictionTable);

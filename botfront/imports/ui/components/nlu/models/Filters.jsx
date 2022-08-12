@@ -6,6 +6,7 @@ import {
 import moment from 'moment';
 import DatePicker from '../../common/DatePicker';
 import { ProjectContext } from '../../../layouts/context';
+import { withTranslation } from "react-i18next";
 import { applyTimezoneOffset } from '../../../../lib/graphs';
 import getColor from '../../../../lib/getColors';
 
@@ -14,7 +15,7 @@ const SORT_KEY_MAP = {
     intent: 'alphabet',
 };
 
-export default class Filters extends React.Component {
+class Filters extends React.Component {
     state = {
         sortDropdownOpen: false,
     };
@@ -87,6 +88,7 @@ export default class Filters extends React.Component {
             color: getColor(label.text, true),
             content: `${label.text}`,
         });
+        const { t } = this.props;
 
         return (
             <div className={`side-by-side narrow middle ${className}`}>
@@ -96,14 +98,14 @@ export default class Filters extends React.Component {
                             startDate={startDate}
                             endDate={endDate}
                             onConfirm={this.handleCalendarChange}
-                            placeholder='Filter by date'
+                            placeholder={t('Filter by date')}
                         />
                     </div>
                 )}
                 {intents.length > 0 && (
                     <Dropdown
                         style={{ marginRight: '10px' }}
-                        placeholder='Filter by intents'
+                        placeholder={t('Filter by intents')}
                         size='tiny'
                         onChange={this.handleIntentSelectorChange}
                         multiple
@@ -117,7 +119,7 @@ export default class Filters extends React.Component {
                 {entities.length > 0 && (
                     <Dropdown
                         style={{ marginRight: '10px' }}
-                        placeholder='Filter by entities'
+                        placeholder={t('Filter by entities')}
                         size='tiny'
                         onChange={this.handleEntitiesSelectorChange}
                         value={entitiesFilter}
@@ -131,7 +133,7 @@ export default class Filters extends React.Component {
 
                 <Input
                     icon='search'
-                    placeholder='Search...'
+                    placeholder={t('Search...')}
                     onChange={this.handleTextChange}
                     value={query}
                 />
@@ -154,7 +156,7 @@ export default class Filters extends React.Component {
                                 <Dropdown
                                     onClick={() => this.setState({ sortDropdownOpen: !sortDropdownOpen })}
                                     onClose={() => this.setState({ sortDropdownOpen: false })}
-                                    placeholder='Choose sort'
+                                    placeholder={t('Choose sort')}
                                     size='tiny'
                                     open={sortDropdownOpen}
                                     onChange={this.handleSortKeyChange}
@@ -187,3 +189,5 @@ Filters.propTypes = {
     filter: PropTypes.object,
     className: PropTypes.string,
 };
+
+export default withTranslation('nlu')(Filters);

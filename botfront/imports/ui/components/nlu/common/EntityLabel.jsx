@@ -7,6 +7,7 @@ import EntityDropdown from './EntityDropdown';
 import EntityValueEditor from '../../stories/common/EntityValueEditor';
 import getColor from '../../../../lib/getColors';
 import { useEventListener } from '../../utils/hooks';
+import { withTranslation } from "react-i18next";
 
 function Entity({
     value,
@@ -27,6 +28,7 @@ function Entity({
     const [newValue, setNewValue] = useState(value);
     const [toBeDeleted, setToBeDeleted] = useState(false);
     const [createdAt] = useState(new Event('click').timeStamp);
+    const { t } = this.props;
     useEffect(() => {
         if (openInitially) setPopupOpen(true);
     }, []);
@@ -123,7 +125,7 @@ function Entity({
                     open
                     basic
                     wide
-                    content={renderContent()}
+                    content={t(renderContent())}
                     position='bottom right'
                     on='click'
                     context={labelRef.current}
@@ -183,4 +185,4 @@ Entity.defaultProps = {
 };
 
 
-export default Entity;
+export default withTranslation('nlu')(Entity);

@@ -15,6 +15,7 @@ import { ConversationOptionsContext } from './Context';
 import StoryRulesEditor from './rules/StoryRulesEditor';
 import { can } from '../../../lib/scopes';
 import StoryPrefix from './common/StoryPrefix';
+import { withTranslation } from "react-i18next";    
 
 const StoryTopMenu = ({
     fragment,
@@ -38,6 +39,7 @@ const StoryTopMenu = ({
     const [triggerEditorOpen, setTriggerEditorOpen] = useState(false);
     const [confirmPopupOpen, setConfirmPopupOpen] = useState(false);
     const [confirmOverwriteOpen, setConfirmOverwriteOpen] = useState(false);
+    const { t } = this.props;
 
     const testCaseFailing = useMemo(() => type === 'test_case' && fragment.success === false, [type, fragment]);
 
@@ -178,7 +180,7 @@ const StoryTopMenu = ({
                 className='overwrite-expected-button'
                 basic
                 color='green'
-                content='Set actual as expected'
+                content={t('Set actual as expected')}
                 icon='check'
                 labelPosition='right'
                 size='mini'
@@ -189,7 +191,7 @@ const StoryTopMenu = ({
                 className='remove-test-button'
                 basic
                 color='red'
-                content='Remove test case'
+                content={t('Remove test case')}
                 icon='trash'
                 labelPosition='right'
                 size='mini'
@@ -202,7 +204,7 @@ const StoryTopMenu = ({
         <Confirm
             header='Warning'
             className='warning'
-            content='The current expected results will be overwritten. This action cannot be undone.'
+            content={t('The current expected results will be overwritten. This action cannot be undone.')}
             cancelButton='Cancel'
             confirmButton='Overwrite'
             open={confirmOverwriteOpen && testCaseFailing}
@@ -347,4 +349,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(StoryTopMenu);
+export default withTranslation('stories')(connect(mapStateToProps)(StoryTopMenu));

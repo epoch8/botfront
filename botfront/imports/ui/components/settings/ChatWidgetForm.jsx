@@ -33,6 +33,7 @@ import ChangesSaved from '../utils/ChangesSaved';
 import IntentField from '../form_fields/IntentField';
 import { ProjectContext } from '../../layouts/context';
 import InfoField from '../utils/InfoField';
+import {withTranslation} from "react-i18next";
 
 const ColorField = React.lazy(() => import('../form_fields/ColorField'));
 class ChatWidgetForm extends React.Component {
@@ -156,6 +157,7 @@ class ChatWidgetForm extends React.Component {
 
     renderInstall = () => {
         const { copied, selectedEnvironment } = this.state;
+        const { t } = this.props;
         const {
             project: { deploymentEnvironments: availableEnvs = [] },
         } = this.context;
@@ -163,7 +165,7 @@ class ChatWidgetForm extends React.Component {
             <>
                 <Message
                     info
-                    content='Paste this snippet in your html.'
+                    content={t('Paste this snippet in your html.')}
                 />
                 <Form>
                     <Input
@@ -197,7 +199,7 @@ class ChatWidgetForm extends React.Component {
                             }}
                             className='copy-button'
                             icon='copy'
-                            content={copied ? 'Copied' : 'Copy'}
+                            content={t(copied ? 'Copied' : 'Copy')}
                             data-cy='copy-webchat-snippet'
                         />
                     </Input>
@@ -208,12 +210,13 @@ class ChatWidgetForm extends React.Component {
 
     renderWidgetSettings = (saving, settings, projectId) => {
         const { saved, advancedVisible, showConfirmation } = this.state;
+        const { t } = this.props;
         return (
             <>
                 <Message
                     info
                     icon='question circle'
-                    content='Those settings are only used for the Webchat Plus channel'
+                    content={t('Those settings are only used for the Webchat Plus channel')}
                 />
                 <AutoForm
                     disabled={!!saving || !can('projects:w', projectId)}
@@ -242,41 +245,41 @@ class ChatWidgetForm extends React.Component {
                     <Divider />
 
                     <Header as='h3'>General</Header>
-                    <AutoField label='Widget tile' name='title' data-cy='widget-title' />
-                    <AutoField label='Widget subtile' name='subtitle' />
+                    <AutoField label={t('Widget tile')} name='title' data-cy='widget-title' />
+                    <AutoField label={t('Widget subtile')} name='subtitle' />
                     <InfoField
                         required={false}
-                        info='The payload that will be sent when a user opens the chat window. The response to this payload is an introductory message'
+                        info={t('The payload that will be sent when a user opens the chat window. The response to this payload is an introductory message')}
                         Component={IntentField}
-                        label='Initial payload'
+                        label={t('Initial payload')}
                         name='initPayload'
                     />
                     <SelectField
                         data-cy='lang-select'
                         options={this.getlanguageOptions()}
                         name='customData'
-                        label='Language'
+                        label={t('Language')}
                     />
                     <ErrorsField />
                     <Divider />
 
                     <Header as='h3'>Colors</Header>
-                    <ColorField label='Main webchat color' name='mainColor' />
+                    <ColorField label={t('Main webchat color')} name='mainColor' />
                     <ColorField
-                        label='Conversation background color'
+                        label={t('Conversation background color')}
                         name='conversationBackgroundColor'
                     />
-                    <ColorField label='User message text color' name='userTextColor' />
+                    <ColorField label={t('User message text color')} name='userTextColor' />
                     <ColorField
-                        label='User message background color'
+                        label={t('User message background color')}
                         name='userBackgroundColor'
                     />
                     <ColorField
-                        label='Assistant message text color'
+                        label={t('Assistant message text color')}
                         name='assistTextColor'
                     />
                     <ColorField
-                        label='Assistant message background color'
+                        label={t('Assistant message background color')}
                         name='assistBackgoundColor'
                     />
 
@@ -296,51 +299,51 @@ class ChatWidgetForm extends React.Component {
                         </Accordion.Title>
                         <Accordion.Content active={advancedVisible}>
                             <AutoField
-                                label='User input hint'
+                                label={t('User input hint')}
                                 name='inputTextFieldHint'
                             />
                             <ToggleField
-                                label='Show full screen button'
+                                label={t('Show full screen button')}
                                 name='showFullScreenButton'
                             />
                             <InfoField
-                                label='Display unread messages count'
+                                label={t('Display unread messages count')}
                                 required={false}
-                                info='If set, the number of unread message will be displayer next to the chat icon'
+                                info={t('If set, the number of unread message will be displayer next to the chat icon')}
                                 Component={ToggleField}
                                 name='displayUnreadCount'
                             />
                             <InfoField
-                                label='Hide when not connected'
+                                label={t('Hide when not connected')}
                                 required={false}
-                                info='If set, the widget will remain hidden if it cannot connect to Botfront'
+                                info={t('If set, the widget will remain hidden if it cannot connect to Botfront')}
                                 Component={ToggleField}
                                 name='hideWhenNotConnected'
                             />
                             <InfoField
-                                label='Disable tooltips'
+                                label={t('Disable tooltips')}
                                 required={false}
-                                info='If set, messages will not appear as a bubble when the widget is closed'
+                                info={t('If set, messages will not appear as a bubble when the widget is closed')}
                                 Component={ToggleField}
                                 name='disableTooltips'
                             />
                             <InfoField
-                                label='Automatically clear the cache'
+                                label={t('Automatically clear the cache')}
                                 required={false}
-                                info='If set, an user re-connecting after 30 will be start with a new session'
+                                info={t('If set, an user re-connecting after 30 will be start with a new session')}
                                 Component={ToggleField}
                                 name='autoClearCache'
                             />
                             <InfoField
                                 required={false}
-                                info='Display a timestamp next to every message'
+                                info={t('Display a timestamp next to every message')}
                                 Component={ToggleField}
-                                label='Display message timestamp'
+                                label={t('Display message timestamp')}
                                 name='showMessageDate'
                             />
                             <Divider />
                             <AutoField
-                                label='Open launcher image'
+                                label={t('Open launcher image')}
                                 name='openLauncherImage'
                             />
                             <AutoField label='Close launcher image' name='closeImage' />
@@ -348,17 +351,17 @@ class ChatWidgetForm extends React.Component {
                             <Divider />
                             <LongTextField
                                 className='monospaced'
-                                label='Default highlight class name'
+                                label={t('Default highlight class name')}
                                 name='defaultHighlightClassname'
                             />
                             <LongTextField
                                 className='monospaced'
-                                label='Default highlight css'
+                                label={t('Default highlight css')}
                                 name='defaultHighlightCss'
                             />
                             <LongTextField
                                 className='monospaced'
-                                label='Default highlight css animation'
+                                label={t('Default highlight css animation')}
                                 name='defaultHighlightAnimation'
                             />
                         </Accordion.Content>
@@ -464,4 +467,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(widgetSettingsContainer);
+export default withTranslation('settings')(connect(mapStateToProps)(widgetSettingsContainer));

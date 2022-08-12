@@ -6,8 +6,9 @@ import { useDrop } from 'react-dnd-cjs';
 import CarouselSlide from './CarouselSlide';
 import { useEventListener } from '../../utils/hooks';
 import { defaultCarouselSlide } from '../../../../lib/botResponse.utils';
+import { withTranslation } from "react-i18next";
 
-export default function CarouselEditor(props) {
+function CarouselEditor(props) {
     const {
         min, max, value, onChange,
     } = props;
@@ -30,6 +31,7 @@ export default function CarouselEditor(props) {
         updatedSlides[draggedSlideIndex] = elements[index];
         setSlides(updatedSlides);
     };
+    const { t } = this.props;
 
     const handleMouseWheel = (e) => {
         // turns vertical scroll into horizontal scroll
@@ -60,7 +62,7 @@ export default function CarouselEditor(props) {
                     <Popup
                         size='mini'
                         inverted
-                        content='Add a slide'
+                        content={t('Add a slide')}
                         trigger={(
                             <Icon name='add' size='huge' color='grey' link onClick={createSlide} data-cy='add-slide' />
                         )}
@@ -82,3 +84,5 @@ CarouselEditor.defaultProps = {
     min: 1,
     max: 10,
 };
+
+export default withTranslation('stories')(CarouselEditor);

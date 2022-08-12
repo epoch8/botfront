@@ -2,6 +2,7 @@ import { Message } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 import CrashReportButton from '../utils/CrashReportButton';
+import { withTranslation } from "react-i18next";
 
 class StoryErrorBoundary extends React.Component {
     constructor(props) {
@@ -15,13 +16,14 @@ class StoryErrorBoundary extends React.Component {
 
     render() {
         const { error, reported } = this.state;
+        const { t } = this.props;
         if (error) {
             return (
                 <div className='story-error-wrapper'>
                     <Message
                         icon='warning'
-                        header='Sorry, something went wrong with the story'
-                        content={(
+                        header={t('Sorry, something went wrong with the story')}
+                        content={t(
                             <>
                                 <p>
                                     Please try to refresh the page. If the problem
@@ -56,4 +58,4 @@ StoryErrorBoundary.propTypes = {
     children: PropTypes.element.isRequired,
 };
 
-export default StoryErrorBoundary;
+export default withTranslation('stories')(StoryErrorBoundary);

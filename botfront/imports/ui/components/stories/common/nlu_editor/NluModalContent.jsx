@@ -21,6 +21,7 @@ import { ConversationOptionsContext } from '../../Context';
 import { can } from '../../../../../lib/scopes';
 import { useExamples, useLazyExamples } from '../../../nlu/models/hooks';
 import { ProjectContext } from '../../../../layouts/context';
+import { withTranslation } from "react-i18next";
 
 function sameCanonicalGroup(example, payload) {
     // check if these examples are in the same canonical group
@@ -247,30 +248,31 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
                 edited, isNew, deleted, entities: cellEntities, intent,
             } = {},
         } = row;
+        const { t } = this.props;
         let text;
         let color;
         let title;
         let message;
         if (deleted) {
-            text = 'deleted';
+            text = t('deleted');
             color = undefined;
-            title = 'Deleted Example';
-            message = 'You just deleted this user utterance and it will be removed from the training set when you save';
+            title = t('Deleted Example');
+            message = t('You just deleted this user utterance and it will be removed from the training set when you save');
         } else if (!checkPayloadsMatch({ intent, entities: cellEntities })) {
-            text = 'invalid';
+            text = t('invalid');
             color = 'red';
-            title = 'Invalid Example';
-            message = 'The intent and entities associated with this utterance do not correspond to the currently selected payload. Either adjust intent and entities or delete this utterance';
+            title = t('Invalid Example');
+            message = t('The intent and entities associated with this utterance do not correspond to the currently selected payload. Either adjust intent and entities or delete this utterance');
         } else if (isNew) {
-            text = 'new';
+            text = t('new');
             color = 'yellow';
-            title = 'New example';
-            message = 'You just added this utterance and it is not yet added to the training set';
+            title = t('New example');
+            message = t('You just added this utterance and it is not yet added to the training set');
         } else if (edited) {
-            text = 'edited';
+            text = t('edited');
             color = 'olive';
-            title = 'Edited example';
-            message = 'You edited this utterance and the changes are not yet saved in the training set';
+            title = t('Edited example');
+            message = t('You edited this utterance and the changes are not yet saved in the training set');
         }
         return text ? (
             <Popup
@@ -293,6 +295,7 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
     };
 
     if (loadingExamples) return <div>Loading</div>;
+    const { t } = this.props;
     return (
         <Container>
             <br />
@@ -327,8 +330,8 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
                                     </Button>
                                 </span>
                             )}
-                            header='Cannot save changes'
-                            content='You must fix invalid utterances prior to saving'
+                            header={t('Cannot save changes')}
+                            content={t('You must fix invalid utterances prior to saving')}
                         />
                 
                         <Popup
@@ -339,7 +342,7 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
                             )}
                             content={(
                                 <ConfirmPopup
-                                    description='Are you sure? All the data you entered above will be discarded!'
+                                    description={t('Are you sure? All the data you entered above will be discarded!')}
                                     onYes={closeModal}
                                     onNo={() => setCancelPopupOpen(false)}
                                 />
@@ -367,4 +370,4 @@ NLUModalContent.propTypes = {
 };
 
 
-export default NLUModalContent;
+export default withTranslation('stories')(NLUModalContent);

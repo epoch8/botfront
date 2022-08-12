@@ -7,6 +7,7 @@ import { formNameIsValid } from '../../../lib/client.safe.utils';
 import { tooltipWrapper } from '../utils/Utils';
 import { storyTypeCustomizations } from '../../../lib/story.types';
 import StoryPrefix from './common/StoryPrefix';
+import { withTranslation } from "react-i18next";
 
 const StoryGroupTreeNode = (props) => {
     const {
@@ -147,7 +148,7 @@ const StoryGroupTreeNode = (props) => {
         );
     };
 
-
+    //Todo: translate
     const renderItemActions = () => (
         <div className={`item-actions ${disabled ? 'hidden' : ''}`}>
             {!disableEdit && !isBeingRenamed && (
@@ -368,4 +369,4 @@ StoryGroupTreeNode.defaultProps = {
 
 const StoryGroupTreeNodeWrapped = props => <StoryGroupTreeNode {...props} />;
 
-export default StoryGroupTreeNodeWrapped;
+export default withTranslation('stories')(StoryGroupTreeNodeWrapped);

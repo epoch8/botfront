@@ -4,6 +4,7 @@ import { Icon, Popup } from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import { useDrop } from 'react-dnd-cjs';
 import QuickReply, { isButtonValid } from './QuickReply';
+import { withTranslation } from "react-i18next";
 
 function QuickReplies({
     value, onChange, min, max, fluid,
@@ -12,6 +13,7 @@ function QuickReplies({
 
     const id = useMemo(() => uuidv4(), [false]);
     const [, drop] = useDrop({ accept: `qr-for-${id}` });
+    const { t } = this.props;
 
     const handleChange = (button, i) => {
         const newButtons = [...buttons.slice(0, i), button, ...buttons.slice(i + 1)];
@@ -66,7 +68,7 @@ function QuickReplies({
                     size='mini'
                     inverted
                     position='top center'
-                    content='Add a button'
+                    content={t('Add a button')}
                     trigger={(
                         <Icon
                             className='add-quick-reply'
@@ -113,4 +115,4 @@ QuickReplies.defaultProps = {
     fluid: false,
 };
 
-export default QuickReplies;
+export default withTranslation('stories')(QuickReplies);

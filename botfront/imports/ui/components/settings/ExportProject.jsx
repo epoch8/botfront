@@ -7,6 +7,7 @@ import {
 } from 'semantic-ui-react';
 import JSZIP from 'jszip';
 import { ProjectContext } from '../../layouts/context';
+import { withTranslation } from "react-i18next";
 
 const ExportProject = ({
     setLoading,
@@ -141,4 +142,4 @@ ExportProject.propTypes = {
     setLoading: PropTypes.func.isRequired,
 };
 
-export default ExportProject;
+export default withTranslation('settings')(ExportProject);

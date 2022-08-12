@@ -12,6 +12,7 @@ import { setStoriesCurrent } from '../../../store/actions/actions';
 import { StoryGroups } from '../../../../api/storyGroups/storyGroups.collection';
 
 import { SEARCH_FRAGMENTS } from './queries';
+import { withTranslation } from "react-i18next";
 
 const SearchBar = (props) => {
     const {
@@ -29,6 +30,7 @@ const SearchBar = (props) => {
     const [results, setResults] = useState([]);
     const [searching, setSearching] = useState(false);
     const [displayShortcuts, setDisplayShortcuts] = useState(false);
+    const { t } = this.props;
 
     const searchStories = useCallback(
         debounce(async (searchInputValue) => {
@@ -213,12 +215,12 @@ const SearchBar = (props) => {
 
     const renderShortcuts = () => (
         <div className='search-shortcuts'>
-            <Shortcut value='with:highlights' text='Stories with onscreen guidance' />
-            <Shortcut value='with:triggers' text='Stories with triggers' />
-            <Shortcut value='with:custom_style' text='Stories with custom styles' />
-            <Shortcut value='with:observe_events' text='Stories with user interactions callback' />
-            <Shortcut value='status:unpublished' text='Unpublished stories' />
-            <Shortcut value='status:published' text='Published stories' />
+            <Shortcut value='with:highlights' text={t('Stories with onscreen guidance')} />
+            <Shortcut value='with:triggers' text={t('Stories with triggers')} />
+            <Shortcut value='with:custom_style' text={t('Stories with custom styles')} />
+            <Shortcut value='with:observe_events' text={t('Stories with user interactions callback')} />
+            <Shortcut value='status:unpublished' text={t('Unpublished stories')} />
+            <Shortcut value='status:published' text={t('Published stories')} />
         </div>
     );
 
@@ -290,6 +292,6 @@ const mapStateToProps = state => ({
     activeStories: state.stories.get('storiesCurrent').toJS(),
 });
 
-export default connect(mapStateToProps, { setActiveStories: setStoriesCurrent })(
+export default withTranslation('stories')(connect(mapStateToProps, { setActiveStories: setStoriesCurrent })(
     SearchBarWithTracker,
-);
+));

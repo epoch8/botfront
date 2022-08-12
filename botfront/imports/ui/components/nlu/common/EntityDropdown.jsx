@@ -3,6 +3,7 @@ import React, { useState, useContext, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import IconButton from '../../common/IconButton';
 import { ProjectContext } from '../../../layouts/context';
+import { withTranslation } from "react-i18next";
 
 // eslint-disable-next-line no-control-regex
 const asciiChar = /^[\x21-\x7E]+$/;
@@ -27,7 +28,7 @@ function EntityDropdown({
             })),
         [entities, entity],
     );
-
+    const { t } = this.props;
     const [searchInputState, setSearchInputState] = useState('');
 
     const handleSearchChange = (_e, { searchQuery }) => {
@@ -47,7 +48,7 @@ function EntityDropdown({
                 button
                 labeled
                 className='icon entity-dropdown'
-                placeholder='Select an entity... '
+                placeholder={t('Select an entity... ')}
                 search
                 selection
                 value={entity && entity.entity}
@@ -84,4 +85,4 @@ EntityDropdown.defaultProps = {
     disabled: false,
 };
 
-export default EntityDropdown;
+export default withTranslation('nlu')(EntityDropdown);

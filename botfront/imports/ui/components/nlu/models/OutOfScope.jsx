@@ -4,6 +4,7 @@ import {
     Message, Popup, Button, Icon,
 } from 'semantic-ui-react';
 import { saveAs } from 'file-saver';
+import { withTranslation } from "react-i18next";
 import IntentLabel from '../common/IntentLabel';
 import UserUtteranceViewer from '../common/UserUtteranceViewer';
 import { useActivity } from '../activity/hooks';
@@ -23,6 +24,7 @@ import IconButton from '../../common/IconButton';
 
 function OutOfScope() {
     const [sortType, setSortType] = useState('Newest');
+    const { t } = this.props;
     const getSortFunction = () => {
         switch (sortType) {
         case 'Newest':
@@ -30,7 +32,7 @@ function OutOfScope() {
         case 'Oldest':
             return { sortKey: 'createdAt', sortDesc: false };
         default:
-            throw new Error('No such sort type');
+            throw new Error(t('No such sort type'));
         }
     };
 
@@ -114,7 +116,7 @@ function OutOfScope() {
                 <Popup
                     size={size}
                     inverted
-                    content='Add this utterance to training data'
+                    content={t('Add this utterance to training data')}
                     trigger={(
                         <IconButton
                             basic
@@ -190,7 +192,7 @@ function OutOfScope() {
         <>
             {data && data.length
                 ? render()
-                : <Message success icon='check' header='Congratulations!' content='You are up to date' />
+                : <Message success icon='check' header={t('Congratulations!')} content={t('You are up to date')} />
             }
         </>
     );
@@ -198,4 +200,4 @@ function OutOfScope() {
 
 OutOfScope.propTypes = {};
 
-export default OutOfScope;
+export default withTranslation('nlu')(OutOfScope);

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Alert from 'react-s-alert';
+import { withTranslation } from "react-i18next";
 
 import StoryRulesForm from './StoryRulesForm';
 
@@ -59,12 +60,13 @@ const StoryRulesEditor = (props) => {
     const handleChangeRules = (model) => {
         setRules(model);
     };
+    const { t } = this.props;
 
     const handleOnSave = (model) => {
         setRules(model);
         Meteor.call('stories.updateRules', projectId, storyId, clearOptionalFields(model), (err) => {
             if (err) {
-                Alert.error(`Error: the rules could not be saved: ${err}`);
+                Alert.error(t(`Error: the rules could not be saved: ${err}`));
                 return;
             }
             setOpen(false);
@@ -74,7 +76,7 @@ const StoryRulesEditor = (props) => {
     const deleteTriggers = () => {
         Meteor.call('stories.deleteRules', projectId, storyId, (err) => {
             if (err) {
-                Alert.error(`Error: the rules could not be deleted: ${err}`);
+                Alert.error(t(`Error: the rules could not be deleted: ${err}`));
                 return;
             }
             setOpen(false);
@@ -111,7 +113,7 @@ const StoryRulesEditor = (props) => {
                     </Modal>
                 </div>
             )}
-            content='You must remove the links to this story to add triggers'
+            content={t('You must remove the links to this story to add triggers')}
             disabled={!isDestinationStory}
         />
     );
@@ -137,4 +139,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(StoryRulesEditor);
+export default withTranslation('stories')(connect(mapStateToProps)(StoryRulesEditor));

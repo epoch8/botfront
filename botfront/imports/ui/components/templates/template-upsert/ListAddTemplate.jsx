@@ -5,8 +5,9 @@ import { Dropdown, Button } from 'semantic-ui-react';
 import yamljs from 'js-yaml';
 import cloneDeep from 'lodash/cloneDeep';
 import { examples } from './templateExamples';
+import { withTranslation } from "react-i18next";
 
-
+//Todo: translate
 const messageTypesOptions = [
     { value: 0, text: 'Text' },
     { value: 1, text: 'Text with buttons (quick replies)' },
@@ -65,4 +66,4 @@ const ListAddTemplate = ({
     );
 };
 
-export default connectField(ListAddTemplate, { includeParent: true, initialValue: false });
+export default withTranslation('templates')(connectField(ListAddTemplate, { includeParent: true, initialValue: false }));

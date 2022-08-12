@@ -7,6 +7,7 @@ import { groupBy } from 'lodash';
 import { ProjectContext } from '../../../layouts/context';
 import { ConversationOptionsContext } from '../Context';
 import { slotValueToLabel } from '../SlotLabel';
+import { withTranslation } from "react-i18next";
 
 const SlotPopupContent = (props) => {
     const {
@@ -55,6 +56,7 @@ const SlotPopupContent = (props) => {
         if (type === 'categorical') return [...slot.categories, null];
         return [null];
     }
+    const { t } = this.props;
     const renderDropdown = () => (
         <Dropdown
             trigger={trigger}
@@ -107,7 +109,7 @@ const SlotPopupContent = (props) => {
                                         }}
                                     >
                                         <Dropdown
-                                            text={s.name}
+                                            text={t(s.name)}
                                             fluid
                                             // The upward here prevents a visual bug
                                             upward={false}
@@ -119,7 +121,7 @@ const SlotPopupContent = (props) => {
                                                 {chooseSlotWithoutValue ? (
                                                     <Dropdown.Item
                                                         data-cy={`confirm-select-${s.name}`}
-                                                        text='Choose this slot'
+                                                        text={t('Choose this slot')}
                                                         onClick={() => onSelect({ ...s })}
                                                     />
                                                 ) : getSlotValue(s).map(content => (
@@ -169,7 +171,7 @@ const SlotPopupContent = (props) => {
                 <Button
                     fluid
                     color='orange'
-                    content='Edit slots'
+                    content={t('Edit slots')}
                     onClick={() => {
                         setPopupOpen(false);
                         browseToSlots();

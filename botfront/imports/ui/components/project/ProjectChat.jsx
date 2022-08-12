@@ -5,6 +5,7 @@ import React from 'react';
 import {
     Menu, Icon, Dropdown, Popup, Message,
 } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 
 import Chat from './Chat';
 import { wrapMeteorCallback } from '../utils/Errors';
@@ -122,6 +123,7 @@ class ProjectChat extends React.Component {
         const {
             triggerChatPane, project: { _id: projectId }, initPayload,
         } = this.props;
+        const { t } = this.props;
         return (
             <div className='chat-pane-container' data-cy='chat-pane'>
                 <Menu pointing secondary>
@@ -151,7 +153,7 @@ class ProjectChat extends React.Component {
                                         className={savedTest ? 'saved-test' : ''}
                                     />
                                 )}
-                                content='Save conversation as a test case'
+                                content={t('Save conversation as a test case')}
                                 position='bottom right'
                                 className='redo-chat-popup'
                                 disabled={noChannel}
@@ -169,7 +171,7 @@ class ProjectChat extends React.Component {
                                         data-cy='restart-chat'
                                     />
                                 )}
-                                content='Restart the conversation'
+                                content={t('Restart the conversation')}
                                 position='bottom right'
                                 className='redo-chat-popup'
                                 disabled={noChannel}
@@ -186,7 +188,7 @@ class ProjectChat extends React.Component {
                                         data-cy='close-chat'
                                     />
                                 )}
-                                content='Close the conversation'
+                                content={t('Close the conversation')}
                                 position='bottom right'
                                 className='redo-chat-popup'
                             />
@@ -254,4 +256,4 @@ const mapDispatchToProps = {
     changeShouldRefreshChat: setShouldRefreshChat,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProjectChat);
+export default withTranslation('project')(connect(mapStateToProps, mapDispatchToProps)(ProjectChat));

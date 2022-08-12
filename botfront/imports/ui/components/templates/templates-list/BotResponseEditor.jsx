@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { safeDump, safeLoad } from 'js-yaml';
 import { useMutation, useSubscription, useQuery } from '@apollo/react-hooks';
+import { withTranslation } from "react-i18next";
 import {
     Segment, Menu, MenuItem, Modal, Button,
 } from 'semantic-ui-react';
@@ -60,6 +61,7 @@ const BotResponseEditor = (props) => {
     const [responseKey, setResponseKey] = useState(name);
     const [renameError, setRenameError] = useState();
     const [triggerClose, setTriggerClose] = useState(false);
+    const { t } = this.props;
 
     useEffect(() => {
         if (botResponse) {
@@ -259,9 +261,9 @@ const BotResponseEditor = (props) => {
                             renameable={renameable}
                             onChange={(_e, target) => setResponseKey(target.value)}
                             saveResponseName={handleChangeKey}
-                            errorMessage={renameError}
+                            errorMessage={t(renameError)}
                             responseName={responseKey}
-                            disabledMessage='Responses in forms cannot be renamed.'
+                            disabledMessage={t('Responses in forms cannot be renamed.')}
                         />
                     </div>
                     <div className='response-editor-topbar-section'>
@@ -397,4 +399,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(BotResponseEditorWrapper);
+export default withTranslation('templates')(connect(mapStateToProps)(BotResponseEditorWrapper));

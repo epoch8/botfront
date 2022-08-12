@@ -7,6 +7,7 @@ import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
 import React from 'react';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
+import { withTranslation } from "react-i18next";
 
 import { CorePolicySchema, CorePolicies as CorePolicyCollection } from '../../../api/core_policies';
 import { wrapMeteorCallback } from '../utils/Errors';
@@ -46,6 +47,7 @@ class CorePolicy extends React.Component {
     renderPolicies = () => {
         const { policies, projectId } = this.props;
         const { saved, showConfirmation, saving } = this.state;
+        const { t } = this.props;
         return (
             <AutoForm
                 disabled={saving}
@@ -66,7 +68,7 @@ class CorePolicy extends React.Component {
                         <NumField
                             data-cy='augmentation-factor'
                             name='augmentationFactor'
-                            label='Augmentation factor'
+                            label={t('Augmentation factor')}
                             disabled={!can('stories:w', projectId)}
                             defaultF
                         />
@@ -137,4 +139,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(PolicyContainer);
+export default withTranslation('settings')(connect(mapStateToProps)(PolicyContainer));

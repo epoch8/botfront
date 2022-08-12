@@ -8,6 +8,7 @@ import {
     stringPayloadToObject,
     objectPayloadToString,
 } from '../../../../lib/story.utils';
+import { withTranslation } from "react-i18next";
 
 function ResponseButtonEditor({
     value: {
@@ -27,6 +28,7 @@ function ResponseButtonEditor({
         { text: 'Postback', value: 'postback' },
         { text: 'Web URL', value: 'web_url' },
     ];
+    const { t } = this.props;
     return (
         <Form className='response-button-editor'>
             <Grid columns={16} textAlign='left'>
@@ -37,7 +39,7 @@ function ResponseButtonEditor({
                                 label='Button title'
                                 data-cy='enter-button-title'
                                 autoFocus
-                                placeholder='Button title'
+                                placeholder={t('Button title')}
                                 onChange={(_event, { value }) => {
                                     const updatedVal = { title: value, type };
                                     if (type === 'web_url') updatedVal.url = url;
@@ -94,14 +96,14 @@ function ResponseButtonEditor({
                                 basic
                                 color='red'
                                 icon='trash'
-                                content='Delete button'
+                                content={t('Delete button')}
                                 type='button'
                                 onClick={onDelete}
                             />
                         )}
                         <Button
                             primary
-                            content='Save'
+                            content={t('Save')}
                             data-cy='save-button'
                             disabled={!valid}
                             onClick={onClose}
@@ -131,4 +133,4 @@ ResponseButtonEditor.defaultProps = {
     noButtonTitle: false,
 };
 
-export default ResponseButtonEditor;
+export default withTranslation('stories')(ResponseButtonEditor);

@@ -18,6 +18,7 @@ import IntentReport from './IntentReport';
 import EntityReport from './EntityReport';
 import { InputButtons } from './InputButtons.jsx';
 import { Evaluations } from '../../../../api/nlu_evaluation';
+import { withTranslation } from "react-i18next";
 import UploadDropzone from '../../utils/UploadDropzone';
 import { Loading } from '../../utils/Utils';
 import { can } from '../../../../lib/scopes';
@@ -144,6 +145,7 @@ class Evaluation extends React.Component {
 
     loadData(data) {
         const { loading } = this.state;
+        const { t } = this.props;
         const textData = toUtf8(Buffer.from(data));
         let parsed;
         try {
@@ -151,7 +153,7 @@ class Evaluation extends React.Component {
         } catch (e) {
             parsed = readNluFromCsv(textData);
             if (!parsed) {
-                Alert.error('Error: you must upload a JSON or CSV file with the same format as an export', {
+                Alert.error(t('Error: you must upload a JSON or CSV file with the same format as an export'), {
                     position: 'top',
                     timeout: 'none',
                 });
@@ -160,7 +162,7 @@ class Evaluation extends React.Component {
         }
         if (/\ufffd/.test(parsed)) {
             // out of range char test
-            Alert.error('Error: invalid file encoding', {
+            Alert.error(t('Error: invalid file encoding'), {
                 position: 'top',
                 timeout: 'none',
             });
@@ -170,6 +172,7 @@ class Evaluation extends React.Component {
     }
 
     render() {
+        const { t } = this.props;
         const {
             validationRender,
             evaluation,
@@ -201,7 +204,7 @@ class Evaluation extends React.Component {
                             <>
                                 <div id='test_set_buttons'>
                                     <InputButtons
-                                        labels={['Use training set', 'Upload test set', 'Use validated examples']}
+                                        labels={[t('Use training set'), t('Upload test set'), t('Use validated examples')]}
                                         operations={[this.useTrainingSet.bind(this), this.useTestSet.bind(this), this.useValidatedSet.bind(this)]}
                                         defaultSelection={defaultSelection}
                                         onDefaultLoad={defaultSelection === 2 ? this.evaluate : () => {}}
@@ -267,4 +270,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(EvaluationContainer);
+export default withTranslation('nlu')(connect(mapStateToProps)(EvaluationContainer));

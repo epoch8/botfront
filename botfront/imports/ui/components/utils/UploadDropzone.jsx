@@ -1,13 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { NativeTypes } from 'react-dnd-html5-backend-cjs';
 import { useDrop } from 'react-dnd-cjs';
+import { withTranslation } from "react-i18next";
 import {
     Message, Icon, Button, Segment,
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { Loading } from './Utils';
 
-export default function UploadDropzone(props) {
+function UploadDropzone(props) {
     const {
         onDropped, accept: acceptString = '', onError, successMessage, success, loading, binary, maxSizeInMb,
     } = props;
@@ -23,6 +24,7 @@ export default function UploadDropzone(props) {
         setProcessing(true);
 
         const accept = acceptString.split(/,\s*/);
+        const { t } = this.props;
         let acceptedFiles = files.filter(f => accept.includes(f.type) || accept.some(t => f.name.match(new RegExp(`${t}$`))));
         let rejectedFiles = files.filter(f => !acceptedFiles.includes(f));
         if (!acceptString) {
@@ -30,10 +32,10 @@ export default function UploadDropzone(props) {
             rejectedFiles = [];
         }
 
-        if (!acceptedFiles.length && !rejectedFiles.length) return handleError('Sorry, could not read you file');
-        if (rejectedFiles.length) return handleError(`${rejectedFiles[0].name} is not of type: ${accept}`);
-        if (acceptedFiles.length > 1) return handleError('Please upload only one file');
-        if (acceptedFiles[0].size > maxSizeInMb * 1000000) return handleError(`Your file should not exceed ${maxSizeInMb}Mb.`);
+        if (!acceptedFiles.length && !rejectedFiles.length) return handleError(t('Sorry, could not read you file'));
+        if (rejectedFiles.length) return handleError(t(`${rejectedFiles[0].name} is not of type: ${accept}`));
+        if (acceptedFiles.length > 1) return handleError(t('Please upload only one file'));
+        if (acceptedFiles[0].size > maxSizeInMb * 1000000) return handleError(t(`Your file should not exceed ${maxSizeInMb}Mb.`));
 
         const file = acceptedFiles[0];
 
@@ -47,8 +49,8 @@ export default function UploadDropzone(props) {
             }
         };
 
-        reader.onabort = () => handleError('file reading was aborted');
-        reader.onerror = () => handleError('file reading has failed');
+        reader.onabort = () => handleError(t('file reading was aborted'));
+        reader.onerror = () => handleError(t('file reading has failed'));
         return binary ? reader.readAsArrayBuffer(file) : reader.readAsText(file);
     };
 
@@ -60,6 +62,7 @@ export default function UploadDropzone(props) {
             canDrop: monitor.canDrop(),
         }),
     });
+    const { t } = this.props;
 
     return (
         <Loading loading={loading || processing}>
@@ -76,17 +79,17 @@ export default function UploadDropzone(props) {
                         <Button
                             primary
                             basic
-                            content='Upload file'
+                            content={t('Upload file')}
                             size='small'
                             onClick={() => fileField.current.click()}
                         />
-                        <span className='small grey'>or drop a file to upload</span>
+                        <span className='small grey'>t(or drop a file to upload)</span>
                     </div>
                 </Segment>
             ) : (
                 <Message
                     positive
-                    header='Success!'
+                    header={t('Success!')}
                     icon='check circle'
                     content={successMessage}
                 />
@@ -105,7 +108,7 @@ UploadDropzone.propTypes = {
     binary: PropTypes.bool,
     maxSizeInMb: PropTypes.number,
 };
-
+//Todo: translate
 UploadDropzone.defaultProps = {
     successMessage: 'Your file is ready',
     success: false,
@@ -114,3 +117,5 @@ UploadDropzone.defaultProps = {
     onError: console.log,
     maxSizeInMb: 2,
 };
+
+export default withTranslation('utils')(UploadDropzone);

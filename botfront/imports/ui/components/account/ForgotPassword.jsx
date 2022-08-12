@@ -64,8 +64,7 @@ class ForgotPassword extends React.Component {
         );
     };
 
-    renderSent  = () => {
-        const { t } = this.props;
+    renderSent = () => {
         <Message positive header={t('Check your email inbox')} content={t('If you have an account with us, you will find the instructions to reset your password in your inbox')} />;
     };
 

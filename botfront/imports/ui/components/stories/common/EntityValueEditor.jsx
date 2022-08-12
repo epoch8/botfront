@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Input, Button, Label } from 'semantic-ui-react';
 import IconButton from '../../common/IconButton';
+import { withTranslation } from "react-i18next";
 
 function EntityValueEditor({
     entity,
@@ -12,6 +13,7 @@ function EntityValueEditor({
 }) {
     const exists = field => field in entity && entity[field] !== null;
     const capitalize = key => key.charAt(0).toUpperCase() + key.slice(1);
+    const { t } = this.props;
 
     const renderField = key => (
         <div className='side-by-side middle entity-value-input-container'>
@@ -48,7 +50,7 @@ function EntityValueEditor({
     const renderAddButton = key => (
         <Button
             onClick={() => onChange({ ...entity, [key]: '' })}
-            content={capitalize(key)}
+            content={t(capitalize(key))}
             icon='add'
             disabled={disabled}
             data-cy={`add-entity-${key}`}
@@ -96,4 +98,4 @@ EntityValueEditor.defaultProps = {
 };
 
 
-export default EntityValueEditor;
+export default withTranslation('stories')(EntityValueEditor);

@@ -6,6 +6,7 @@ import React from 'react';
 
 import StepAccount from './StepAccount';
 import { wrapMeteorCallback } from '../utils/Errors';
+import { withTranslation } from "react-i18next";
 
 class SetupSteps extends React.Component {
     constructor(props) {
@@ -60,13 +61,14 @@ class SetupSteps extends React.Component {
 
     render() {
         const { loading } = this.state;
+        const { t } = this.props;
         return (
             <Container>
                 <Segment disabled={loading}>
                     <Step.Group fluid size='large'>
                         <Step
                             active
-                            title='Create your admin account'
+                            title={t('Create your admin account')}
                             onClick={this.handleAccountClick}
                             data-cy='account-step'
                         />
@@ -82,4 +84,4 @@ SetupSteps.propTypes = {
     router: PropTypes.object.isRequired,
 };
 
-export default SetupSteps;
+export default withTranslation('setup')(SetupSteps);

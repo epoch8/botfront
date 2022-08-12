@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Menu, Popup } from 'semantic-ui-react';
 
 import TextInput from './TextInput';
+import { withTranslation } from "react-i18next";
 
 function SearchMenuItem({ name, activeName, onItemClick }) {
     function onClick() {
@@ -67,7 +68,7 @@ SearchMenu.defaultProps = {
     onItemClick: () => {},
 };
 
-export default class InlineSearch extends React.Component {
+class InlineSearch extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -146,19 +147,20 @@ export default class InlineSearch extends React.Component {
     render() {
         const { text, data, searchPrompt, placeholder } = this.props;
         const { menuOpen, text: activeText } = this.state;
+        const { t } = this.props;
 
         return (
             <Popup
                 className='inline_search fill_contents'
                 trigger={(
                     <div className='trigger' ref={(node) => { this.inputContainer = node; }}>
-                        <TextInput text={activeText} onTextChange={this.onTextChange} onEnter={this.onEnter} placeholder={placeholder} staticText={text} />
+                        <TextInput text={t(activeText)} onTextChange={this.onTextChange} onEnter={this.onEnter} placeholder={placeholder} staticText={t(text)} />
                     </div>
                 )}
                 content={(
                     <SearchMenu
-                        activeText={activeText}
-                        text={text}
+                        activeText={t(activeText)}
+                        text={t(text)}
                         data={data}
                         onItemClick={this.onItemClick}
                         searchPrompt={searchPrompt}
@@ -187,3 +189,5 @@ InlineSearch.defaultProps = {
     searchPrompt: 'Search',
     placeholder: false,
 };
+
+export default withTranslation('utilds')(InlineSearch);

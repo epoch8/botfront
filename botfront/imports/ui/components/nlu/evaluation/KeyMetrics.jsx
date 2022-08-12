@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon, Popup, Statistic } from 'semantic-ui-react';
+import { withTranslation } from "react-i18next";
 
-export default class KeyMetrics extends React.PureComponent {
+class KeyMetrics extends React.PureComponent {
     formatStat = (stat) => {
         const toFloat = parseFloat(stat);
         return `${(toFloat * 100).toFixed(2)}%`;
@@ -10,21 +11,22 @@ export default class KeyMetrics extends React.PureComponent {
 
     render() {
         const { f1, precision, accuracy } = this.props;
+        const { t } = this.props;
         const data = [
             {
-                label: 'F1-Score',
+                label: t('F1-Score'),
                 value: f1,
-                help: 'A general measure of the quality of your model based on precision and accuracy',
+                help: t('A general measure of the quality of your model based on precision and accuracy'),
             },
             {
-                label: 'Precision',
+                label: t('Precision'),
                 value: precision,
-                help: 'On 100 predictions for label, how many were actually labeled as such in test set',
+                help: t('On 100 predictions for label, how many were actually labeled as such in test set'),
             },
             {
-                label: 'Accuracy',
+                label: t('Accuracy'),
                 value: accuracy,
-                help: 'On 100 instances of label in test set, how many were actually predicted',
+                help: t('On 100 instances of label in test set, how many were actually predicted'),
             },
         ];
 
@@ -49,3 +51,5 @@ KeyMetrics.propTypes = {
     accuracy: PropTypes.number.isRequired,
     precision: PropTypes.number.isRequired,
 };
+
+export default withTranslation('nlu')(KeyMetrics);

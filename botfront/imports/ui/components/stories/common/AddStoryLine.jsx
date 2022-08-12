@@ -7,6 +7,7 @@ import SlotPopupContent from './SlotPopupContent';
 import DashedButton from './DashedButton';
 import UserUtterancePopupContent from './UserUtterancePopupContent';
 import { ConversationOptionsContext } from '../Context';
+import { withTranslation } from "react-i18next";
 
 const AddStoryLine = React.forwardRef((props, ref) => {
     const {
@@ -31,6 +32,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
     const [loopMenuOpen, setLoopMenuOpen] = useState(false);
     const [actionName, setActionName] = useState('');
     const { forms = [] } = useContext(ConversationOptionsContext);
+    const { t } = this.props;
 
     const handleCreateLoopLines = (name = null, activate) => {
         if (typeof name === 'string' && !name.trim()) return;
@@ -51,7 +53,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
             <Dropdown.Item>
                 <Input
                     autoFocus
-                    placeholder='Type in loop action name...'
+                    placeholder={t('Type in loop action name...')}
                     data-cy='enter-loop-name'
                     onClick={e => e.stopPropagation()}
                     value={actionName}
@@ -81,7 +83,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
                     <Dropdown
                         open={loopMenuOpen === 'activate'}
                         onOpen={() => setLoopMenuOpen('activate')}
-                        text='Activate loop'
+                        text={t('Activate loop')}
                         fluid
                         data-cy='activate-loop'
                         closeOnBlur={false}
@@ -95,7 +97,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
                 <Dropdown
                     open={loopMenuOpen === 'active'}
                     onOpen={() => setLoopMenuOpen('active')}
-                    text='Active loop'
+                    text={t('Active loop')}
                     fluid
                     data-cy='active-loop'
                     closeOnBlur={false}
@@ -105,7 +107,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
                 </Dropdown>
             </Dropdown.Item>
             <Dropdown.Item
-                content='No active loop'
+                content={t('No active loop')}
                 onClick={() => handleCreateLoopLines()}
                 data-cy='no-active-loop'
             />
@@ -222,4 +224,4 @@ AddStoryLine.defaultProps = {
     trackOpenMenu: () => {},
 };
 
-export default AddStoryLine;
+export default withTranslation('stories')(AddStoryLine);
