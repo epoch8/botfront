@@ -5,10 +5,10 @@ import { Menu, Tab } from 'semantic-ui-react';
 
 import { connect } from 'react-redux';
 
+import { withTranslation } from 'react-i18next';
 import ImportRasaFiles from './ImportRasaFiles.jsx';
 import ExportProject from './ExportProject.jsx';
 import { can } from '../../../lib/scopes';
-import {withTranslation} from "react-i18next";
 
 class ImportExportProject extends React.Component {
     constructor (props) {
@@ -39,9 +39,10 @@ class ImportExportProject extends React.Component {
         const { loading } = this.state;
         const { projectId } = this.props;
         const panes = [];
+        const { t } = this.props;
         if (can('import:x', projectId)) {
             panes.push({
-                menuItem: this.renderMenuItem('Import'), // Todo: translate
+                menuItem: this.renderMenuItem(t('Import')),
                 render: () => (
                     <Tab.Pane loading={loading} key='Import' data-cy='import-project-tab'>
                         <ImportRasaFiles />
@@ -51,7 +52,7 @@ class ImportExportProject extends React.Component {
         }
         if (can('export:x', projectId)) {
             panes.push({
-                menuItem: this.renderMenuItem('Export'), // Todo: translate
+                menuItem: this.renderMenuItem(t('Export')),
                 render: () => (
                     <Tab.Pane loading={loading} key='Export' data-cy='export-project-tab'>
                         <ExportProject setLoading={this.setLoading} />

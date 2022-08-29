@@ -6,11 +6,11 @@ import {
     TextArea,
     Tab,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import { upsertActivity as upsertActivityMutation } from './mutations';
 import apolloClient from '../../../../startup/client/apollo';
 import { ProjectContext } from '../../../layouts/context';
 import { cleanDucklingFromExamples } from '../../../../lib/utils';
-import { withTranslation } from "react-i18next";
 
 export async function populateActivity(instance, examples, projectId, language, callback) {
     return Meteor.call('rasa.parse', instance, examples, async (err, activity) => {
@@ -43,14 +43,14 @@ function ActivityInsertions() {
     const MAX_LINES = 50;
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);
-    // Todo: translate. Какая то странная ошибка с props
-    const { t } = this.props;
+
+    const { t } = useTranslation('nlu');
 
     const onTextChanged = (e, { value }) => setText(value.split('\n').slice(0, MAX_LINES).join('\n'));
 
     const saveExamples = () => {
         setLoading(true);
-        
+
         const examples = text.split('\n')
             .filter(t => !t.match(/^\s*$/))
             .map(t => ({ text: t, lang: language }));
@@ -80,4 +80,4 @@ function ActivityInsertions() {
 
 ActivityInsertions.propTypes = {};
 
-export default withTranslation('nlu')(ActivityInsertions);
+export default ActivityInsertions;

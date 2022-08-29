@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Tab, Button, Icon } from 'semantic-ui-react';
 import { saveAs } from 'file-saver';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 import KeyMetrics from './KeyMetrics';
 import ReportTable from './ReportTable';
@@ -13,16 +13,15 @@ import { reportToCsv } from '../../../../lib/nlu.utils';
 
 class IntentReport extends React.Component {
     getPanes() {
-        const { report, predictions } = this.props;
-        const { t } = this.props;
+        const { report, predictions, t } = this.props;
         const tabs = [{
-            menuItem: 'Detailed Report',
+            menuItem: t('Detailed Report'),
             render: () => <ReportTable report={report} labelType='intent' />,
         }];
         if (predictions && predictions.length) {
             tabs.push(
                 {
-                    menuItem: 'Misclassifications',
+                    menuItem: t('Misclassifications'),
                     render: () => <PredictionTable predictions={predictions} labelType='intent' />,
                 },
             );
@@ -38,8 +37,10 @@ class IntentReport extends React.Component {
     }
 
     render() {
-        const { accuracy, precision, f1_score: f1 } = this.props;
-        // Todo: translate
+        const {
+            accuracy, precision, t, f1_score: f1,
+        } = this.props;
+
         return (
             <div>
                 <br />
@@ -52,7 +53,7 @@ class IntentReport extends React.Component {
                 <br />
                 <Button type='submit' basic fluid color='blue' onClick={() => this.exportReport()} data-cy='export-evaluation-results'>
                     <Icon name='download' />
-                    Download report
+                    {t('Download report')}
                 </Button>
                 <br />
                 <Tab

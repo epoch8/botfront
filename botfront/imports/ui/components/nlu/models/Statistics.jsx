@@ -5,13 +5,13 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { saveAs } from 'file-saver';
+import { useTranslation } from 'react-i18next';
 import { Stories as StoriesCollection } from '../../../../api/story/stories.collection';
 import { Loading } from '../../utils/Utils';
 import IntentLabel from '../common/IntentLabel';
 import DataTable from '../../common/DataTable';
 import { ProjectContext } from '../../../layouts/context';
 import { GET_INTENT_STATISTICS, GET_EXAMPLE_COUNT } from './graphql';
-import {withTranslation} from "react-i18next";
 
 
 const Statistics = (props) => {
@@ -23,7 +23,7 @@ const Statistics = (props) => {
     const { data, loading, refetch } = useQuery(
         GET_INTENT_STATISTICS, { variables: { projectId, language: workingLanguage } },
     );
-    const { t } = this.props;
+    const { t } = useTranslation('nlu');
 
     // always refetch on first page load
     useEffect(() => { if (refetch) refetch(); }, [refetch, workingLanguage]);
@@ -103,7 +103,7 @@ const Statistics = (props) => {
         },
         ...countColumns,
     ];
-    // Todo: translate
+
     return (
         <Loading loading={!ready || loading}>
             <div className='side-by-side'>{renderCards()}</div>
@@ -112,7 +112,7 @@ const Statistics = (props) => {
                 ? (
                     <div className='glow-box extra-padding'>
                         <div className='side-by-side'>
-                            <h3>Examples per intent</h3>
+                            <h3>{t('Examples per intent')}</h3>
                             <Button onClick={downloadData} disabled={!(dataToDisplay || []).length} icon='download' basic />
                         </div>
                         <br />
@@ -158,4 +158,4 @@ const mapStateToProps = state => ({
     workingLanguage: state.settings.get('workingLanguage'),
 });
 
-export default withTranslation('nlu')(connect(mapStateToProps)(StatisticsWithStoryCount));
+export default connect(mapStateToProps)(StatisticsWithStoryCount);

@@ -4,14 +4,14 @@ import {
 import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 
 import { wrapMeteorCallback } from '../utils/Errors';
 import SlotEditor from './SlotEditor';
 import { can } from '../../../lib/scopes';
 import { slotSchemas } from '../../../api/slots/slots.schema';
 import { ConversationOptionsContext } from './Context';
-import { withTranslation } from "react-i18next";
-// Todo: translate
+
 class Slots extends React.Component {
     constructor(props) {
         super(props);
@@ -88,7 +88,7 @@ class Slots extends React.Component {
     static contextType = ConversationOptionsContext;
 
     render() {
-        const { slots, projectId } = this.props;
+        const { slots, projectId, t } = this.props;
         const { newSlot, slotsUsedInForms } = this.state;
         const canEditSlots = can('stories:w', projectId);
         return (
@@ -132,7 +132,7 @@ class Slots extends React.Component {
                                         data-cy='add-slot'
                                     >
                                         <Dropdown.Menu>
-                                            <Dropdown.Header content='Choose a slot type' />
+                                            <Dropdown.Header content={t('Choose a slot type')} />
                                             {this.getSlotOptions().map(
                                                 option => (
                                                     <Dropdown.Item
@@ -149,7 +149,7 @@ class Slots extends React.Component {
                                     </Dropdown>
                                 </Button.Group>
                             )}
-                            content='Add slot'
+                            content={t('Add slot')}
                         />
                     </Container>
                 )}

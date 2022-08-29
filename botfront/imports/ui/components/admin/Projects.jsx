@@ -23,7 +23,7 @@ class ProjectsList extends React.Component {
 
     getColumns = () => {
         const { t } = this.props;
-        [
+        return [
             {
                 id: 'name',
                 accessor: 'name',
@@ -68,7 +68,7 @@ class ProjectsList extends React.Component {
                     <Menu.Menu position='right'>
                         {can('projects:w') && (
                             <Menu.Item>
-                                
+
                                 <div data-cy='new-project-trigger'>
                                     <Button
                                         data-cy='new-project'

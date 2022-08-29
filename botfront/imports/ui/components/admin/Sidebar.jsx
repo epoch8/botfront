@@ -23,37 +23,37 @@ class AdminSidebar extends React.Component {
             <Menu vertical inverted pointing style={style}>
                 <Menu.Item>
                     <Menu.Header as='h2' name='nlu'>
-                        t{("Admin")}
+                        {t('Admin')}
                     </Menu.Header>
                     {can('projects:r', { anyScope: true }) && (
                         <Link to='/admin/projects'>
-                            <Menu.Item name='Projects' data-cy='projects-link'> {t("Projects")}</Menu.Item>
+                            <Menu.Item name='Projects' data-cy='projects-link'> {t('Projects')}</Menu.Item>
                         </Link>
                     )}
                     {can('users:r', { anyScope: true }) && (
                         <Link to='/admin/users' data-cy='users-link'>
-                            <Menu.Item name='Users'> {t("Users")}</Menu.Item>
+                            <Menu.Item name='Users'> {t('Users')}</Menu.Item>
                         </Link>
                     )}
                     {can('global-settings:r', { anyScope: true })
                     && (
                         <Link to='/admin/settings'>
-                            <Menu.Item name='Settings' data-cy='global-settings-link'> {t("Settings")}</Menu.Item>
+                            <Menu.Item name='Settings' data-cy='global-settings-link'> {t('Settings')}</Menu.Item>
                         </Link>
                     )
                     }
                     {can('roles:r', { anyScope: true })
                         && (
                             <Link to='/admin/roles'>
-                                <Menu.Item name='Roles' data-cy='roles-link'> {t("Roles")}</Menu.Item>
+                                <Menu.Item name='Roles' data-cy='roles-link'> {t('Roles')}</Menu.Item>
                             </Link>
                         )
                     }
                 </Menu.Item>
                 <Menu.Item>
-                    <Menu.Header>{t("Account")}</Menu.Header>
+                    <Menu.Header>{t('Account')}</Menu.Header>
                     <Link to='/login'>
-                        <Menu.Item name='Sign out'>{t("Sign out")}</Menu.Item>
+                        <Menu.Item name='Sign out'>{t('Sign out')}</Menu.Item>
                     </Link>
                 </Menu.Item>
             </Menu>

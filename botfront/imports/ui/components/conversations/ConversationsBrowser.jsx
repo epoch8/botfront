@@ -15,7 +15,6 @@ import ConversationFilters from './ConversationFilters';
 import { updateIncomingPath } from '../incoming/incoming.utils';
 import { ConversationBrowserContext } from './context';
 import { wrapMeteorCallback } from '../utils/Errors';
-import { useTranslation } from "react-i18next";
 
 const LS_LABELING_KEY = 'labeling';
 
@@ -76,8 +75,6 @@ function ConversationsBrowser(props) {
         setNewLabels({});
         setNewHasEventLabels({});
     }, [trackers]);
-
-    const { t } = useTranslation('conversations');
 
     function optimisticRemoveMarker(id) {
         setOptimisticRemoveReadMarker(new Set([...optimisticRemoveReadMarker, id]));

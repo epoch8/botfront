@@ -11,6 +11,7 @@ import {
 import 'react-select/dist/react-select.css';
 import { connect } from 'react-redux';
 import { debounce } from 'lodash';
+import { useTranslation } from 'react-i18next';
 import PageMenu from '../../utils/PageMenu';
 import { cleanDucklingFromExamples } from '../../../../lib/utils';
 import { NLUModels } from '../../../../api/nlu_model/nlu_model.collection';
@@ -38,7 +39,6 @@ import {
     useInsertExamples,
 } from './hooks';
 import { can } from '../../../../lib/scopes';
-import {withTranslation} from "react-i18next";
 
 function NLUModel(props) {
     const { changeWorkingLanguage } = props;
@@ -84,7 +84,7 @@ function NLUModel(props) {
     const [updateExamples] = useUpdateExamples(variables);
     const [insertExamples] = useInsertExamples(variables);
     const [selection, setSelection] = useState([]);
-    const { t } = this.props;
+    const { t } = useTranslation('nlu');
 
     const [activityLinkRender, setActivityLinkRender] = useState(
         (incomingState && incomingState.isActivityLinkRender) || false,
@@ -128,7 +128,7 @@ function NLUModel(props) {
     };
 
     const handleMenuItemClick = (e, { name }) => setActiveItem(name);
-    // Todo: translate
+
     const renderWarningMessageIntents = () => {
         if (!loadingExamples && intents.length < 2) {
             return (
@@ -137,7 +137,7 @@ function NLUModel(props) {
                     content={(
                         <div>
                             <Icon name='warning' />
-                            You need at least two distinct intents to train NLU
+                            {t('You need at least two distinct intents to train NLU')}
                         </div>
                     )}
                     info
@@ -189,7 +189,7 @@ function NLUModel(props) {
 
     if (!project) return null;
     if (!model) return null;
-    //Todo: translate
+    // Todo: translate
     return (
         <>
             {renderTopMenu()}
@@ -325,4 +325,4 @@ const mapDispatchToProps = {
     changeWorkingLanguage: setWorkingLanguage,
 };
 
-export default withTranslation('nlu')(connect(mapStateToProps, mapDispatchToProps)(NLUModel));
+export default connect(mapStateToProps, mapDispatchToProps)(NLUModel);

@@ -7,15 +7,77 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 // have a look at the Quick start guide
 // for passing in lng and translations on init
 import transENAccount from '../../public/locales/en/account.json';
+import transENAdmin from '../../public/locales/en/admin.json';
+import transENAnalytics from '../../public/locales/en/analytics.json';
+import transENConversations from '../../public/locales/en/conversations.json';
+import transENExampleEditor from '../../public/locales/en/example_editor.json';
+import transENForms from '../../public/locales/en/forms.json';
+import transENIncoming from '../../public/locales/en/incoming.json';
+import transENNlu from '../../public/locales/en/nlu.json';
+import transENProject from '../../public/locales/en/project.json';
+import transENSettings from '../../public/locales/en/settings.json';
+import transENSetup from '../../public/locales/en/setup.json';
+import transENStories from '../../public/locales/en/stories.json';
+import transENSynonyms from '../../public/locales/en/synonyms.json';
+import transENTemplates from '../../public/locales/en/templates.json';
+import transENTranslation from '../../public/locales/en/translation.json';
+import transENUtils from '../../public/locales/en/utils.json';
+
 import transRUAccount from '../../public/locales/ru/account.json';
+import transRUAdmin from '../../public/locales/ru/admin.json';
+import transRUAnalytics from '../../public/locales/ru/analytics.json';
+import transRUConversations from '../../public/locales/ru/conversations.json';
+import transRUExampleEditor from '../../public/locales/ru/example_editor.json';
+import transRUForms from '../../public/locales/ru/forms.json';
+import transRUIncoming from '../../public/locales/ru/incoming.json';
+import transRUNlu from '../../public/locales/ru/nlu.json';
+import transRUProject from '../../public/locales/ru/project.json';
+import transRUSettings from '../../public/locales/ru/settings.json';
+import transRUSetup from '../../public/locales/ru/setup.json';
+import transRUStories from '../../public/locales/ru/stories.json';
+import transRUSynonyms from '../../public/locales/ru/synonyms.json';
+import transRUTemplates from '../../public/locales/ru/templates.json';
+import transRUTranslation from '../../public/locales/ru/translation.json';
+import transRUUtils from '../../public/locales/ru/utils.json';
+
 
 // the translations
 const resources = {
     en: {
         account: transENAccount,
+        admin: transENAdmin,
+        analytics: transENAnalytics,
+        conversations: transENConversations,
+        example_editor: transENExampleEditor,
+        forms: transENForms,
+        incoming: transENIncoming,
+        nlu: transENNlu,
+        project: transENProject,
+        settings: transENSettings,
+        setup: transENSetup,
+        stories: transENStories,
+        synonyms: transENSynonyms,
+        templates: transENTemplates,
+        translation: transENTranslation,
+        utils: transENUtils,
     },
     ru: {
         account: transRUAccount,
+        admin: transRUAdmin,
+        analytics: transRUAnalytics,
+        conversations: transRUConversations,
+        example_editor: transRUExampleEditor,
+        forms: transRUForms,
+        incoming: transRUIncoming,
+        nlu: transRUNlu,
+        project: transRUProject,
+        settings: transRUSettings,
+        setup: transRUSetup,
+        stories: transRUStories,
+        synonyms: transRUSynonyms,
+        templates: transRUTemplates,
+        translation: transRUTranslation,
+        utils: transRUUtils,
     },
 };
 resources['en-US'] = resources.en;

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import matchSorter from 'match-sorter';
 import ReactTable from 'react-table-v6';
 import { Label, Icon } from 'semantic-ui-react';
-import {withTranslation} from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 function PredictionTable(props) {
     const { labelType } = props;
@@ -12,8 +12,8 @@ function PredictionTable(props) {
         const { predictions } = props;
         return predictions.filter(pred => pred.predicted !== pred[labelType]);
     };
-    const { t } = this.props;
-    // Todo: translate
+    const { t } = useTranslation('nlu');
+
     const getPredictionsColumns = () => [
         {
             accessor: 'text',
@@ -29,7 +29,7 @@ function PredictionTable(props) {
         {
             id: labelType,
             accessor: r => r[labelType],
-            Header: t(`Correct ${labelType}`),
+            Header: `${t('Correct')} ${labelType}`,
             filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: [labelType] }),
             Cell: p => (
                 <div>
@@ -90,4 +90,4 @@ PredictionTable.propTypes = {
     labelType: PropTypes.string.isRequired,
 };
 
-export default withTranslation('nlu')(PredictionTable);
+export default PredictionTable;

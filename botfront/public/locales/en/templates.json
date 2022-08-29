@@ -1,0 +1,9 @@
+{
+  "the button will disappear when a new message is added to the conversation": "the button will disappear when a new message is added to the conversation",
+  "the button will remain visible and clickable": "the button will remain visible and clickable",
+  "Disable persistence": "Disable persistence",
+  "Enable persistence": "Enable persistence",
+  "Responses in forms cannot be renamed.": "Responses in forms cannot be renamed.",
+  "This response cannot be deleted because it is used in a story": "This response cannot be deleted because it is used in a story",
+  "Create a NLU model first": "Create a NLU model first"
+}

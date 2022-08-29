@@ -1,0 +1,18 @@
+{
+  "Commit and push": "Commit and push",
+  "Commit message": "Commit message",
+  "Push to remote": "Push to remote",
+  "Revert to previous": "Revert to previous",
+  "Deployment failed: the webhook parameters are missing": "Deployment failed: the webhook parameters are missing",
+  "Deployment failed: the deployment target is missing": "Deployment failed: the deployment target is missing",
+  "Cannot deploy, training failed": "Cannot deploy, training failed",
+  "Train": "Train",
+  "Rasa instance not reachable": "Rasa instance not reachable",
+  "Train NLU and stories from 1 focused story group.": "Train NLU and stories from 1 focused story group.",
+  "Sorry, could not read you file": "Sorry, could not read you file",
+  "Please upload only one file": "Please upload only one file",
+  "file reading was aborted": "file reading was aborted",
+  "file reading has failed": "file reading has failed",
+  "Upload file": "Upload file",
+  "Success!": "Success!"
+}

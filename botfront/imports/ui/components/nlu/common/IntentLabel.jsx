@@ -5,11 +5,11 @@ import PropTypes from 'prop-types';
 import {
     Icon, Popup, Input, Button, Modal, Item, Label, Dropdown,
 } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
 import UserUtteranceViewer from './UserUtteranceViewer';
 import { ProjectContext } from '../../../layouts/context';
 import { OOS_LABEL } from '../../constants.json';
 import DataTable from '../../common/DataTable';
-import { withTranslation } from "react-i18next";
 
 const Intent = React.forwardRef((props, ref) => {
     const {
@@ -25,13 +25,13 @@ const Intent = React.forwardRef((props, ref) => {
         multiple,
         width,
         onlyDataTable,
+        t,
     } = props;
     const { getCanonicalExamples } = useContext(ProjectContext);
     const [popupOpen, setPopupOpen] = useState(false);
     const [typeInput, setTypeInput] = useState('');
     const labelRef = useRef();
     const tableRef = useRef();
-    const { t } = this.props;
     const showReset = allowEditing && enableReset && ((value && value !== OOS_LABEL) || detachedModal);
 
     const getIntentsFromValue = () => {

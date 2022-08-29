@@ -27,7 +27,7 @@ function SequenceSelector({
     function switchLabel(index, exclude) {
         const newSequence = sequence;
         newSequence[index] = { ...newSequence[index], excluded: exclude };
-        
+
         onChange([...newSequence]);
     }
 
@@ -119,7 +119,7 @@ function SequenceSelector({
                     }}
                 />
             )}
-        
+
             </Dropdown.Menu>
         );
     };
@@ -157,6 +157,13 @@ function SequenceSelector({
                     </Dropdown>
                 </Dropdown.Item>
             )}
+            {/* {allowedEventTypes.includes('conversation-label') && (
+                <Dropdown.Item className='dropdown-step' key='slots-dropdown-item'>
+                    <Dropdown scrolling open={dropdownOpen === 'slot'} text='Conversation labels' fluid className='sequence-addition' onClick={() => setDropdownOpen('slot')} data-cy='slot-event-dropdown'>
+                        {renderContent('slot')}
+                    </Dropdown>
+                </Dropdown.Item>
+            )} */}
         </Dropdown.Menu>
     );
 
@@ -269,7 +276,7 @@ SequenceSelector.defaultProps = {
     sequence: [],
     actionOptions: [],
     slotOptions: [],
-    allowedEventTypes: ['slot', 'intent', 'action'],
+    allowedEventTypes: ['slot', 'intent', 'action', 'conversation-label'],
     bordered: false,
     enableExclusions: true,
     width: 14,

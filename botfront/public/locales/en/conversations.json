@@ -1,0 +1,22 @@
+{
+  "полный ответ": "полный ответ",
+  "нет сценария": "нет сценария",
+  "ошибка распознавания": "ошибка распознавания",
+  "сложная формулировка": "сложная формулировка",
+  "мусор": "мусор",
+  "баг в сценарии": "баг в сценарии",
+  "No events to show": "No events to show",
+  "check debug mode for non-dialogue events.": "check debug mode for non-dialogue events.",
+  "check JSON mode to view the full tracker object.": "check JSON mode to view the full tracker object.",
+  "Apply": "Apply",
+  "Download results (JSON)": "Download results (JSON)",
+  "time elapsed between the first and last message in seconds": "time elapsed between the first and last message in seconds",
+  "unique identifier": "unique identifier",
+  "Something went wrong, the conversation was not deleted": "Something went wrong, the conversation was not deleted",
+  "Запрос удовлетворён": "Запрос удовлетворён",
+  "Провал": "Провал",
+  "Непонятно": "Непонятно",
+  "Мусор": "Мусор",
+  "Labeling": "Labeling",
+  "This will delete all the slot settings associated with this form": "This will delete all the slot settings associated with this form"
+}

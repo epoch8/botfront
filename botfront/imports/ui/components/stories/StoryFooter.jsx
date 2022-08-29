@@ -9,11 +9,11 @@ import {
     Checkbox,
 } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 import StoryPathPopup from './StoryPathPopup.jsx';
 import { ConversationOptionsContext } from './Context';
 import { can } from '../../../lib/scopes';
-import { withTranslation } from "react-i18next";
-//Todo: translate
+
 class StoryFooter extends React.Component {
     constructor(props) {
         super(props);
@@ -94,7 +94,7 @@ class StoryFooter extends React.Component {
 
 
     renderContinue = () => {
-        const { canContinue, disableContinue } = this.props;
+        const { canContinue, disableContinue, t } = this.props;
         if (disableContinue) {
             return <></>;
         }
@@ -102,14 +102,14 @@ class StoryFooter extends React.Component {
             return (
                 <Menu.Item className='footer-option-button' onClick={this.handlerContinueClick}>
                     <Icon name='arrow alternate circle right outline' color='blue' />
-                    Connect
+                    {t('Connect')}
                 </Menu.Item>
             );
         }
         return (
             <Menu.Item className='footer-option-button' onClick={this.handlerContinueClick}>
                 <Icon className='long' name='arrow alternate circle right outline' color='blue' />
-                Continue To Linked Story
+                {t('Continue To Linked Story')}
             </Menu.Item>
         );
     }
@@ -119,6 +119,7 @@ class StoryFooter extends React.Component {
             canBranch,
             fragment,
             destinationStory,
+            t,
         } = this.props;
         if (destinationStory || fragment.type === 'rule') return null;
         return (
@@ -134,7 +135,7 @@ class StoryFooter extends React.Component {
                     name='code branch'
                     color={this.selectIconColor(canBranch)}
                 />
-                Branch Story
+                {t('Branch Story')}
             </Menu.Item>
         );
     }
@@ -164,6 +165,7 @@ class StoryFooter extends React.Component {
             fragment,
             destinationStory,
             onDestinationStorySelection,
+            t,
         } = this.props;
         const { stories } = this.context;
         if (!canBranch || fragment.type === 'rule') return null;
@@ -180,9 +182,9 @@ class StoryFooter extends React.Component {
                     name='arrow right'
                     color='green'
                 />
-                Link&nbsp;to:
+                {t('Link&nbsp;to:')}
                 <Dropdown
-                    placeholder='Select story'
+                    placeholder={t('Select story')}
                     value={destinationStory ? destinationStory._id : ''}
                     fluid
                     search
@@ -250,4 +252,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('stories')(connect(mapStateToProps)(StoryFooter));
+export default connect(mapStateToProps)(withTranslation('stories')(StoryFooter));
