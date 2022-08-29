@@ -5,6 +5,8 @@ import {
     updateConversationStatus,
     deleteConversation,
     getIntents,
+    updateConversationLabel,
+    labelEvent,
 } from '../mongo/conversations';
 import { checkIfCan } from '../../../../lib/scopes';
 import { auditLog } from '../../../../../server/logger';
@@ -81,6 +83,16 @@ export default {
                 resType: 'conversation',
             });
             return { success: response.ok === 1 };
+        },
+        async setConversationLabel(_, args, context) {
+            checkIfCan('incoming:r', args.projectId, context.user._id);
+            const response = await updateConversationLabel(args.id, args.label || null, context.user._id);
+            return { success: response.ok === 1 };
+        },
+        async labelEvent(_, args, context) {
+            checkIfCan('incoming:r', args.projectId, context.user._id);
+            const response = await labelEvent(args.id, args.eventIndex, args.label || null, context.user._id);
+            return { success: response && (response.ok === 1) };
         },
         importConversations: async (_, args, __) => {
             const {

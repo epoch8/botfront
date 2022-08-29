@@ -1,7 +1,7 @@
 type Query {
     conversationsPage(
-        
-        projectId: String!, 
+
+        projectId: String!,
         """ Page requested (1 if you want all results)"""
         page: Int,
         """ The number of conversations per page (-1 for all results in one page) """
@@ -30,6 +30,8 @@ type Query {
         endDate: String
         """ unique identifier of the user"""
         userId: String
+        """ unique identifier of the conversation"""
+        conversationId: String
         """ filter conversation containing the listed intents/ actions goes with eventFilterOperator """
         eventFilter: [StepInput],
         """ String (default ‘or’, possible other value ‘and', 'inorder') type of filtering for intents/ actions filters """
@@ -38,7 +40,7 @@ type Query {
         userInitiatedConversations: Boolean,
         """" include stories that are start with a trigger intent """
         triggeredConversations: Boolean,
-       
+
     ): Pagination
     conversation(projectId: String!, id: String, senderId: String): ConversationContainer!
     intentsInConversations(projectId: String!): [String]
@@ -63,6 +65,8 @@ type Mutation {
     markAsRead(id: String!): updateResponse!
     updateStatus(id: String!, status: String): updateResponse!
     delete(id: String!): updateResponse!
+    setConversationLabel(id: String!, label: String): updateResponse!
+    labelEvent(id: String!, eventIndex: Int!, label: String): updateResponse!
     importConversations(
         conversations: [ConversationContainerInput]!
         projectId: String!
@@ -86,6 +90,14 @@ type ConversationContainer {
     createdAt: String
     env: String
     language: String
+    label: Label
+    hasLabeledEvent: Boolean
+}
+
+type Label {
+    value: Any
+    labeledAt: Float
+    userId: String
 }
 
 input ConversationContainerInput {

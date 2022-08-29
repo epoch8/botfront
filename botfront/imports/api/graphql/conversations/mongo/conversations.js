@@ -9,7 +9,7 @@ import { createEventsStep } from './eventFilter';
 const createSortObject = (sort) => {
     let fieldName;
     let order;
-    const sortObject = { };
+    const sortObject = {};
     switch (sort) {
     case 'updatedAt_ASC':
         fieldName = 'updatedAt';
@@ -61,7 +61,7 @@ const createMatchingSteps = ({
         },
         countMatchesPerConversation('$tracker.events'),
         // that part check the order of the elements in the sequence, and store then in a dedicated field if they match
-       
+
         {
             $set: {
                 matching: {
@@ -106,7 +106,7 @@ export const createFilterObject = ({
                 { 'tracker.events.confidence': { [mongo]: confidenceFilter } }],
         }];
     }
-   
+
     if (startDate && endDate) {
         filters.$and = dateRangeCondition(moment(startDate).unix(), moment(endDate).unix());
     }
@@ -133,6 +133,7 @@ export const getConversations = async ({
     startDate = null,
     endDate = null,
     userId = null,
+    conversationId = null,
     eventFilterOperator = 'or',
     eventFilter = null,
     userInitiatedConversations,
@@ -156,7 +157,7 @@ export const getConversations = async ({
         },
         'query',
     );
- 
+
 
     const sequenceMatchingSteps = createMatchingSteps({
         eventFilterOperator,
@@ -164,7 +165,7 @@ export const getConversations = async ({
     });
 
     const sortObject = createSortObject(sort);
-    
+
 
     let lengthFilterStages = [];
     if (xThanLength && lengthFilter > 0) {
@@ -223,10 +224,42 @@ export const getConversations = async ({
         ];
     }
 
+    const firstFilters = () => {
+        const filters = { projectId };
+        if (conversationId) filters._id = conversationId;
+        if (status.length > 0) filters.status = { $in: status };
+        if (env) filters.env = env;
+        if (env === 'development') {
+            filters.env = { $in: ['development', null] };
+        }
+        if (startDate && endDate) {
+            const startDateM = moment(startDate);
+            const endDateM = moment(endDate);
+            filters.$and = [
+                {
+                    $or: [
+                        { 'tracker.events.0.timestamp': { $lte: startDateM.unix() } },
+                        { 'tracker.events.0.timestamp': { $lte: endDateM.unix() } },
+                    ],
+                },
+                {
+                    $or: [
+                        { updatedAt: { $gte: startDateM.toDate() } },
+                        { updatedAt: { $gte: endDateM.toDate() } },
+                    ],
+                },
+            ];
+        }
+        return filters;
+    };
+
     const pages = pageSize > -1 ? pageSize : 1;
     const boundedPageNb = Math.min(pages, page);
     const limit = pageSize > -1 ? [{ $limit: pageSize }] : [];
     const aggregation = [
+        {
+            $match: firstFilters(),
+        },
         ...addFieldsForDateRange(),
         addFirstIntentField([], true),
         {
@@ -251,6 +284,13 @@ export const getConversations = async ({
                         $skip: (boundedPageNb - 1) * pageSize,
                     },
                     ...limit,
+                    {
+                        $addFields: {
+                            hasLabeledEvent: {
+                                $anyElementTrue: '$tracker.events.metadata.label.value',
+                            },
+                        },
+                    },
                 ],
                 pages: [
                     {
@@ -293,7 +333,7 @@ export const getIntents = async (projectId) => {
             projectId,
         }, 'intents',
     ).lean();
-    
+
     const intents = intentsOfConversation.map(conversation => conversation.intents);
     return Array.from(new Set(intents.flat()));
 };
@@ -305,3 +345,36 @@ export const updateConversationStatus = async (id, status) => (
 export const deleteConversation = async id => (
     Conversations.deleteOne({ _id: id }).exec()
 );
+
+export const updateConversationLabel = async (id, label, userId) => (
+    Conversations.updateOne(
+        { _id: id },
+        {
+            $set: {
+                label: {
+                    value: label,
+                    labeledAt: Date.now(),
+                    userId,
+                },
+            },
+        },
+    ).exec()
+);
+
+export const labelEvent = async (id, eventIndex, label, userId) => {
+    const index = parseInt(eventIndex, 10);
+    if (!index) return null;
+    const labeKkey = `tracker.events.${index}.metadata.label`;
+    return Conversations.updateOne(
+        { _id: id },
+        {
+            $set: {
+                [labeKkey]: {
+                    value: label,
+                    labeledAt: Date.now(),
+                    userId,
+                },
+            },
+        },
+    ).exec();
+};

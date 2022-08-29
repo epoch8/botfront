@@ -39,7 +39,7 @@ export const runAppolloServer = () => {
             if (user.username === 'EXTERNAL_CONSUMER' && !can('responses:r', null, user._id)) {
                 Meteor.roleAssignment.update(
                     { 'user._id': user._id },
-                    { user: { _id: user._id }, scope: null, inheritedRoles: [{ _id: 'responses:r' }] },
+                    { user: { _id: user._id }, scope: null, inheritedRoles: [{ _id: 'responses:r' }, { _id: 'stories:r' }] },
                     { upsert: true },
                 );
             }

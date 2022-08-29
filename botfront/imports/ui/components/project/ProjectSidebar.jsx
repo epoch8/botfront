@@ -53,11 +53,22 @@ class ProjectSidebar extends React.Component {
                             <Menu.Item name='Responses' icon='comment' />
                         </Link>
                     </Can>
-                    <Can I='analytics:r' projectId={projectId}>
-                        <Link to={`/project/${projectId}/analytics`}>
+                    {(settingsReady && settings.settings.public.metabaseUrl) ? (
+                        <a href={settings.settings.public.metabaseUrl} target='_blank' rel='noopener noreferrer'>
                             <Menu.Item name='Analytics' icon='chart line' />
-                        </Link>
-                    </Can>
+                        </a>
+                    ) : (
+                        <Can I='analytics:r' projectId={projectId}>
+                            <Link to={`/project/${projectId}/analytics`}>
+                                <Menu.Item name='Analytics' icon='chart line' />
+                            </Link>
+                        </Can>
+                    )}
+                    {settingsReady && settings.settings.public.chatbotAdminUrl && (
+                        <a href={settings.settings.public.chatbotAdminUrl} target='_blank' rel='noopener noreferrer'>
+                            <Menu.Item name='Chatbot Admin' icon='cogs' />
+                        </a>
+                    )}
                     {canViewProjectsTab && (
                         <Link to={`/project/${projectId}/settings`}>
                             <Menu.Item name='Settings' icon='setting' data-cy='settings-sidebar-link' />
@@ -101,7 +112,13 @@ ProjectSidebar.defaultProps = {
 const ProjectSidebarContainer = withTracker((props) => {
     const { projectId } = props;
     const settingsHandler = Meteor.subscribe('settings');
-    const settings = GlobalSettings.findOne({}, { fields: { 'settings.public.docUrl': 1 } });
+    const settings = GlobalSettings.findOne({}, {
+        fields: {
+            'settings.public.docUrl': 1,
+            'settings.public.metabaseUrl': 1,
+            'settings.public.chatbotAdminUrl': 1,
+        },
+    });
     const currentProject = Projects.find({ _id: projectId }).fetch();
     const projectName = currentProject.length > 0 ? `${currentProject[0].name}` : 'Botfront.';
 

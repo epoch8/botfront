@@ -4,16 +4,20 @@ import { useMutation } from '@apollo/react-hooks';
 import Alert from 'react-s-alert';
 import { browserHistory } from 'react-router';
 import {
+    Button, Radio,
     Grid, Icon, Menu, Message, Pagination,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 
-import { DELETE_CONV } from './mutations';
+import { DELETE_CONV, LABEL_CONV } from './mutations';
 import ConversationViewer from './ConversationViewer';
 import ConversationFilters from './ConversationFilters';
 import { updateIncomingPath } from '../incoming/incoming.utils';
 import { ConversationBrowserContext } from './context';
 import { wrapMeteorCallback } from '../utils/Errors';
 import { useTranslation } from "react-i18next";
+
+const LS_LABELING_KEY = 'labeling';
 
 function ConversationsBrowser(props) {
     const {
@@ -31,9 +35,22 @@ function ConversationsBrowser(props) {
 
     const { t } = useTranslation('conversations');
     const [deleteConv, { data }] = useMutation(DELETE_CONV);
+    const [labelConv, { labelConvData }] = useMutation(LABEL_CONV);
     const [optimisticRemoveReadMarker, setOptimisticRemoveReadMarker] = useState(
         new Set(),
     );
+    const [labeling, setLabeling] = useState(!!window.localStorage.getItem(LS_LABELING_KEY));
+    const [newLabels, setNewLabels] = useState({});
+    const [newHasEventLabels, setNewHasEventLabels] = useState({});
+
+    const currentTrackerIdx = trackers ? trackers.findIndex(tracker => tracker._id === activeConversationId) : -1;
+    const currentTracker = currentTrackerIdx !== -1 ? trackers[currentTrackerIdx] : null;
+    const currentLabel = (
+        Object.hasOwn(newLabels, activeConversationId) ? newLabels[activeConversationId]
+            : ((currentTracker && currentTracker.label) ? currentTracker.label.value : null)
+    );
+    const isFirstConv = (page === 1) && (currentTrackerIdx === 0);
+    const isLastConv = (page === pages) && trackers && (currentTrackerIdx === (trackers.length - 1));
 
     useEffect(() => {
         if (data && !data.delete.success) {
@@ -45,9 +62,22 @@ function ConversationsBrowser(props) {
     }, [data]);
 
     useEffect(() => {
+        if (labelConvData && !labelConvData.setConversationLabel.success) {
+            Alert.warning('Something went wrong, the conversation was not labeled', {
+                position: 'top-right',
+                timeout: 5000,
+            });
+        }
+    }, [labelConvData]);
+
+    useEffect(() => {
         // empty the optimistic marking of read message when new data arrive
         setOptimisticRemoveReadMarker(new Set());
+        setNewLabels({});
+        setNewHasEventLabels({});
     }, [trackers]);
+
+    const { t } = useTranslation('conversations');
 
     function optimisticRemoveMarker(id) {
         setOptimisticRemoveReadMarker(new Set([...optimisticRemoveReadMarker, id]));
@@ -99,6 +129,8 @@ function ConversationsBrowser(props) {
     }
 
     function renderMenuItems() {
+        const getLabel = t => (Object.hasOwn(newLabels, t._id) ? newLabels[t._id] : t.label && t.label.value);
+        const getHasLabeledEvent = t => (Object.hasOwn(newHasEventLabels, t._id) ? newHasEventLabels[t._id] : t.hasLabeledEvent);
         const items = trackers.map((t, index) => (
             <Menu.Item
                 key={index.toString(10)}
@@ -107,10 +139,16 @@ function ConversationsBrowser(props) {
                 onClick={handleItemClick}
                 data-cy='conversation-item'
             >
+                <span style={{ fontSize: '10px' }}>{t._id}</span>
+                {labeling ? (
+                    <>
+                        <Icon name='tag' disabled={!getHasLabeledEvent(t)} />
+                        <Icon name='tag' disabled={!getLabel(t)} />
+                    </>
+                ) : <></>}
                 {optimisticRemoveReadMarker.has(t._id)
                     ? renderIcon({ status: 'read' })
                     : renderIcon(t)}
-                <span style={{ fontSize: '10px' }}>{t._id}</span>
             </Menu.Item>
         ));
         return items;
@@ -149,6 +187,91 @@ function ConversationsBrowser(props) {
             </Message>
         </Grid.Row>
     );
+
+    const handleConversationLabelChange = (label) => {
+        setNewLabels({
+            ...newLabels,
+            [activeConversationId]: label,
+        });
+        labelConv({ variables: { id: activeConversationId, label } });
+    };
+
+    const handleHasLabeledEventChange = (hasLabeledEvent) => {
+        setNewHasEventLabels({
+            ...newHasEventLabels,
+            [activeConversationId]: hasLabeledEvent,
+        });
+    };
+
+    const handlePrevClick = () => {
+        if (isFirstConv) return;
+        if (currentTrackerIdx > 0) {
+            goToConversation(page, trackers[currentTrackerIdx - 1]._id);
+        } else {
+            goToConversation(page - 1, 'last');
+        }
+    };
+
+    const handleNextClick = () => {
+        if (isLastConv) return;
+        if (currentTrackerIdx < (trackers.length - 1)) {
+            goToConversation(page, trackers[currentTrackerIdx + 1]._id);
+        } else {
+            pageChange(page + 1);
+        }
+    };
+
+    const handleLabelingChange = (active) => {
+        setLabeling(active);
+        if (active) {
+            window.localStorage.setItem(LS_LABELING_KEY, 'true');
+        } else {
+            window.localStorage.removeItem(LS_LABELING_KEY);
+        }
+    };
+
+    const renderConversationLabelButtons = () => {
+        const buttons = [
+            [t('Запрос удовлетворён'), 'success'],
+            [t('Провал'), 'fail'],
+            [t('Непонятно'), 'unclear'],
+            [t('Мусор'), 'trash'],
+        ].map(([text, value]) => {
+            const active = value === currentLabel;
+            const labelValue = active ? null : value;
+            return (
+                <Button
+                    onClick={() => handleConversationLabelChange(labelValue)}
+                    key={value}
+                    active={active}
+                    color={active ? 'blue' : null}
+                >
+                    {text}
+                </Button>
+            );
+        });
+        return (
+            <Grid.Row>
+                <Button.Group fluid>
+                    <Button
+                        onClick={() => handlePrevClick()}
+                        key='prev'
+                        disabled={isFirstConv}
+                    >
+                        <Icon name='angle left' />
+                    </Button>
+                    {buttons}
+                    <Button
+                        onClick={() => handleNextClick()}
+                        key='next'
+                        disabled={isLastConv}
+                    >
+                        <Icon name='angle right' />
+                    </Button>
+                </Button.Group>
+            </Grid.Row>
+        );
+    };
     const renderBody = () => (
         <>
             <Grid.Column width={5}>
@@ -178,7 +301,10 @@ function ConversationsBrowser(props) {
                     removeReadMark={optimisticRemoveMarker}
                     optimisticlyRemoved={optimisticRemoveReadMarker}
                     onCreateTestCase={createTestCase}
+                    labeling={labeling}
+                    onHasLabeledEventChange={handleHasLabeledEventChange}
                 />
+                {(labeling && currentTracker) ? renderConversationLabelButtons() : <></>}
             </Grid.Column>
         </>
     );
@@ -190,6 +316,14 @@ function ConversationsBrowser(props) {
             }}
         >
             <Grid>
+                <Grid.Row>
+                    <Radio
+                        toggle
+                        label={t('Labeling')}
+                        checked={labeling}
+                        onChange={(_, checkbox) => handleLabelingChange(checkbox.checked)}
+                    />
+                </Grid.Row>
                 <Grid.Row>
                     <ConversationFilters
                         activeFilters={activeFilters}

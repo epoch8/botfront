@@ -7,12 +7,13 @@ import Alert from 'react-s-alert';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { connect } from 'react-redux';
 import { GET_CONVERSATION } from './queries';
-import { MARK_READ } from './mutations';
+import { MARK_READ, LABEL_EVENT } from './mutations';
+import { getEventLabel } from './utils';
 import ConversationJsonViewer from './ConversationJsonViewer';
 import ConversationDialogueViewer from './ConversationDialogueViewer';
 import Can from '../roles/Can';
 
-function ConversationViewer (props) {
+function ConversationViewer(props) {
     const [active, setActive] = useState('Text');
     const [savedTest, setSavedTest] = useState(false);
 
@@ -21,7 +22,14 @@ function ConversationViewer (props) {
     useEffect(() => (() => clearTimeout(timeout.current)), []);
 
     const {
-        tracker, ready, onDelete, removeReadMark, optimisticlyRemoved, onCreateTestCase,
+        tracker,
+        ready,
+        onDelete,
+        removeReadMark,
+        optimisticlyRemoved,
+        onCreateTestCase,
+        labeling,
+        onLabelChange,
     } = props;
 
     const [markRead, { data }] = useMutation(MARK_READ);
@@ -87,8 +95,22 @@ function ConversationViewer (props) {
 
         return (
             <Segment style={style} attached>
-                {active === 'Text' && <ConversationDialogueViewer conversation={tracker} mode='text' />}
-                {active === 'Debug' && <ConversationDialogueViewer conversation={tracker} mode='debug' />}
+                {active === 'Text' && (
+                    <ConversationDialogueViewer
+                        conversation={tracker}
+                        labeling={labeling}
+                        onLabelChange={onLabelChange}
+                        mode='text'
+                    />
+                )}
+                {active === 'Debug' && (
+                    <ConversationDialogueViewer
+                        conversation={tracker}
+                        labeling={labeling}
+                        onLabelChange={onLabelChange}
+                        mode='debug'
+                    />
+                )}
                 {active === 'JSON' && <ConversationJsonViewer tracker={tracker.tracker} />}
             </Segment>
         );
@@ -110,7 +132,7 @@ function ConversationViewer (props) {
         }
     }, [data]);
 
-    
+
     return (
         <div className='conversation-wrapper'>
             <Menu compact attached='top'>
@@ -156,6 +178,8 @@ function ConversationViewer (props) {
 ConversationViewer.defaultProps = {
     tracker: null,
     optimisticlyRemoved: new Set(),
+    labeling: false,
+    onLabelChange: null,
 };
 
 ConversationViewer.propTypes = {
@@ -165,28 +189,57 @@ ConversationViewer.propTypes = {
     removeReadMark: PropTypes.func.isRequired,
     optimisticlyRemoved: PropTypes.instanceOf(Set),
     onCreateTestCase: PropTypes.func.isRequired,
+    labeling: PropTypes.bool,
+    onLabelChange: PropTypes.func,
 };
 
 const ConversationViewerContainer = (props) => {
     const {
-        conversationId, projectId, onDelete, removeReadMark, optimisticlyRemoved, onCreateTestCase,
+        conversationId,
+        projectId,
+        onDelete,
+        removeReadMark,
+        optimisticlyRemoved,
+        onCreateTestCase,
+        labeling,
+        onHasLabeledEventChange,
     } = props;
 
     const tracker = useRef(null);
-    
-    const { loading, error, data } = useQuery(GET_CONVERSATION, {
+
+    const {
+        loading, error, data, refetch,
+    } = useQuery(GET_CONVERSATION, {
         variables: { projectId, conversationId },
-        pollInterval: 1000,
+        pollInterval: 2000,
     });
 
+    const [labelEvent, { data: labelEventData }] = useMutation(LABEL_EVENT);
+
     const newTracker = !loading && !error && data ? data.conversation : null;
+
+    const compareLabels = () => {
+        const currentTracker = tracker.current;
+        if (!newTracker || !currentTracker) return false;
+        return newTracker.tracker.events.every((newEvent, index) => (
+            getEventLabel(currentTracker.tracker.events[index]) === getEventLabel(newEvent)
+        ));
+    };
+
     if (newTracker && (
         (tracker.current ? tracker.current.tracker.events : []).length !== newTracker.tracker.events.length
-        || (tracker.current || {})._id !== newTracker._id
+        || (tracker.current || {})._id !== newTracker._id || !compareLabels()
     )) {
         tracker.current = newTracker;
+        if (onHasLabeledEventChange) {
+            onHasLabeledEventChange(newTracker.tracker.events.some(getEventLabel));
+        }
     }
-    
+
+    const onLabelChange = (eventIndex, label) => {
+        labelEvent({ variables: { id: conversationId, eventIndex, label } }).then(() => refetch());
+    };
+
     const componentProps = {
         ready: !!tracker.current,
         onDelete,
@@ -194,6 +247,8 @@ const ConversationViewerContainer = (props) => {
         removeReadMark,
         optimisticlyRemoved,
         onCreateTestCase,
+        labeling,
+        onLabelChange,
     };
 
     return (<ConversationViewer {...componentProps} />);

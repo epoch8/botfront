@@ -15,6 +15,7 @@ query retreiveConversations(
     $startDate: String
     $endDate: String
     $userId: String
+    $conversationId: String
     $eventFilterOperator: String
     $eventFilter: [StepInput]
     $userInitiatedConversations: Boolean
@@ -23,7 +24,7 @@ query retreiveConversations(
     ) {
     conversationsPage(
         projectId: $projectId,
-        page: $page, 
+        page: $page,
         pageSize: $pageSize,
         status: ["new", "read", "flagged"],
         sort: updatedAt_DESC,
@@ -37,6 +38,7 @@ query retreiveConversations(
         startDate: $startDate,
         endDate: $endDate,
         userId: $userId
+        conversationId: $conversationId
         eventFilterOperator: $eventFilterOperator,
         eventFilter: $eventFilter
         userInitiatedConversations: $userInitiatedConversations,
@@ -48,6 +50,12 @@ query retreiveConversations(
             status
             projectId
             userId
+            label {
+                value
+                labeledAt
+                userId
+            }
+            hasLabeledEvent
             tracker @include(if: $fetchTrackers)
             createdAt @include(if: $fetchTrackers)
             env @include(if: $fetchTrackers)

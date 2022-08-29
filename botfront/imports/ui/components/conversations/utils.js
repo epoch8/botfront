@@ -1,13 +1,19 @@
 import moment from 'moment';
 
+export function getEventLabel(event) {
+    return (event && event.metadata && event.metadata.label && event.metadata.label.value) || null;
+}
+
 export function generateTurns(tracker, debug = false, tzOffset = null) {
     const turns = [];
     let currentTurn = {
         userSays: null,
         botResponses: [],
+        label: null,
+        eventIndex: null,
     };
     const buttonValues = {};
-    tracker.events.forEach((event) => {
+    tracker.events.forEach((event, index) => {
         const type = event.event;
 
         if (type === 'user' && !!event.text) {
@@ -36,6 +42,8 @@ export function generateTurns(tracker, debug = false, tzOffset = null) {
                     ...currentTurn,
                     userSays,
                     messageId: event.message_id,
+                    label: getEventLabel(event),
+                    eventIndex: index,
                 };
             } else {
                 // Finish previous turn and init a new one
@@ -44,6 +52,8 @@ export function generateTurns(tracker, debug = false, tzOffset = null) {
                     userSays,
                     botResponses: [],
                     messageId: event.message_id,
+                    label: getEventLabel(event),
+                    eventIndex: index,
                 };
             }
         } else if (type === 'bot') {
