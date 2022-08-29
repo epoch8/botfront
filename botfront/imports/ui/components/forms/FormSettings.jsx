@@ -17,7 +17,7 @@ import { can } from '../../../lib/scopes';
 import ToggleField from '../common/ToggleField';
 import { clearTypenameField } from '../../../lib/client.safe.utils';
 import { useMethod } from '../utils/hooks.js';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 const CreateForm = (props) => {
     const {

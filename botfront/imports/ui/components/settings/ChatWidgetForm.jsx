@@ -33,7 +33,7 @@ import ChangesSaved from '../utils/ChangesSaved';
 import IntentField from '../form_fields/IntentField';
 import { ProjectContext } from '../../layouts/context';
 import InfoField from '../utils/InfoField';
-import {withTranslation} from "react-i18next";
+import {withTranslation} from 'react-i18next';
 
 const ColorField = React.lazy(() => import('../form_fields/ColorField'));
 class ChatWidgetForm extends React.Component {
@@ -222,7 +222,7 @@ class ChatWidgetForm extends React.Component {
                     disabled={!!saving || !can('projects:w', projectId)}
                     schema={new SimpleSchema2Bridge(chatWidgetSettingsSchema)}
                     model={settings}
-                   
+
                     onSubmit={this.onSave}
                     modelTransform={(mode, model) => {
                         const newModel = cloneDeep(model);

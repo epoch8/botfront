@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Input } from 'semantic-ui-react';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 class LookupTableValueEditor extends React.Component {
     constructor(props) {

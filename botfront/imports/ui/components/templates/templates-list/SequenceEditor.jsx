@@ -10,7 +10,7 @@ import BotResponsesContainer from '../../stories/common/BotResponsesContainer';
 import CustomResponseEditor from '../common/CustomResponseEditor';
 import IconButton from '../../common/IconButton';
 import ButtonTypeToggle from '../common/ButtonTypeToggle';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 import { addContentType, defaultTemplate } from '../../../../lib/botResponse.utils';
 

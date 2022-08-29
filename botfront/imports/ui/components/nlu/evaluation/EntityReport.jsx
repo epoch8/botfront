@@ -7,7 +7,7 @@ import KeyMetrics from './KeyMetrics';
 import ReportTable from './ReportTable';
 import UserUtteranceViewer from '../common/UserUtteranceViewer';
 import { Info } from '../../common/Info';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function ExampleTextComparison({ example, prediction }) {
     return (

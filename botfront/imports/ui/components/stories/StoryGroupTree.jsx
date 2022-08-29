@@ -9,14 +9,14 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import { Menu, Confirm, Portal } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import EmbeddedTree from '../common/EmbeddedTree';
 import { useStoryGroupTree } from './hooks/useStoryGroupTree';
 import StoryGroupTreeNode from './StoryGroupTreeNode';
 import { useEventListener } from '../utils/hooks';
 import { ProjectContext } from '../../layouts/context';
 import { can } from '../../../lib/scopes';
-import { withTranslation } from "react-i18next";
-//Todo: translate
+
 const openFirstStoryIfNoneSelected = (
     storyMenuSelection,
     tree,
@@ -59,6 +59,8 @@ const StoryGroupTree = React.forwardRef((props, ref) => {
     const [deletionModalVisible, setDeletionModalVisible] = useState(false);
     const [renamingModalPosition, setRenamingModalPosition] = useState(null);
     const [mouseDown, setMouseDown] = useState(false);
+
+    const { t } = useTranslation('stories');
 
     const {
         language,
@@ -336,8 +338,8 @@ const StoryGroupTree = React.forwardRef((props, ref) => {
             <Confirm
                 open={!!deletionModalVisible}
                 className='warning'
-                header='Warning!'
-                confirmButton='Delete'
+                header={t('Warning!')}
+                confirmButton={t('Delete')}
                 content={deletionModalMessage}
                 onCancel={() => setDeletionModalVisible(false)}
                 {...(deletionIsPossible
@@ -402,4 +404,4 @@ StoryGroupTree.defaultProps = {
     isDeletionPossible: () => [true, 'Delete?'],
 };
 
-export default withTranslation('stories')(StoryGroupTree);
+export default StoryGroupTree;

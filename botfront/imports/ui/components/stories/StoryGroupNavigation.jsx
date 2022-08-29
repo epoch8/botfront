@@ -10,7 +10,7 @@ import { Slots } from '../../../api/slots/slots.collection';
 import { ConversationOptionsContext } from './Context';
 import { formNameIsValid } from '../../../lib/client.safe.utils';
 import { tooltipWrapper } from '../utils/Utils';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 class StoryGroupNavigation extends React.Component {
     constructor(props) {

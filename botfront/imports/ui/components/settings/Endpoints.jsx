@@ -18,7 +18,7 @@ import { can } from '../../../lib/scopes';
 import { ENVIRONMENT_OPTIONS } from '../constants.json';
 import restartRasa from './restartRasa';
 import HttpRequestsForm from '../common/HttpRequestsForm';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 class Endpoints extends React.Component {
     constructor(props) {

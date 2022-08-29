@@ -5,7 +5,7 @@ import {
 } from 'semantic-ui-react';
 import Widget from 'rasa-webchat';
 import { Loading } from '../components/utils/Utils';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 const ResponsiveAlternants = ({ cutoff, children, ...props }) => (
     <>

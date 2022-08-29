@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Form, Input } from 'semantic-ui-react';
-import { withTranslation } from "react-i18next";
 
 
 const LookupTableStringEditor = (props) => {
@@ -41,14 +40,14 @@ const LookupTableStringEditor = (props) => {
             onDone(update);
         }
     };
-    const { t } = this.props;
+
     return (
         <Form data-cy='add-value'>
             <Input
                 fluid
                 className='lookup-table-values'
                 autoFocus={autoFocus}
-                placeholder={t(placeholder)}
+                placeholder={placeholder}
                 name='synonyms'
                 value={inputValue}
                 onBlur={handleDone}
@@ -75,4 +74,4 @@ LookupTableStringEditor.defaultProps = {
     listAttribute: '',
 };
 
-export default withTranslation('synonyms')(LookupTableStringEditor);
+export default LookupTableStringEditor;

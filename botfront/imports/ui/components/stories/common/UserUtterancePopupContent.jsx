@@ -4,7 +4,7 @@ import {
     Dropdown, Modal, Button,
 } from 'semantic-ui-react';
 import PayloadEditor from './PayloadEditor';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 const UserUtterancePopupContent = (props) => {
     const {

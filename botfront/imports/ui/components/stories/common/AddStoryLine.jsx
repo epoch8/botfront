@@ -7,7 +7,7 @@ import SlotPopupContent from './SlotPopupContent';
 import DashedButton from './DashedButton';
 import UserUtterancePopupContent from './UserUtterancePopupContent';
 import { ConversationOptionsContext } from '../Context';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 const AddStoryLine = React.forwardRef((props, ref) => {
     const {

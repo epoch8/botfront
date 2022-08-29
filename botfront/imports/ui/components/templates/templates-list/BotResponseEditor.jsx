@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { safeDump, safeLoad } from 'js-yaml';
 import { useMutation, useSubscription, useQuery } from '@apollo/react-hooks';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 import {
     Segment, Menu, MenuItem, Modal, Button,
 } from 'semantic-ui-react';
@@ -55,7 +55,7 @@ const BotResponseEditor = (props) => {
     const { reloadStories } = useContext(ConversationOptionsContext);
     const [upsertWholeBotResponse] = useMutation(UPSERT__FULL_BOT_RESPONSE);
     const [deleteVariation] = useMutation(DELETE_VARIATION);
-    
+
     const [newBotResponse, setNewBotResponse] = useState(botResponse);
     const [activeTab, setActiveTab] = useState(0);
     const [responseKey, setResponseKey] = useState(name);
@@ -94,13 +94,13 @@ const BotResponseEditor = (props) => {
 
     const handleDeleteVariation = (index) => {
         const activeIndex = newBotResponse.values.findIndex(({ lang }) => lang === language);
-        
+
         const { sequence } = newBotResponse.values[activeIndex];
         const updatedSequence = [
             ...sequence.slice(0, index),
             ...sequence.slice(index + 1),
         ];
-        
+
         const updatedBotResponse = { ...newBotResponse };
         updatedBotResponse.values[activeIndex].sequence = updatedSequence;
         if (isNew) {

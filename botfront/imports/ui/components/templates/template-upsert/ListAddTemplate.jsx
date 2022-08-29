@@ -5,7 +5,7 @@ import { Dropdown, Button } from 'semantic-ui-react';
 import yamljs from 'js-yaml';
 import cloneDeep from 'lodash/cloneDeep';
 import { examples } from './templateExamples';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 //Todo: translate
 const messageTypesOptions = [

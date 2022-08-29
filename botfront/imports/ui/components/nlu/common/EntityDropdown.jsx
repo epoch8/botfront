@@ -3,7 +3,7 @@ import React, { useState, useContext, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import IconButton from '../../common/IconButton';
 import { ProjectContext } from '../../../layouts/context';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 // eslint-disable-next-line no-control-regex
 const asciiChar = /^[\x21-\x7E]+$/;

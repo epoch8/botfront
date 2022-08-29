@@ -5,7 +5,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 import TextareaAutosize from 'react-autosize-textarea';
-import { withTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 import ImageThumbnail from './ImageThumbnail';
 import CarouselEditor from './CarouselEditor';
 import QuickReplies from './QuickReplies';
@@ -46,7 +46,7 @@ const BotResponseContainer = (props) => {
 
     const setText = () => onChange({ ...value, text: formatNewlines(input) }, false);
     const setImage = image => onChange({ ...value, image }, false);
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     function handleTextBlur(e) {
         const tagRegex = new RegExp(tag);
@@ -107,7 +107,7 @@ const BotResponseContainer = (props) => {
             onClick={() => editCustom()}
             data-cy='edit-custom-response'
         >
-            Custom Format Response
+            {t('Custom Format Response')}
         </Button>
     );
 
@@ -170,4 +170,4 @@ BotResponseContainer.defaultProps = {
     disableEnterKey: false,
 };
 
-export default withTranslation('stories')(BotResponseContainer);
+export default BotResponseContainer;

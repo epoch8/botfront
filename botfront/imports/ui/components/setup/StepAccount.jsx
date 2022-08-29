@@ -6,7 +6,7 @@ import {
 import PropTypes from 'prop-types';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
 import { accountSetupSchema } from '../../../api/setup';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class StepAccountComponent extends React.Component {

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Alert from 'react-s-alert';
 import { Meteor } from 'meteor/meteor';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 import {
     Dropdown, Confirm, Button,
     Loader, Message, Icon,
@@ -72,7 +72,7 @@ class ChitChat extends React.Component {
             notConfiguredError, chitChatIntents, confirmOpen, selectedIntents,
         } = this.state;
         const { t } = this.props;
-        
+
         return (
             <div className='glow-box extra-padding no-margin'>
                 {notConfiguredError && <Message error content={notConfiguredError} />}

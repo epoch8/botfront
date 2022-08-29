@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
 import IconButton from '../../common/IconButton';
 import IntentLabel from '../common/IntentLabel';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 const NluCommandBar = React.forwardRef((props, ref) => {
     const {
         selection, onSetIntent, onDelete, onCloseIntentPopup, onUndraft,
     } = props;
-    
+
     const intentLabelRef = useRef();
     const selectionIncludesCanonical = selection.some(d => d.metadata?.canonical);
     const selectionIncludesNonDraft = selection.some(d => !d.metadata?.draft);

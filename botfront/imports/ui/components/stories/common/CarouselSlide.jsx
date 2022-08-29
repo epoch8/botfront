@@ -6,7 +6,7 @@ import TextareaAutosize from 'react-autosize-textarea';
 import QuickReplies from './QuickReplies';
 import ImageThumbnail from './ImageThumbnail';
 import ResponseButtonEditor from './ResponseButtonEditor';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function CarouselSlide(props) {
     const {

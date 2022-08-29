@@ -8,7 +8,7 @@ import SimpleSchema from 'simpl-schema';
 import PropTypes from 'prop-types';
 import React from 'react';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 import { wrapMeteorCallback } from '../../../utils/Errors';
 import ChangesSaved from '../../../utils/ChangesSaved';

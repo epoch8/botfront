@@ -18,7 +18,7 @@ import IntentReport from './IntentReport';
 import EntityReport from './EntityReport';
 import { InputButtons } from './InputButtons.jsx';
 import { Evaluations } from '../../../../api/nlu_evaluation';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 import UploadDropzone from '../../utils/UploadDropzone';
 import { Loading } from '../../utils/Utils';
 import { can } from '../../../../lib/scopes';

@@ -10,7 +10,7 @@ import { ProjectContext } from '../../layouts/context';
 import ChangeResponseType from './ChangeResponseType';
 import { can } from '../../../lib/scopes';
 import StrictNumberInput from '../common/StrictNumberInput';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 const validationOptions = [
     { key: 'is_in', value: 'is_in', text: 'be in' },

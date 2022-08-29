@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Icon, Popup } from 'semantic-ui-react';
 import { insertSmartPayloads } from '../../../lib/client.safe.utils';
 import { runTestCaseStories } from '../utils/runTestCaseStories';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 import {
     setShowChat,

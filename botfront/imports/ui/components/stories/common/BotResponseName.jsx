@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import {
     Loader, Header, List, Input, Popup,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import HoverablePopup from '../../common/HoverablePopup';
 import { ConversationOptionsContext } from '../Context';
 import { generateRenamingErrorMessage } from '../../../../lib/botResponse.utils';
-import { withTranslation } from "react-i18next";
 
 const BotResponseName = (props) => {
     const {
@@ -23,7 +23,7 @@ const BotResponseName = (props) => {
     const [nameInputValue, setNameInputValue] = useState(name);
     const [renameError, setRenameError] = useState(null);
     const [saving, setSaving] = useState(false);
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     const handleSaveName = (e) => {
         setSaving(true);
@@ -92,7 +92,7 @@ const BotResponseName = (props) => {
                     )}
                     content={(
                         <>
-                            <Header as='h4'>This response is used in {responseLocations.length} fragments</Header>
+                            <Header as='h4'>{t('This response is used in')} {responseLocations.length} {t('fragments')}</Header>
                             <List data-cy='response-locations-list' className='link-list'>
                                 {responseLocations.map(({ title, _id }) => (
                                     <List.Item
@@ -144,4 +144,4 @@ BotResponseName.defaultProps = {
     editable: true,
 };
 
-export default withTranslation('stories')(BotResponseName);
+export default BotResponseName;

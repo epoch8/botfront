@@ -7,7 +7,7 @@ import {
 } from 'semantic-ui-react';
 import JSZIP from 'jszip';
 import { ProjectContext } from '../../layouts/context';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 const ExportProject = ({
     setLoading,

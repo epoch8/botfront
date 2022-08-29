@@ -9,7 +9,7 @@ import { ProjectContext } from '../../../layouts/context';
 import UtteranceInput from '../../utils/UtteranceInput';
 import NluModalContent from './nlu_editor/NluModalContent';
 import { USER_LINE_EDIT_MODE } from '../../../../lib/story.utils';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 const UtteranceContainer = (props) => {
     const {

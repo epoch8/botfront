@@ -16,7 +16,7 @@ import AceField from '../utils/AceField';
 import { can } from '../../../lib/scopes';
 import { ENVIRONMENT_OPTIONS } from '../constants.json';
 import restartRasa from './restartRasa';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 class Credentials extends React.Component {
     constructor(props) {

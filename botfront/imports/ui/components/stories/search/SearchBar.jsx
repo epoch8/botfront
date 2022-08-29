@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import React, { useState, useCallback } from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
+import { useTranslation } from 'react-i18next';
 
 import { wrapMeteorCallback } from '../../utils/Errors';
 import apolloClient from '../../../../startup/client/apollo';
@@ -12,7 +13,6 @@ import { setStoriesCurrent } from '../../../store/actions/actions';
 import { StoryGroups } from '../../../../api/storyGroups/storyGroups.collection';
 
 import { SEARCH_FRAGMENTS } from './queries';
-import { withTranslation } from "react-i18next";
 
 const SearchBar = (props) => {
     const {
@@ -30,7 +30,7 @@ const SearchBar = (props) => {
     const [results, setResults] = useState([]);
     const [searching, setSearching] = useState(false);
     const [displayShortcuts, setDisplayShortcuts] = useState(false);
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     const searchStories = useCallback(
         debounce(async (searchInputValue) => {
@@ -292,6 +292,6 @@ const mapStateToProps = state => ({
     activeStories: state.stories.get('storiesCurrent').toJS(),
 });
 
-export default withTranslation('stories')(connect(mapStateToProps, { setActiveStories: setStoriesCurrent })(
+export default connect(mapStateToProps, { setActiveStories: setStoriesCurrent })(
     SearchBarWithTracker,
-));
+);

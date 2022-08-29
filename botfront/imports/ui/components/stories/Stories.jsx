@@ -14,6 +14,7 @@ import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks';
 import PropTypes from 'prop-types';
 import SplitPane from 'react-split-pane';
 import shortId from 'shortid';
+import { useTranslation } from 'react-i18next';
 import { setStoriesCurrent } from '../../store/actions/actions';
 import { StoryGroups } from '../../../api/storyGroups/storyGroups.collection';
 import { Stories as StoriesCollection } from '../../../api/story/stories.collection';
@@ -30,7 +31,6 @@ import { UPSERT_FORM, GET_FORMS, DELETE_FORMS } from './graphql/queries';
 import { FORMS_MODIFIED, FORMS_DELETED, FORMS_CREATED } from './graphql/subscriptions';
 import FormEditors from '../forms/FormEditors';
 import { clearTypenameField } from '../../../lib/client.safe.utils';
-import { withTranslation } from "react-i18next";
 
 const callbackCaller = (args, afterAll = () => {}) => async (res) => {
     const callback = args[args.length - 1];
@@ -40,36 +40,6 @@ const callbackCaller = (args, afterAll = () => {}) => async (res) => {
 
 const SlotsEditor = React.lazy(() => import('./Slots'));
 const PoliciesEditor = React.lazy(() => import('../settings/CorePolicy'));
-
-const isDeletionPossible = (node = {}, nodes, tree) => {
-    const isDestination = s1 => ((nodes.find(s2 => s2._id === s1.id) || {}).checkpoints || []).length;
-    const isOrigin = s1 => nodes.some(s2 => (s2.checkpoints || []).some(c => c[0] === s1.id));
-    const isDestinationOrOrigin = s => isDestination(s) || isOrigin(s);
-    const { t } = this.props;
-    let deletable = false;
-    let message = null;
-    if (['story', 'rule'].includes(node.type)) {
-        deletable = !isDestinationOrOrigin(node);
-        message = t(deletable
-            ? `'${node.title}' will be deleted. This action cannot be undone.`
-            : `'${node.title}' cannot be deleted as it is linked to another story.`);
-    }
-    if (node.type === 'story-group') {
-        deletable = !(node.children || []).some(c => isDestinationOrOrigin(tree.items[c]));
-        message = t(deletable
-            ? `The group ${node.title} and all its content in it will be deleted. This action cannot be undone.`
-            : `The group ${node.title} cannot be deleted as it contains links.`);
-    }
-    if (node.type === 'form') {
-        deletable = true;
-        message = t(`The form ${node.title} will be deleted. This action cannot be undone.`);
-    }
-    if (node.type === 'test_case') {
-        deletable = true;
-        message = t(`The test ${node.title} will be deleted. This action cannot be undone.`);
-    }
-    return [deletable, message];
-};
 
 function Stories(props) {
     const {
@@ -88,6 +58,7 @@ function Stories(props) {
     const [policiesModal, setPoliciesModal] = useState(false);
     const [resizing, setResizing] = useState(false);
     const [storyEditorsKey, setStoryEditorsKey] = useState(shortId.generate());
+    const { t } = useTranslation('stories');
 
     const treeRef = useRef();
 
@@ -292,6 +263,35 @@ function Stories(props) {
         [projectId],
     );
 
+    const isDeletionPossible = (node = {}, nodes, tree) => {
+        const isDestination = s1 => ((nodes.find(s2 => s2._id === s1.id) || {}).checkpoints || []).length;
+        const isOrigin = s1 => nodes.some(s2 => (s2.checkpoints || []).some(c => c[0] === s1.id));
+        const isDestinationOrOrigin = s => isDestination(s) || isOrigin(s);
+        let deletable = false;
+        let message = null;
+        if (['story', 'rule'].includes(node.type)) {
+            deletable = !isDestinationOrOrigin(node);
+            message = deletable
+                ? `'${node.title}' ${t('will be deleted. This action cannot be undone')}.`
+                : `'${node.title}' ${t('cannot be deleted as it is linked to another story')}.`;
+        }
+        if (node.type === 'story-group') {
+            deletable = !(node.children || []).some(c => isDestinationOrOrigin(tree.items[c]));
+            message = deletable
+                ? `${t('The group')} ${node.title} ${t('and all its content in it will be deleted. This action cannot be undone')}.`
+                : `${t('The group')} ${node.title} ${t('cannot be deleted as it contains links')}.`;
+        }
+        if (node.type === 'form') {
+            deletable = true;
+            message = `${t('The form')} ${node.title} ${t('will be deleted. This action cannot be undone')}.`;
+        }
+        if (node.type === 'test_case') {
+            deletable = true;
+            message = `${t('The test')} ${node.title} ${t('will be deleted. This action cannot be undone')}.`;
+        }
+        return [deletable, message];
+    };
+
     useEventListener('keydown', ({ key }) => {
         if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
         if (key === 'ArrowLeft') treeRef.current.focusMenu();
@@ -427,6 +427,6 @@ const mapStateToProps = state => ({
     selectedLanguage: state.settings.get('workingLanguage'),
 });
 
-export default withTranslation('stories')(connect(mapStateToProps, { setStoryMenuSelection: setStoriesCurrent })(
+export default connect(mapStateToProps, { setStoryMenuSelection: setStoriesCurrent })(
     StoriesWithTracker,
-));
+);

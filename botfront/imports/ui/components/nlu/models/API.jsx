@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import moment from 'moment-timezone';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 import {
     Form, Dropdown, Input, Checkbox,
 } from 'semantic-ui-react';

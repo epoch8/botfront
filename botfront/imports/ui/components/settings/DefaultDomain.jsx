@@ -5,7 +5,7 @@ import 'react-s-alert/dist/s-alert-default.css';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 import { can } from '../../../lib/scopes';
 import { DefaultDomainSchema } from '../../../api/project/project.schema';

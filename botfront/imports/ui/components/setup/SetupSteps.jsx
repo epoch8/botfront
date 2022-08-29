@@ -6,7 +6,7 @@ import React from 'react';
 
 import StepAccount from './StepAccount';
 import { wrapMeteorCallback } from '../utils/Errors';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 class SetupSteps extends React.Component {
     constructor(props) {

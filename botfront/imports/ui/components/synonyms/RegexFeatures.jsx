@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import LookupTable from './LookupTable';
 import { wrapMeteorCallback } from '../utils/Errors';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 class RegexFeatures extends React.Component {
     onItemChanged = (regexFeature, callback) => {

@@ -10,7 +10,7 @@ import { useDrop } from 'react-dnd-cjs';
 import { ResponseContext } from './BotResponsesContainer';
 import { ProjectContext } from '../../../layouts/context';
 import { wrapMeteorCallback } from '../../utils/Errors';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function ImageThumbnail(props) {
     const {

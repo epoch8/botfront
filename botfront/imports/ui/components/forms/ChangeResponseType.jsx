@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { defaultTemplate } from '../../../lib/botResponse.utils';
 import { ProjectContext } from '../../layouts/context';
 import { can } from '../../../lib/scopes';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 const ChangeResponseType = (props) => {
     const {
@@ -24,7 +24,7 @@ const ChangeResponseType = (props) => {
         { value: 'CarouselPayload', text: 'carousel' },
         { value: 'CustomPayload', text: 'custom' },
     ];
-    
+
     const handleChangeResponseType = () => {
         upsertResponse(name, { payload: defaultTemplate(selectedType) }, 0);
         setSelectedType(null);

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import matchSorter from 'match-sorter';
 import ReactTable from 'react-table-v6';
 import { Popup, Icon } from 'semantic-ui-react';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function ReportTable(props) {
     const { labelType } = props;

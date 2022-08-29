@@ -2,7 +2,7 @@ import React, {
     useState, useEffect, useContext, useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 import {
     Segment,
     Input,

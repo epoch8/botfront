@@ -2,7 +2,7 @@ import { Message } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import React from 'react';
 import CrashReportButton from '../utils/CrashReportButton';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 class StoryErrorBoundary extends React.Component {
     constructor(props) {

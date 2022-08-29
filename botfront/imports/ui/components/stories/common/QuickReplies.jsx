@@ -4,7 +4,7 @@ import { Icon, Popup } from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import { useDrop } from 'react-dnd-cjs';
 import QuickReply, { isButtonValid } from './QuickReply';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function QuickReplies({
     value, onChange, min, max, fluid,

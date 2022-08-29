@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import { withTracker } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 import {
     Button, Confirm, Icon, Message, Tab,
 } from 'semantic-ui-react';

@@ -1,4 +1,5 @@
 {
+  "Your changes have been saved.": "Your changes have been saved.",
   "Commit and push": "Commit and push",
   "Commit message": "Commit message",
   "Push to remote": "Push to remote",
@@ -8,6 +9,11 @@
   "Cannot deploy, training failed": "Cannot deploy, training failed",
   "Train": "Train",
   "Rasa instance not reachable": "Rasa instance not reachable",
+  "Sharing enabled": "Sharing enabled",
+  "Sharing disabled": "Sharing disabled",
+  "Copy link": "Copy link",
+  "Train NLU and stories from": "Train NLU and stories from",
+  "focused story groups": "focused story groups",
   "Train NLU and stories from 1 focused story group.": "Train NLU and stories from 1 focused story group.",
   "Sorry, could not read you file": "Sorry, could not read you file",
   "Please upload only one file": "Please upload only one file",

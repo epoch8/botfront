@@ -14,7 +14,7 @@ import SelectField from '../../form_fields/SelectField';
 import { can } from '../../../../api/roles/roles';
 import URLIsSequence from './URLIsSequence';
 import ButtonSelectField from '../../form_fields/ButtonSelectField';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 //Todo: translate
 class RulesForm extends AutoForm {
@@ -41,7 +41,7 @@ class RulesForm extends AutoForm {
             return undefined;
         }
     }
-    
+
     addDefaultArrayField = (accessor) => {
         const key = accessor[accessor.length - 1].replace(/__DISPLAYIF/, '');
         const valueAccessor = [...accessor.slice(0, accessor.length - 1), key];
@@ -123,7 +123,7 @@ function StoryRulesForm({
         event: { type: String, trim: true },
         visualization: { type: String, defaultValue: 'none' },
     });
-    
+
     const QueryStringSchema = new SimpleSchema({
         param: { type: String, trim: true, regEx: noSpaces },
         value: {
@@ -171,7 +171,7 @@ function StoryRulesForm({
         eventListeners__DISPLAYIF: { type: Boolean, optional: true },
         when: { type: String, optional: true, defaultValue: 'always' },
     });
-    
+
     export const RulesSchema = new SimpleSchema({
         text: { type: String, optional: true },
         text__DISPLAYIF: { type: Boolean, optional: true },
@@ -180,7 +180,7 @@ function StoryRulesForm({
             optional: true,
         },
     });
-    
+
     export const rootSchema = new SimpleSchema({
         rules: { type: Array, optional: true, minCount: 1 },
         'rules.$': { type: RulesSchema },
@@ -235,7 +235,7 @@ function StoryRulesForm({
             return true;
         }
     };
-    
+
     const optionalFieldRecursion = (model, parentPath) => {
         const currentModel = model;
         const path = parentPath || '';
@@ -263,7 +263,7 @@ function StoryRulesForm({
         }
         return activeModel;
     };
-    
+
     const activeModel = initializeOptionalFields(); // add __DISPLAYIF fields to the incomming model
 
     const validateEnabledFields = (model) => {
@@ -407,7 +407,7 @@ function StoryRulesForm({
                                 >
                                     <AutoField name='' label='Trigger based on number of page visits' data-cy='page-visits-input' step={1} min={0} />
                                 </OptionalField>
-                                    
+
                                 <OptionalField
                                     name='queryString'
                                     label='Trigger if specific query string parameters are present in the URL'

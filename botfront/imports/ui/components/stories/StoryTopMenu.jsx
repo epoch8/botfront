@@ -15,7 +15,7 @@ import { ConversationOptionsContext } from './Context';
 import StoryRulesEditor from './rules/StoryRulesEditor';
 import { can } from '../../../lib/scopes';
 import StoryPrefix from './common/StoryPrefix';
-import { withTranslation } from "react-i18next";    
+import { withTranslation } from 'react-i18next';
 
 const StoryTopMenu = ({
     fragment,
@@ -247,7 +247,7 @@ const StoryTopMenu = ({
                         <StoryRulesEditor
                         // the trigger element will have it's onClick, disabled, and className props modified
                             trigger={(
-                            
+
                                 <Icon
                                     name='stopwatch'
                                     color={rules && rules.length ? 'green' : 'grey'}

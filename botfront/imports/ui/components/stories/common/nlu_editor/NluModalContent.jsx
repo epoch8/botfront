@@ -21,7 +21,7 @@ import { ConversationOptionsContext } from '../../Context';
 import { can } from '../../../../../lib/scopes';
 import { useExamples, useLazyExamples } from '../../../nlu/models/hooks';
 import { ProjectContext } from '../../../../layouts/context';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function sameCanonicalGroup(example, payload) {
     // check if these examples are in the same canonical group
@@ -177,7 +177,7 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
                     metadata: { ...updatedExamples[index].metadata, ...example.metadata },
                 };
             }
-        
+
 
             if (example.isNew) {
                 updatedExamples[index] = canonicalizeExample(example, updatedExamples);
@@ -333,7 +333,7 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
                             header={t('Cannot save changes')}
                             content={t('You must fix invalid utterances prior to saving')}
                         />
-                
+
                         <Popup
                             trigger={(
                                 <Button onClick={handleCancel} data-cy='cancel-nlu-changes' ref={cancelButtonRef}>

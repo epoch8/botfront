@@ -6,6 +6,7 @@ import { debounce } from 'lodash';
 import {
     Message, Button, Icon, Confirm,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import IntentLabel from '../common/IntentLabel';
 import UserUtteranceViewer from '../common/UserUtteranceViewer';
 import { useActivity, useDeleteActivity, useUpsertActivity } from './hooks';
@@ -29,7 +30,6 @@ import ActivityCommandBar from './ActivityCommandBar';
 import CanonicalPopup from '../common/CanonicalPopup';
 import ConversationSidePanel from './ConversationSidePanel';
 import ConversationIcon from './ConversationIcon';
-import { withTranslation } from "react-i18next";
 
 function Activity(props) {
     const [sortType, setSortType] = useState('Newest');
@@ -37,7 +37,7 @@ function Activity(props) {
         intents,
         entities,
     } = useContext(ProjectContext);
-    const { t } = this.props;
+    const { t } = useTranslation('nlu');
     const getSortFunction = () => {
         switch (sortType) {
         case 'Newest':
@@ -95,7 +95,7 @@ function Activity(props) {
     const activityCommandBarRef = useRef();
     const tableRef = useRef();
     const canEdit = useMemo(() => can('incoming:w', projectId), [projectId]);
-    
+
     // always refetch on first page load and sortType change
     useEffect(() => {
         if (refetch) refetch();
@@ -147,12 +147,12 @@ function Activity(props) {
                 .filter(d1 => newData.map(d2 => d2._id).includes(d1._id))
                 .map(d1 => ({ ...d1, ...newData.find(d2 => d2._id === d1._id) })),
         );
-        
+
         const toInsert = dataUpdated.map((utterance) => {
             if (possiblyValidated.includes(utterance._id) && utterance.intent && utterance.validated !== undefined) return { ...utterance, validated: true };
             return utterance;
         });
-       
+
         return upsertActivity({
             variables: { data: toInsert },
             optimisticResponse: {
@@ -168,7 +168,7 @@ function Activity(props) {
     const handleDelete = (utterances) => {
         const ids = utterances.map(u => u._id);
         const fallbackUtterance = getFallbackUtterance(ids);
-        const message = t(`Delete ${utterances.length} incoming utterances?`);
+        const message = `${t('Delete')} ${utterances.length} ${t('incoming utterances?')}`;
         const action = () => deleteActivity({
             variables: { ids },
             optimisticResponse: {
@@ -180,25 +180,25 @@ function Activity(props) {
     };
 
     const handleSetValidated = (utterances, val = true) => {
-        const message = t(`Mark ${utterances.length} incoming utterances as ${
-            val ? 'validated' : 'invalidated'
-        } ?`);
+        const message = `${t('Mark')} ${utterances.length} ${t('incoming utterances as')} ${
+            val ? t('validated') : t('invalidated')
+        } ?`;
         const action = () => handleUpdate(utterances.map(({ _id }) => ({ _id, validated: val })));
         return utterances.length > 1 ? setConfirm({ message, action }) : action();
     };
 
     const handleMarkOoS = (utterances, ooS = true) => {
         const fallbackUtterance = getFallbackUtterance(utterances.map(u => u._id));
-        const message = t(`Mark ${utterances.length} incoming utterances as out of scope?`);
+        const message = `${t('Mark ${utterances.length')} ${t('incoming utterances as out of scope?')}`;
         const action = () => handleUpdate(utterances.map(({ _id }) => ({ _id, ooS })))
             .then(mutationCallback(fallbackUtterance, 'upsertActivity'));
         return utterances.length > 1 ? setConfirm({ message, action }) : action();
     };
 
     const handleSetIntent = (utterances, intent) => {
-        const message = t(intent
-            ? `Set intent of ${utterances.length} incoming utterances to ${intent}?`
-            : `Reset intent of ${utterances.length} incoming utterances?`);
+        const message = intent
+            ? `${t('Set intent of')} ${utterances.length} ${t('incoming utterances to')} ${intent}?`
+            : `${t('Reset intent of')} ${utterances.length} ${t('incoming utterances?')}`;
         const action = () => handleUpdate(
             utterances.map(({ _id }) => ({
                 _id,
@@ -325,7 +325,7 @@ function Activity(props) {
             }}
         />
     );
-        
+
     const columns = [
         { key: '_id', selectionKey: true, hidden: true },
         {
@@ -427,7 +427,7 @@ function Activity(props) {
                         basic
                         color='green'
                         icon
-                        labelPosition={t('left')}
+                        labelPosition='left'
                         data-cy='run-evaluation'
                         onClick={() => setConfirm({
                             message:
@@ -532,4 +532,4 @@ Activity.propTypes = {
 
 Activity.defaultProps = {};
 
-export default withTranslation('nlu')(Activity);
+export default Activity;

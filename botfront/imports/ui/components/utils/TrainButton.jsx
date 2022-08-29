@@ -14,6 +14,7 @@ import {
 import { get } from 'lodash';
 import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
+import { withTranslation } from 'react-i18next';
 import { wrapMeteorCallback } from './Errors';
 import { StoryGroups } from '../../../api/storyGroups/storyGroups.collection';
 import { Projects } from '../../../api/project/project.collection';
@@ -22,7 +23,6 @@ import { ProjectContext } from '../../layouts/context';
 import { can, Can } from '../../../lib/scopes';
 import { languages } from '../../../lib/languages';
 import { runTestCaseStories } from './runTestCaseStories';
-import { withTranslation } from "react-i18next";
 
 class TrainButton extends React.Component {
     constructor(props) {
@@ -405,7 +405,7 @@ class TrainButton extends React.Component {
         const {
             project: { enableSharing, _id: projectId },
         } = this.context;
-        //Todo: translate. Непонятный content
+        const { t } = this.props;
         return (
             <Popup
                 trigger={(
@@ -432,7 +432,7 @@ class TrainButton extends React.Component {
                                 !enableSharing,
                             )
                             }
-                            label={enableSharing ? 'Sharing enabled' : 'Sharing disabled'}
+                            label={enableSharing ? t('Sharing enabled') : t('Sharing disabled')}
                         />
                         {enableSharing && (
                             <p>
@@ -443,7 +443,7 @@ class TrainButton extends React.Component {
                                     data-cy='copy-sharing-link'
                                     onClick={this.copyToClipboard}
                                 >
-                                    <Icon name='linkify' /> Copy link
+                                    <Icon name='linkify' /> {t('Copy link')}
                                 </button>
                             </p>
                         )}
@@ -474,21 +474,22 @@ TrainButton.propTypes = {
     status: PropTypes.string,
     partialTrainning: PropTypes.bool,
     ready: PropTypes.bool.isRequired,
+    t: PropTypes.any,
 };
 
 TrainButton.defaultProps = {
     popupContent: '',
     status: '',
     partialTrainning: false,
+    t: null,
 };
 
-export default withTracker((props) => {
+export default withTranslation('utils')(withTracker((props) => {
     // Gets the required number of selected storygroups and sets the content and popup for the train button
-    const { projectId } = props;
+    const { projectId, t } = props;
     const trainingStatusHandler = Meteor.subscribe('training.status', projectId);
     const storyGroupHandler = Meteor.subscribe('storiesGroup', projectId);
     const ready = storyGroupHandler.ready() && trainingStatusHandler.ready();
-    const { t } = this.props;
 
     let storyGroups;
     let selectedStoryGroups;
@@ -505,7 +506,7 @@ export default withTracker((props) => {
         selectedStoryGroups = storyGroups.filter(storyGroup => storyGroup.selected);
         partialTrainning = selectedStoryGroups.length > 0;
         if (partialTrainning && selectedStoryGroups.length > 1) {
-            popupContent = t(`Train NLU and stories from ${selectedStoryGroups.length} focused story groups.`);
+            popupContent = `${t('Train NLU and stories from')} ${selectedStoryGroups.length} ${t('focused story groups')}.`;
         } else if (selectedStoryGroups && selectedStoryGroups.length === 1) {
             popupContent = t('Train NLU and stories from 1 focused story group.');
         } else if (status === 'notReachable') {
@@ -518,5 +519,6 @@ export default withTracker((props) => {
         popupContent,
         status,
         partialTrainning,
+        t,
     };
-})(withTranslation('utils')(TrainButton));
+})(TrainButton));

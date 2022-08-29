@@ -8,7 +8,7 @@ import IconButton from '../common/IconButton';
 import SequenceSelector from '../common/SequenceSelector';
 import EntityDropdown from '../nlu/common/EntityDropdown';
 import EntityValueEditor from '../stories/common/EntityValueEditor';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 const ExtractionItem = (props) => {
     const {

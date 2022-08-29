@@ -6,7 +6,7 @@ import { can } from '../../../lib/scopes';
 import ConfirmPopup from '../common/ConfirmPopup';
 import ToolTipPopup from '../common/ToolTipPopup';
 import { ProjectContext } from '../../layouts/context';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 class BranchTabLabel extends React.Component {
     constructor(props) {

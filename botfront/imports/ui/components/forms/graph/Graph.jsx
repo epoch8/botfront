@@ -15,7 +15,7 @@ import StartNode from './StartNode';
 import SlotNode from './SlotNode';
 import SlotSetNode from './SlotSetNode';
 import FormEditorContainer from '../FormEditorContainer';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 const nodeTypes = {
     start: StartNode,
@@ -46,7 +46,7 @@ const SlotsGraph = (props) => {
         ...elm,
         className: getClassName(elm.type),
     });
-    
+
     const [elements, setElements] = useState([]);
     const formattedElements = useMemo(() => elements.map(elementsReducer), [elements]);
     const [shiftKey, setShiftKey] = useState(false);
@@ -55,7 +55,7 @@ const SlotsGraph = (props) => {
     const [formSettings, setFormSettings] = useState(incomingFormSettings);
     const [slotChoiceModalOpen, setSlotChoiceModalOpen] = useState(null);
     const { t } = useTranslation('forms');
-    
+
     // This lets us update the position of the grid canvas ourself.
     const setTransform = useStoreActions(actions => actions.setInitTransform);
     const setSelectedElements = useStoreActions(actions => actions.unsetNodesSelection);

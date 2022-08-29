@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Confirm } from 'semantic-ui-react';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 import ChangesSaved from "./ChangesSaved";
 
 const buttonStyle = {

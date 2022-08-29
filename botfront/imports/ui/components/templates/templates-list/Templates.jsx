@@ -14,7 +14,7 @@ import { Loading } from '../../utils/Utils';
 import PageMenu from '../../utils/PageMenu';
 import { DELETE_BOT_RESPONSE } from '../mutations';
 import { ProjectContext } from '../../../layouts/context';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 import Can from '../../roles/Can';
 

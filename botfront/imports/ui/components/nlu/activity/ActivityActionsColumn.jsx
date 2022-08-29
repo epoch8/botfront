@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Button, Popup, Icon } from 'semantic-ui-react';
 import IconButton from '../../common/IconButton';
 import SmartTip from './SmartTip';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function ActivityActionsColumn(props) {
     const {

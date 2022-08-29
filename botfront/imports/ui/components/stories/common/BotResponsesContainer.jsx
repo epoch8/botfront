@@ -10,6 +10,7 @@ import {
 } from 'semantic-ui-react';
 import { useMutation } from '@apollo/react-hooks';
 import { safeLoad } from 'js-yaml';
+import { useTranslation } from 'react-i18next';
 
 import IconButton from '../../common/IconButton';
 import BotResponseEditor from '../../templates/templates-list/BotResponseEditor';
@@ -25,7 +26,6 @@ import {
 import BotResponseName from './BotResponseName';
 import { RESP_FROM_LANG } from '../graphql/mutations';
 import ConfirmPopup from '../../common/ConfirmPopup';
-import { withTranslation } from "react-i18next";
 
 export const ResponseContext = React.createContext();
 
@@ -67,6 +67,7 @@ const BotResponsesContainer = (props) => {
     const [uploadImage] = useUpload(name);
     const [deletePopupOpen, setDeletePopupOpen] = useState(false);
     const typeName = useMemo(() => template && template.__typename, [template]);
+    const { t } = useTranslation('stories');
 
     const editable = can('responses:w', projectId) && initialEditable;
 
@@ -142,7 +143,7 @@ const BotResponsesContainer = (props) => {
             setToBeCreated(null);
         }
     }, [toBeCreated]);
-    
+
     const renderResponse = (response, index, sequenceArray) => (
         <React.Fragment
             key={`${response.text}-${(sequenceArray[index + 1] || {}).text}-${index}`}
@@ -178,7 +179,6 @@ const BotResponsesContainer = (props) => {
     );
 
     const renderThemeTag = () => (<span className='bot-response theme-tag'>{theme}</span>);
-    const { t } = this.props;
 
     return (
         <ResponseContext.Provider value={{ name, uploadImage }}>
@@ -248,11 +248,10 @@ const BotResponsesContainer = (props) => {
                                 trigger={<span><IconButton onMouseDown={() => {}} icon='trash' /></span>}
                                 content={(
                                     <ConfirmPopup
-                                        title='Delete response?'
-                                        description={t(responseLocations.length > 1
-                                            ? 'Remove this response from the current fragment'
-                                            : 'Remove this response from the current fragment and delete it'
-                                        )}
+                                        title={t('Delete response?')}
+                                        description={responseLocations.length > 1
+                                            ? t('Remove this response from the current fragment')
+                                            : t('Remove this response from the current fragment and delete it')}
                                         onYes={() => {
                                             setDeletePopupOpen(false);
                                             onDeleteAllResponses();
@@ -307,4 +306,4 @@ BotResponsesContainer.defaultProps = {
     theme: 'default',
 };
 
-export default withTranslation('stories')(BotResponsesContainer);
+export default BotResponsesContainer;

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { Form, Segment } from 'semantic-ui-react';
 import TextArea from 'react-textarea-autosize';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 import { debounce } from 'lodash';
 import UserUtteranceViewer from '../nlu/common/UserUtteranceViewer';
 import { ProjectContext } from '../../layouts/context';

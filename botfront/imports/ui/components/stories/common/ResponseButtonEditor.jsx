@@ -8,7 +8,7 @@ import {
     stringPayloadToObject,
     objectPayloadToString,
 } from '../../../../lib/story.utils';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function ResponseButtonEditor({
     value: {

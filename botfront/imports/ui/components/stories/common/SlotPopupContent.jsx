@@ -7,7 +7,7 @@ import { groupBy } from 'lodash';
 import { ProjectContext } from '../../../layouts/context';
 import { ConversationOptionsContext } from '../Context';
 import { slotValueToLabel } from '../SlotLabel';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 const SlotPopupContent = (props) => {
     const {

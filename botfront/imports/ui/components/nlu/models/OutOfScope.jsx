@@ -4,7 +4,7 @@ import {
     Message, Popup, Button, Icon,
 } from 'semantic-ui-react';
 import { saveAs } from 'file-saver';
-import { withTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 import IntentLabel from '../common/IntentLabel';
 import UserUtteranceViewer from '../common/UserUtteranceViewer';
 import { useActivity } from '../activity/hooks';
@@ -24,7 +24,7 @@ import IconButton from '../../common/IconButton';
 
 function OutOfScope() {
     const [sortType, setSortType] = useState('Newest');
-    const { t } = this.props;
+    const { t } = useTranslation('nlu');
     const getSortFunction = () => {
         switch (sortType) {
         case 'Newest':
@@ -128,7 +128,7 @@ function OutOfScope() {
                     )}
                 />
             );
-    
+
         return (
             <div key={`${datum._id}-actions`} className='side-by-side narrow right'>
                 {action}
@@ -148,14 +148,14 @@ function OutOfScope() {
 
     const columns = [
         {
-            header: 'Intent', key: 'intent', style: { width: '200px' }, render: renderIntent,
+            header: t('Intent'), key: 'intent', style: { width: '200px' }, render: renderIntent,
         },
         {
-            header: 'Example', key: 'text', style: { width: '100%' }, render: renderExample,
+            header: t('Example'), key: 'text', style: { width: '100%' }, render: renderExample,
         },
         ...(can('nlu-data:w', projectId) ? [
             {
-                header: 'Actions', key: 'actions', style: { width: '110px' }, render: renderActions,
+                header: t('Actions'), key: 'actions', style: { width: '110px' }, render: renderActions,
             },
         ] : []),
     ];
@@ -200,4 +200,4 @@ function OutOfScope() {
 
 OutOfScope.propTypes = {};
 
-export default withTranslation('nlu')(OutOfScope);
+export default OutOfScope;

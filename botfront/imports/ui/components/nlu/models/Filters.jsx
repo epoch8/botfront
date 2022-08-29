@@ -6,7 +6,7 @@ import {
 import moment from 'moment';
 import DatePicker from '../../common/DatePicker';
 import { ProjectContext } from '../../../layouts/context';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 import { applyTimezoneOffset } from '../../../../lib/graphs';
 import getColor from '../../../../lib/getColors';
 

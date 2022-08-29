@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icon, Popup } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 const ExceptionWrapper = (props) => {
     const { children, exceptions } = props;

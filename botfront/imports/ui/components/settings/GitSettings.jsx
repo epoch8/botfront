@@ -11,7 +11,7 @@ import {
     Icon,
 } from 'semantic-ui-react';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 import { GitSettingsSchema } from '../../../api/project/project.schema';
 import { Projects } from '../../../api/project/project.collection';
 import { wrapMeteorCallback } from '../utils/Errors';
@@ -27,7 +27,7 @@ class GitSettings extends React.Component {
         this.state = { saving: false, saved: false, hidden: true };
     }
 
-    
+
 
     componentWillUnmount() {
         clearTimeout(this.successTimeout);
@@ -51,34 +51,34 @@ class GitSettings extends React.Component {
                         this.setState({ saved: false });
                         this.hideCreds(true)
                     }, 2 * 1000);
-                    
+
                 }
                 this.setState({ saving: false });
-                
+
             }),
         );
     };
 
-    gitSettingsEmpty = (gitSettings) => { 
+    gitSettingsEmpty = (gitSettings) => {
         if (!gitSettings) return true
         return Object.values(gitSettings).every(val => !val)
     }
-   
+
 
     renderGitSettings = () => {
         const { gitSettings, projectId } = this.props;
         const { saving, saved, hidden } = this.state;
         const bridge = new SimpleSchema2Bridge(GitSettingsSchema);
         const hasWritePermission = can('git-credentials:w', projectId);
-        const obfuscation = { 
+        const obfuscation = {
         //we use this obfuscation because it matches the  validation regex, thus no error are shown when obfuscating
-        gitString: 'https://******:******@******.******#******', 
-        publicSshKey: '**********************', 
+        gitString: 'https://******:******@******.******#******',
+        publicSshKey: '**********************',
         privateSshKey:'**********************'
     }
         const isGitSettingsEmpty = this.gitSettingsEmpty(gitSettings)
         return (
-            
+
             <AutoForm
                 className='git-settings-form'
                 schema={bridge}
@@ -128,19 +128,19 @@ class GitSettings extends React.Component {
                     data-cy='private-ssh-key'
                 />
                 { !hidden && <ErrorsField /> }
-              
+
                 {hasWritePermission && (!hidden || isGitSettingsEmpty) && <SaveButton saved={saved} saving={saving} />}
-                {!isGitSettingsEmpty  ? <Button  
+                {!isGitSettingsEmpty  ? <Button
             className='reveal-hide'
-            data-cy='reveal-button' 
+            data-cy='reveal-button'
             floated='right'
-            onClick={(e)=>{ e.preventDefault(); this.hideCreds(!hidden)}}> 
+            onClick={(e)=>{ e.preventDefault(); this.hideCreds(!hidden)}}>
                 {hidden ? 'Reveal ': 'Hide' }
             </Button>
             : <></>}
-                
+
             </AutoForm>
-            
+
         );
     };
 

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Input, Button, Label } from 'semantic-ui-react';
 import IconButton from '../../common/IconButton';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function EntityValueEditor({
     entity,

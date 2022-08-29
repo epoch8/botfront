@@ -4,7 +4,7 @@ import { Button, Grid } from 'semantic-ui-react';
 import LookupTableValueEditor from './LookupTableValueEditor';
 import LookupTableListEditor from './LookupTableListEditor';
 import LookupTableStringEditor from './LookupTableStringEditor';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 class AddLookupTableRow extends React.Component {
     constructor(props) {
@@ -23,7 +23,7 @@ class AddLookupTableRow extends React.Component {
 
         // Weeds out empty list items
         if (multiple) obj[listAttribute] = obj[listAttribute].filter(listItem => listItem);
-        
+
         onAdd(obj, (err) => {
             if (!err) this.setState(this.emptyState());
         });

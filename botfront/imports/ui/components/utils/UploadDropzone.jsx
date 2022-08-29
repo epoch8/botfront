@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { NativeTypes } from 'react-dnd-html5-backend-cjs';
 import { useDrop } from 'react-dnd-cjs';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 import {
     Message, Icon, Button, Segment,
 } from 'semantic-ui-react';

@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import {
     Icon, Menu, Input, Popup, Dropdown,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import { formNameIsValid } from '../../../lib/client.safe.utils';
 import { tooltipWrapper } from '../utils/Utils';
 import { storyTypeCustomizations } from '../../../lib/story.types';
 import StoryPrefix from './common/StoryPrefix';
-import { withTranslation } from "react-i18next";
 
 const StoryGroupTreeNode = (props) => {
     const {
@@ -36,6 +36,8 @@ const StoryGroupTreeNode = (props) => {
     const [newTitle, setNewTitle] = useState('');
     const [selectAllNext, setSelectAllNext] = useState(false);
     const renamerRef = useRef();
+
+    const { t } = useTranslation('stories');
 
     const isSmartNode = !!item.id.match(/^.*_SMART_/);
 
@@ -148,7 +150,6 @@ const StoryGroupTreeNode = (props) => {
         );
     };
 
-    //Todo: translate
     const renderItemActions = () => (
         <div className={`item-actions ${disabled ? 'hidden' : ''}`}>
             {!disableEdit && !isBeingRenamed && (
@@ -172,7 +173,7 @@ const StoryGroupTreeNode = (props) => {
                                         }
                                         : {})}
                                 />,
-                                'Focus story group',
+                                t('Focus story group'),
                             )}
                             {tooltipWrapper(
                                 <Dropdown
@@ -229,8 +230,7 @@ const StoryGroupTreeNode = (props) => {
                 <Popup
                     content={(
                         <p>
-                            This story is unpublished and is only trained in the
-                            development environment
+                            {t('This story is unpublished and is only trained in the development environment')}
                         </p>
                     )}
                     trigger={(
@@ -292,7 +292,7 @@ const StoryGroupTreeNode = (props) => {
                     {isBeingRenamed ? (
                         <>
                             <Popup
-                                content='Form names must end with _form and may not contain any special characters'
+                                content={t('Form names must end with _form and may not contain any special characters')}
                                 trigger={(
                                     <Input
                                         onChange={(_, { value }) => setNewTitle(value)}
@@ -369,4 +369,4 @@ StoryGroupTreeNode.defaultProps = {
 
 const StoryGroupTreeNodeWrapped = props => <StoryGroupTreeNode {...props} />;
 
-export default withTranslation('stories')(StoryGroupTreeNodeWrapped);
+export default StoryGroupTreeNodeWrapped;

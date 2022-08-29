@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import IconButton from '../../common/IconButton';
-import { withTranslation } from "react-i18next";
 
 const ButtonTypeToggle = (props) => {
     const { className, responseType, onToggleButtonType } = props;
-    const { t } = this.props;
+    const { t } = useTranslation('templates');
 
     const renderPopupContent = () => {
         if (responseType === 'TextWithButtonsPayload') {
@@ -27,7 +27,7 @@ const ButtonTypeToggle = (props) => {
         }
         return <></>;
     };
-    
+
     return (
         <>
             {(responseType === 'TextWithButtonsPayload' || responseType === 'QuickRepliesPayload') && (
@@ -44,8 +44,8 @@ const ButtonTypeToggle = (props) => {
                             />
                         </span>
                     )}
-                    header={t(renderPopupHeader())}
-                    content={t(renderPopupContent())}
+                    header={renderPopupHeader()}
+                    content={renderPopupContent()}
                 />
             )}
         </>
@@ -63,4 +63,4 @@ ButtonTypeToggle.defaultProps = {
     responseType: null,
 };
 
-export default withTranslation('templates')(ButtonTypeToggle);
+export default ButtonTypeToggle;

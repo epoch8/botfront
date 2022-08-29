@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
     Dropdown, Search,
 } from 'semantic-ui-react';
-import { withTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 const BotResponsePopupContent = (props) => {
     const {
@@ -12,11 +12,12 @@ const BotResponsePopupContent = (props) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [closeNext, setCloseNext] = useState(false);
     const [menuOpen, setMenuOpen] = useState();
+    const { t } = useTranslation('stories');
 
     useEffect(() => {
         if (closeNext && !modalOpen) onClose();
     }, [closeNext]);
-    // Todo: translate
+
     return (
         <>
             {/* <Modal
@@ -56,26 +57,26 @@ const BotResponsePopupContent = (props) => {
                     { !disableExisting
                         && (
                             <>
-                                <Dropdown.Header>Select from existing</Dropdown.Header>
+                                <Dropdown.Header>{t('Select from existing')}</Dropdown.Header>
                                 <Dropdown.Item onClick={() => setModalOpen(true)}>
-                                    <Search fluid placeholder='Search responses...' />
+                                    <Search fluid placeholder={t('Search responses...')} />
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
-                                <Dropdown.Header>Or use a template</Dropdown.Header>
+                                <Dropdown.Header>{t('Or use a template')}</Dropdown.Header>
                             </>
                         )
                     }
-                    <Dropdown.Item onClick={() => onCreate('TextPayload')} data-cy='from-text-template'>Text</Dropdown.Item>
-                    <Dropdown.Item disabled={noButtonResponse} onClick={() => onCreate('QuickRepliesPayload')} data-cy='from-qr-template'>Buttons and quick replies</Dropdown.Item>
-                    <Dropdown.Item disabled={noButtonResponse} onClick={() => onCreate('CarouselPayload')} data-cy='from-carousel-template'>Carousel</Dropdown.Item>
-                    <Dropdown.Item onClick={() => onCreate('ImagePayload')} data-cy='from-image-template'>Image</Dropdown.Item>
-                    <Dropdown.Item onClick={() => onCreate('CustomPayload')} data-cy='from-custom-template'>Custom</Dropdown.Item>
+                    <Dropdown.Item onClick={() => onCreate('TextPayload')} data-cy='from-text-template'>{t('Text')}</Dropdown.Item>
+                    <Dropdown.Item disabled={noButtonResponse} onClick={() => onCreate('QuickRepliesPayload')} data-cy='from-qr-template'>{t('Buttons and quick replies')}</Dropdown.Item>
+                    <Dropdown.Item disabled={noButtonResponse} onClick={() => onCreate('CarouselPayload')} data-cy='from-carousel-template'>{t('Carousel')}</Dropdown.Item>
+                    <Dropdown.Item onClick={() => onCreate('ImagePayload')} data-cy='from-image-template'>{t('Image')}</Dropdown.Item>
+                    <Dropdown.Item onClick={() => onCreate('CustomPayload')} data-cy='from-custom-template'>{t('Custom')}</Dropdown.Item>
                     {!limitedSelection
                         && (
-                        <>
-                            <Dropdown.Item onClick={() => onCreate('VideoPayload')} data-cy='from-video-template'>Video</Dropdown.Item>
-                            <Dropdown.Item disabled={noButtonResponse} onClick={() => onCreate('ButtonPayload')} data-cy='from-button-template'>Button template</Dropdown.Item>
-                        </>
+                            <>
+                                <Dropdown.Item onClick={() => onCreate('VideoPayload')} data-cy='from-video-template'>{t('Video')}</Dropdown.Item>
+                                <Dropdown.Item disabled={noButtonResponse} onClick={() => onCreate('ButtonPayload')} data-cy='from-button-template'>{t('Button template')}</Dropdown.Item>
+                            </>
                         )
                     }
                 </Dropdown.Menu>
@@ -109,4 +110,4 @@ BotResponsePopupContent.defaultProps = {
     trackOpenMenu: () => {},
 };
 
-export default withTranslation('stories')(BotResponsePopupContent);
+export default BotResponsePopupContent;

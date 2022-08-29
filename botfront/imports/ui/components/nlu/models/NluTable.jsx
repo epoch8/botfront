@@ -4,8 +4,8 @@ import React, {
 import {
     Popup, Checkbox, Icon, Confirm, Button,
 } from 'semantic-ui-react';
-import { withTranslation } from "react-i18next";
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import DataTable from '../../common/DataTable';
 import 'react-s-alert/dist/s-alert-default.css';
 import Filters from './Filters';
@@ -41,7 +41,7 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
     const { intents, entities, project: { _id: projectId } } = useContext(ProjectContext);
     const [editExampleId, setEditExampleId] = useState([]);
     const canEdit = can('nlu-data:w', projectId);
-    const { t } = this.props;
+    const { t } = useTranslation('nlu');
 
     const tableRef = useRef(null);
     const nluCommandBarRef = useRef(null);
@@ -180,7 +180,7 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
                         size='small'
                         data-cy='icon-gem'
                     />
-                         
+
                 </div>
             );
         }
@@ -480,6 +480,7 @@ NluTable.propTypes = {
     noDrafts: PropTypes.bool,
     renderLabelColumn: PropTypes.func,
     additionalIntentOption: PropTypes.string,
+    t: PropTypes.any,
 };
 
 NluTable.defaultProps = {
@@ -494,5 +495,6 @@ NluTable.defaultProps = {
     noDrafts: false,
     renderLabelColumn: null,
     additionalIntentOption: '',
+    t: null,
 };
-export default withTranslation('nlu')(NluTable);
+export default NluTable;

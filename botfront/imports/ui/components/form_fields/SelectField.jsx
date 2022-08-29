@@ -9,7 +9,7 @@ import filterDOMProps from 'uniforms/filterDOMProps';
 import {
     Dropdown, Label, Icon, Popup,
 } from 'semantic-ui-react';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 import ConfirmPopup from '../common/ConfirmPopup';
 
 const getOptions = (allowedValues, props = {}) => {

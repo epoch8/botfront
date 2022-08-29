@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { GraphQLBridge } from 'uniforms-bridge-graphql';
 import { buildASTSchema, parse, extendSchema } from 'graphql';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 import {
     Message, Tab,
 } from 'semantic-ui-react';
@@ -79,7 +79,7 @@ function ResponseMetadataForm({
     ];
 
     const schema = extendSchema(buildASTSchema(parse(`
-    
+
     type PageChange {
         regex: Boolean
         url: String!
@@ -118,7 +118,7 @@ function ResponseMetadataForm({
         css: String
         style: String!
     }
-    
+
     ${basicSchemaString}
 
     # This is required by buildASTSchema
@@ -202,7 +202,7 @@ function ResponseMetadataForm({
                         <>
                             <InfoField name='domHighlight.selector' label='CSS selector' info='The CSS selector of the DOM element to highlight' />
                             <ButtonSelectField name='domHighlight.style' />
-                            
+
                             <DisplayIf condition={context => context.model.domHighlight && context.model.domHighlight.style === 'class'}>
                                 <AutoField name='domHighlight.css' label='Class name' />
                             </DisplayIf>
@@ -318,14 +318,14 @@ function ResponseMetadataForm({
         if (newModel.pageEventCallbacks && !newModel.pageEventCallbacks.enabled) delete newModel.pageEventCallbacks;
         // Remove enabled fields
         if (newModel.domHighlight && newModel.domHighlight.enabled) delete newModel.domHighlight.enabled;
-        
+
         if (newModel.domHighlight && !newModel.domHighlight.tooltipCloseEnabled) {
             delete newModel.domHighlight.tooltipClose
         }
         if (newModel.domHighlight) {
             delete newModel.domHighlight.tooltipCloseEnabled
         }
-        
+
         if (newModel.customCss && newModel.customCss.enabled) delete newModel.customCss.enabled;
         if (newModel.pageChangeCallbacks && newModel.pageChangeCallbacks.enabled) {
             delete newModel.pageChangeCallbacks.enabled;

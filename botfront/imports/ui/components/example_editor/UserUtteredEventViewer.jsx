@@ -4,7 +4,7 @@ import { Comment, Confirm, Popup } from 'semantic-ui-react';
 
 import UserUtteranceViewer from '../nlu/common/UserUtteranceViewer';
 import { ConversationBrowserContext } from '../conversations/context';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 export default function UserUtteredEventViewer({ event, author }) {
     const [open, setOpen] = useState(false);

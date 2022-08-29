@@ -7,7 +7,7 @@ import LookupTable from './LookupTable';
 import InlineSearch from '../utils/InlineSearch';
 import MinScoreEdit from './MinScoreEdit';
 import { can } from '../../../lib/scopes';
-import {withTranslation} from "react-i18next";
+import {withTranslation} from 'react-i18next';
 
 function ModeEdit({ gazette, onEdit }) {
     function onUpdateText(value, callback) {

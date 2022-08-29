@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Menu, Popup } from 'semantic-ui-react';
 
 import TextInput from './TextInput';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function SearchMenuItem({ name, activeName, onItemClick }) {
     function onClick() {

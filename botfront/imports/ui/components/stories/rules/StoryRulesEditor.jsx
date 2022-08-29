@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Alert from 'react-s-alert';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 import StoryRulesForm from './StoryRulesForm';
 

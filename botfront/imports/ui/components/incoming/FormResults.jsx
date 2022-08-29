@@ -8,7 +8,7 @@ import { saveAs } from 'file-saver';
 import { useQuery } from '@apollo/react-hooks';
 import { GET_FORMS } from '../stories/graphql/queries';
 import { Loading } from '../utils/Utils';
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 
 const FormResults = (props) => {
     const { projectId, environment } = props;

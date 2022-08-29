@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 const BadLineLabel = (props) => {
     const { lineMd, lineIndex } = props;

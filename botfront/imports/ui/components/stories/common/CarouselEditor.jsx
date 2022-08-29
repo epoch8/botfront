@@ -6,7 +6,7 @@ import { useDrop } from 'react-dnd-cjs';
 import CarouselSlide from './CarouselSlide';
 import { useEventListener } from '../../utils/hooks';
 import { defaultCarouselSlide } from '../../../../lib/botResponse.utils';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function CarouselEditor(props) {
     const {

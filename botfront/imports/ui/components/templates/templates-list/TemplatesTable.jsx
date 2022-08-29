@@ -4,7 +4,7 @@ import {
     Icon, Label, Tab, Message, Popup,
 } from 'semantic-ui-react';
 import React from 'react';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 import { find, sortBy } from 'lodash';
 import { connect } from 'react-redux';
 import 'react-s-alert/dist/s-alert-default.css';

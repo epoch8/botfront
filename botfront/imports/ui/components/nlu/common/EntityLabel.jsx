@@ -7,7 +7,7 @@ import EntityDropdown from './EntityDropdown';
 import EntityValueEditor from '../../stories/common/EntityValueEditor';
 import getColor from '../../../../lib/getColors';
 import { useEventListener } from '../../utils/hooks';
-import { withTranslation } from "react-i18next";
+import { withTranslation } from 'react-i18next';
 
 function Entity({
     value,
