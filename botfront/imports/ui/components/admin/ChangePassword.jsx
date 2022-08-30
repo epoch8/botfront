@@ -59,10 +59,10 @@ class ChangePassword extends React.Component {
     };
 
     handleChangePassword = (formData) => {
-        const { userId } = this.props;
+        const { userId, t } = this.props;
         const { password, passwordVerify } = formData;
         if (password !== passwordVerify) {
-            Alert.error('Passwords don\'t match', {
+            Alert.error(t('Passwords don\'t match'), {
                 position: 'bottom',
                 timeout: 2000,
             });
@@ -71,13 +71,13 @@ class ChangePassword extends React.Component {
 
         Meteor.call('user.changePassword', userId, password, (err) => {
             if (err) {
-                Alert.error(`Error: ${err.reason}`, {
+                Alert.error(`${t('Error:')} ${err.reason}`, {
                     position: 'bottom',
                     timeout: 'none',
                 });
             } else {
                 this.setState(this.getInitialState());
-                Alert.success('Password changed', {
+                Alert.success(t('Password changed'), {
                     position: 'bottom',
                     timeout: 2000,
                 });
@@ -89,10 +89,10 @@ class ChangePassword extends React.Component {
         const { t } = this.props;
         return (
             <AutoForm schema={changePasswordSchemaBridge} onSubmit={this.handleChangePassword}>
-                <Header>Change Password</Header>
+                <Header>{t('Change Password')}</Header>
                 <AutoField name='password' placeholder={t('password')} type='password' label={null} />
                 <AutoField name='passwordVerify' placeholder={t('password')} type='password' label={null} />
-                <Button data-cy='change-password'>{t("Change")}</Button>
+                <Button data-cy='change-password'>{t('Change')}</Button>
                 <ErrorsField />
             </AutoForm>
         );

@@ -2,8 +2,8 @@ import React from 'react';
 import { Link } from 'react-router';
 import { Container, Header } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import CrashReportButton from './utils/CrashReportButton';
 import { withTranslation } from 'react-i18next';
+import CrashReportButton from './utils/CrashReportButton';
 
 class ErrorBoundary extends React.Component {
     constructor(props) {
@@ -25,8 +25,8 @@ class ErrorBoundary extends React.Component {
         const { error, reported } = this.state;
         const {
             children: { props: { location: { pathname = '' } = {} } = {} } = {},
+            t,
         } = this.props;
-        const { t } = this.props;
         if (this.isRootUrlError()) {
             /*
                 Users commonly forget to setup the ROOT_URL environment variable which
@@ -44,10 +44,9 @@ class ErrorBoundary extends React.Component {
                             as='h1'
                             style={{ fontFamily: 'Hind, sans-serif', fontSize: '40px' }}
                         >
-                            Please configure the ROOT_URL environment variable
+                            {t('Please configure the ROOT_URL environment variable')}
                             <Header.Subheader style={{ marginTop: '10px' }}>
-                                The ROOT_URL environment variable must be set to
-                                the public URL where your instance of Botfront can be reached.
+                                {t('The ROOT_URL environment variable must be set to the public URL where your instance of Botfront can be reached.')}
                             </Header.Subheader>
                         </Header>
                         <p>
@@ -67,15 +66,15 @@ class ErrorBoundary extends React.Component {
                         as='h1'
                         style={{ fontFamily: 'Hind, sans-serif', fontSize: '160px' }}
                     >
-                        Oops!
+                        {t('Oops!')}
                         <Header.Subheader style={{ marginTop: '10px' }}>
-                            Something went wrong. Sorry about that.
+                            {t('Something went wrong. Sorry about that.')}
                         </Header.Subheader>
                     </Header>
                     <p>
-                        {t(reported
-                            ? 'We\'re working on it!'
-                            : 'Help the Botfront project by reporting the issue.')}
+                        {reported
+                            ? t('We\'re working on it!')
+                            : t('Help the Botfront project by reporting the issue.')}
                     </p>
                     <p>
                         <CrashReportButton
@@ -85,7 +84,7 @@ class ErrorBoundary extends React.Component {
                             onLoad={rep => this.setState({ reported: rep })}
                         />
                     </p>
-                    <Link to='/'>&#8617; home</Link>
+                    <Link to='/'>{t('&#8617; home')}</Link>
                 </div>
             </Container>
         );

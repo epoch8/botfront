@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: bitnami/mongodb:4.2.3-debian-10-r31
+    restart: always
+    user: root
+    environment:
+      - MONGODB_DATABASE=bf
+      - MONGODB_DISABLE_SYSTEM_LOG=no
+      - MONGODB_ENABLE_DIRECTORY_PER_DB=no
+      - MONGODB_ENABLE_IPV6=no
+      - MONGODB_PASSWORD=SheeF2faidaen2
+      - MONGODB_ROOT_PASSWORD=vahS1Eeyocha0cho
+      - MONGODB_SYSTEM_LOG_VERBOSITY=2
+      - MONGODB_USERNAME=botfront
+    volumes:
+      - ./mongodb:/bitnami/mongodb/
+    ports:
+      - 27117:27017
