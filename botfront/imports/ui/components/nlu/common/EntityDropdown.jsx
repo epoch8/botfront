@@ -1,9 +1,10 @@
 import { Dropdown } from 'semantic-ui-react';
 import React, { useState, useContext, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
+
 import IconButton from '../../common/IconButton';
 import { ProjectContext } from '../../../layouts/context';
-import { withTranslation } from 'react-i18next';
 
 // eslint-disable-next-line no-control-regex
 const asciiChar = /^[\x21-\x7E]+$/;
@@ -28,7 +29,7 @@ function EntityDropdown({
             })),
         [entities, entity],
     );
-    const { t } = this.props;
+    const { t } = useTranslation('nlu');
     const [searchInputState, setSearchInputState] = useState('');
 
     const handleSearchChange = (_e, { searchQuery }) => {
@@ -53,7 +54,7 @@ function EntityDropdown({
                 selection
                 value={entity && entity.entity}
                 allowAdditions={allowAdditions}
-                additionLabel='Add entity: '
+                additionLabel={t('Add entity: ')}
                 onAddItem={(_, { value }) => onAddItem(value)}
                 onChange={(_, { value }) => onChange(value)}
                 onSearchChange={handleSearchChange}
@@ -85,4 +86,4 @@ EntityDropdown.defaultProps = {
     disabled: false,
 };
 
-export default withTranslation('nlu')(EntityDropdown);
+export default EntityDropdown;

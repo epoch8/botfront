@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Popup, Icon } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import IconButton from '../../common/IconButton';
 import SmartTip from './SmartTip';
-import { withTranslation } from 'react-i18next';
 
 function ActivityActionsColumn(props) {
     const {
@@ -15,7 +16,8 @@ function ActivityActionsColumn(props) {
         onMarkOoS,
         onDelete,
     } = props;
-    const { t } = this.props;
+
+    const { t } = useTranslation('nlu');
 
     const renderDeleteAllButton = utterances => mainAction => (
         <Button
@@ -29,8 +31,8 @@ function ActivityActionsColumn(props) {
         >
             <Icon name='trash' />
             {utterances.length === 1
-                ? 'Delete this utterance'
-                : `Delete ${utterances.length} utterances like this`}
+                ? t('Delete this utterance')
+                : `${t('Delete')} ${utterances.length} ${t('utterances like this')}`}
         </Button>
     );
 
@@ -47,7 +49,7 @@ function ActivityActionsColumn(props) {
             key={`${utterance._id}-delete`}
         >
             <Icon name='trash' />{' '}
-            {mainAction ? 'Delete this utterance' : 'Delete this one only'}
+            {mainAction ? t('Delete this utterance') : t('Delete this one only')}
         </Button>
     );
 
@@ -191,4 +193,4 @@ ActivityActionsColumn.propTypes = {
 
 ActivityActionsColumn.defaultProps = {};
 
-export default withTranslation('nlu')(ActivityActionsColumn);
+export default ActivityActionsColumn;

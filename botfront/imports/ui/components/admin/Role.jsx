@@ -3,11 +3,11 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import {
     Container, Segment, Button, Message,
 } from 'semantic-ui-react';
-import { withTranslation } from 'react-i18next';
 import React, { useState, useEffect } from 'react';
 import { browserHistory } from 'react-router';
 import SimpleSchema from 'simpl-schema';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { rolesDataSimpleSchema as rolesDataSchema } from '../../../api/graphql/rolesData/rolesData.model';
 import { GET_ROLES_DATA, UPSERT_ROLES_DATA, DELETE_ROLE_DATA } from '../utils/queries';
@@ -24,7 +24,6 @@ const children = new SimpleSchema({
 const rolesDataSchemaWithChildren = children.extend(rolesDataSchema);
 
 const Role = (props) => {
-    const { t } = props;
     const { params } = props;
     const { role_name: roleName } = params;
     const [roleData, setRoleData] = useState(null);
@@ -43,6 +42,7 @@ const Role = (props) => {
             browserHistory.push('/admin/roles');
         },
     });
+    const { t } = useTranslation('admin');
 
     useEffect(() => {
         if (!loading) {
@@ -110,14 +110,14 @@ const Role = (props) => {
     };
 
     const disabled = roleData && roleData.deletable === false;
-    
+
     return (
         <>
             <PageMenu icon='shield alternate' title={t(roleName || 'New Role')} />
             <Container>
                 {disabled && (
                     <Message info>
-                        {t("This role is a default role and thus cannot be modified.")}
+                        {t('This role is a default role and thus cannot be modified.')}
                     </Message>
                 )}
                 <Segment>
@@ -171,4 +171,4 @@ Role.propTypes = {
     }).isRequired,
 };
 
-export default withTranslation('admin')(Role);
+export default Role;

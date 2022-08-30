@@ -11,6 +11,7 @@ import {
     AutoField, ErrorsField, SubmitField, AutoForm,
 } from 'uniforms-semantic';
 import { withTranslation } from 'react-i18next';
+
 import InfoField from '../utils/InfoField';
 import { Projects } from '../../../api/project/project.collection';
 import { wrapMeteorCallback } from '../utils/Errors';
@@ -53,10 +54,9 @@ class Project extends React.Component {
     };
 
     render() {
-        const { project, loading } = this.props;
+        const { project, loading, t } = this.props;
         const { confirmOpen } = this.state;
         const { namespace } = project || {};
-        const { t } = this.props;
         return (
             <>
                 <PageMenu icon='sitemap' title={project._id ? project.name : 'New project'} />
@@ -78,7 +78,7 @@ class Project extends React.Component {
                                 />
                                 <SelectField name='defaultLanguage' label={null} placeholder={t('Select the default language of your project')} />
                                 <br />
-                               
+
                                 <AutoField name='disabled' data-cy='disable' />
                                 <ErrorsField />
                                 <SubmitField data-cy='submit-field' />
@@ -91,11 +91,18 @@ class Project extends React.Component {
                                 <Header content={t('Delete project')} />
                                 {!project.disabled && <Message info content={t('A project must be disabled to be deletable')} />}
                                 <br />
-                                <Button icon='trash' disabled={!project.disabled} negative content={t('Delete project')} onClick={() => this.setState({ confirmOpen: true })} data-cy='delete-project' />
+                                <Button
+                                    icon='trash'
+                                    disabled={!project.disabled}
+                                    negative
+                                    content={t('Delete project')}
+                                    onClick={() => this.setState({ confirmOpen: true })}
+                                    data-cy='delete-project'
+                                />
                                 <Confirm
                                     open={confirmOpen}
-                                    header={t(`Delete project ${project.name}?`)}
-                                    content='This cannot be undone!'
+                                    header={`${t('Delete project')} ${project.name}?`}
+                                    content={t('This cannot be undone!')}
                                     onCancel={() => this.setState({ confirmOpen: false })}
                                     onConfirm={() => this.deleteProject()}
                                 />
@@ -110,11 +117,13 @@ class Project extends React.Component {
 
 Project.defaultProps = {
     project: {},
+    t: text => text,
 };
 
 Project.propTypes = {
     loading: PropTypes.bool.isRequired,
     project: PropTypes.object,
+    t: PropTypes.any,
 };
 
 const ProjectContainer = withTracker(({ params }) => {
@@ -140,6 +149,6 @@ const ProjectContainer = withTracker(({ params }) => {
         loading,
         project,
     };
-})(Project);
+})(withTranslation('admin')(Project));
 
-export default withTranslation('admin')(ProjectContainer);
+export default ProjectContainer;

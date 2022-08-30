@@ -12,6 +12,7 @@ import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
 import { passwordComplexityRegex } from '../../../api/user/user.methods';
 
+
 const changePasswordSchema = new SimpleSchema(
     {
         password: {
@@ -29,14 +30,6 @@ const changePasswordSchema = new SimpleSchema(
     },
     { tracker: Tracker },
 );
-
-
-changePasswordSchema.messageBox.messages({
-    en: {
-        passwordMismatch: 'The passwords are not matching. Make sure you enter the same password in both fields',
-        passwordTooSimple: 'Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters',
-    },
-});
 
 const changePasswordSchemaBridge = new SimpleSchema2Bridge(changePasswordSchema);
 
@@ -87,6 +80,12 @@ class ChangePassword extends React.Component {
 
     render () {
         const { t } = this.props;
+        changePasswordSchema.messageBox.messages({
+            en: {
+                passwordMismatch: t('The passwords are not matching. Make sure you enter the same password in both fields'),
+                passwordTooSimple: t('Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters'),
+            },
+        });
         return (
             <AutoForm schema={changePasswordSchemaBridge} onSubmit={this.handleChangePassword}>
                 <Header>{t('Change Password')}</Header>
@@ -101,6 +100,11 @@ class ChangePassword extends React.Component {
 
 ChangePassword.propTypes = {
     userId: PropTypes.string.isRequired,
+    t: PropTypes.any,
+};
+
+ChangePassword.defaultProps = {
+    t: text => text,
 };
 
 export default withTranslation('admin')(ChangePassword);

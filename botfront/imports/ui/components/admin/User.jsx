@@ -61,8 +61,7 @@ class User extends React.Component {
     }
 
     renderRoles = () => {
-        const { t } = this.props;
-        const { projectOptions } = this.props;
+        const { projectOptions, t } = this.props;
         return (
             <ListField name='roles' data-cy='user-roles-field'>
                 <ListItemField name='$'>
@@ -89,31 +88,30 @@ class User extends React.Component {
 
     renderPreferredLanguage = () => {
         const { t } = this.props;
-        (
+        return (
             <SelectField
                 name='profile.preferredLanguage'
                 placeholder={t('Select a prefered language')}
                 data-cy='preferred-language'
                 options={[
                     {
-                        text: 'English',
+                        text: t('English'),
                         value: 'en',
                         key: 'en',
                     },
                     {
-                        text: 'French',
+                        text: t('French'),
                         value: 'fr',
                         key: 'fr',
                     },
                 ]}
             />
-        )
+        );
     };
 
     getPanes = () => {
-        const { t } = this.props;
         const { confirmOpen } = this.state;
-        const { user } = this.props;
+        const { user, t } = this.props;
         const hasWritePermission = can('users:w', { anyScope: true });
         const panes = [
             {
@@ -147,7 +145,7 @@ class User extends React.Component {
             },
             ...(hasWritePermission
                 ? [{
-                    menuItem: 'Password change',
+                    menuItem: t('Password change'),
                     render: () => (
                         <Segment>
                             <ChangePassword userId={user._id} />
@@ -160,7 +158,7 @@ class User extends React.Component {
 
         if (hasWritePermission) {
             panes.push({
-                menuItem: 'User deletion',
+                menuItem: t('User deletion'),
                 render: () => (
                     <Segment>
                         <Header content={t('Delete user')} />
@@ -173,8 +171,8 @@ class User extends React.Component {
                         />
                         <Confirm
                             open={confirmOpen}
-                            header={`Delete user ${this.getUserEmail()}`}
-                            content='This cannot be undone!'
+                            header={`${t('Delete user')} ${this.getUserEmail()}`}
+                            content={t('This cannot be undone!')}
                             onCancel={() => this.setState({ confirmOpen: false })}
                             onConfirm={() => this.removeUser(user._id)}
                         />
@@ -188,11 +186,10 @@ class User extends React.Component {
 
     render() {
         // noinspection JSAnnotator
-        const { t } = this.props;
-        const { user, ready } = this.props;
+        const { user, ready, t } = this.props;
         return (
             <>
-                <PageMenu icon='users' title={t(!!user ? 'Edit user' : 'New user')} />
+                <PageMenu icon='users' title={t(!!user ? t('Edit user') : t('New user'))} />
                 {ready && (
                     <Container>
                         {!!user ? (
@@ -228,12 +225,14 @@ class User extends React.Component {
 
 User.defaultProps = {
     user: null,
+    t: text => text,
 };
 
 User.propTypes = {
     user: PropTypes.object,
     ready: PropTypes.bool.isRequired,
     projectOptions: PropTypes.array.isRequired,
+    t: PropTypes.any,
 };
 
 // TODO test
@@ -244,7 +243,7 @@ function prepareRoles(user) {
         userRoles,
         function(result, value) {
             let rbac = find(result, { project: value.scope });
-            
+
             if (!rbac) {
                 rbac = { project: value.scope ? value.scope : 'GLOBAL', roles: [] };
                 result.push(rbac);
@@ -276,6 +275,6 @@ const UserContainer = withTracker(({ params }) => {
         user,
         projectOptions,
     };
-})(User);
+})(withTranslation('admin')(User));
 
-export default withTranslation('admin')(UserContainer);
+export default UserContainer;

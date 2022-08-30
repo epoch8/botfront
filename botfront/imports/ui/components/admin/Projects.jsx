@@ -60,8 +60,7 @@ class ProjectsList extends React.Component {
     }
 
     render() {
-        const { t } = this.props;
-        const { loading, projects } = this.props;
+        const { loading, projects, t } = this.props;
         return (
             <div>
                 <PageMenu icon='sitemap' title={t('Projects')} headerDataCy='projects-page-header'>
@@ -107,6 +106,11 @@ class ProjectsList extends React.Component {
 ProjectsList.propTypes = {
     projects: PropTypes.arrayOf(PropTypes.object).isRequired,
     loading: PropTypes.bool.isRequired,
+    t: PropTypes.any,
+};
+
+ProjectsList.defaultProps = {
+    t: text => text,
 };
 
 const ProjectsListContainer = withTracker(() => {
@@ -117,6 +121,6 @@ const ProjectsListContainer = withTracker(() => {
         loading,
         projects,
     };
-})(ProjectsList);
+})(withTranslation('admin')(ProjectsList));
 
-export default withTranslation('admin')(ProjectsListContainer);
+export default ProjectsListContainer;
