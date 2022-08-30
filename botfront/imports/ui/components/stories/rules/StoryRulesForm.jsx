@@ -6,6 +6,7 @@ import { Button } from 'semantic-ui-react';
 import SimpleSchema from 'simpl-schema';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { eachTriggerValidators, hasTrigger } from '../../../../lib/storyRules.utils';
 import { getModelField } from '../../../../lib/autoForm.utils';
@@ -14,9 +15,7 @@ import SelectField from '../../form_fields/SelectField';
 import { can } from '../../../../api/roles/roles';
 import URLIsSequence from './URLIsSequence';
 import ButtonSelectField from '../../form_fields/ButtonSelectField';
-import { withTranslation } from 'react-i18next';
 
-//Todo: translate
 class RulesForm extends AutoForm {
     resetOptionalArray = (displayIfPath, fieldName) => {
         const resetPath = [...displayIfPath];
@@ -113,6 +112,7 @@ function StoryRulesForm({
     rules, onSave, deleteTriggers, projectId,
 }) {
     const [enabledErrors, setEnabledErrors] = useState({});
+    const { t } = useTranslation('stories');
 
     const getEnabledError = accessor => enabledErrors[accessor];
 
@@ -207,17 +207,17 @@ function StoryRulesForm({
     ];
 
     const fieldErrorMessages = {
-        text: 'you enabled Display a user message but you did not specify a message',
-        url: 'you enabled browsing history but no URLs are set',
-        numberOfVisits: 'you enabled number of website visits but did not enter a value',
-        numberOfPageVisits: 'you enabled number of page visits but did not enter a value',
-        timeOnPage: 'you enabled time on page but did not enter a value',
-        device: 'A device type must be selected when the "restrict to specific screen sizes" field is enabled',
-        queryString: 'you enabled query string parameters but did not set any key-value pairs',
-        eventListeners: 'you enabled event listener triggers but did not set any selector-event pairs',
-        trigger: 'At least one trigger condition must be added',
-        triggerLimit: 'You selected "Choose a limit" but did not specify a maximum number of tigger activations',
-        timeLimit: 'you enabled minimum interval but did not enter a value',
+        text: t('you enabled Display a user message but you did not specify a message'),
+        url: t('you enabled browsing history but no URLs are set'),
+        numberOfVisits: t('you enabled number of website visits but did not enter a value'),
+        numberOfPageVisits: t('you enabled number of page visits but did not enter a value'),
+        timeOnPage: t('you enabled time on page but did not enter a value'),
+        device: t('A device type must be selected when the "restrict to specific screen sizes" field is enabled'),
+        queryString: t('you enabled query string parameters but did not set any key-value pairs'),
+        eventListeners: t('you enabled event listener triggers but did not set any selector-event pairs'),
+        trigger: t('At least one trigger condition must be added'),
+        triggerLimit: t('You selected "Choose a limit" but did not specify a maximum number of tigger activations'),
+        timeLimit: t('you enabled minimum interval but did not enter a value'),
     };
 
     const createPathElem = (key) => {
@@ -302,7 +302,7 @@ function StoryRulesForm({
 
     const replaceRegexErrors = (error) => {
         if (/failed regular expression validation/.test(error.message)) {
-            return { ...error, message: error.message.replace(/failed regular expression validation/, 'can not contain spaces') };
+            return { ...error, message: error.message.replace(/failed regular expression validation/, t('can not contain spaces')) };
         }
         return error;
     };
@@ -317,7 +317,7 @@ function StoryRulesForm({
     };
 
     const handleValidate = (model, incomingErrors, callback) => {
-        const newError = incomingErrors || new Error('Fields are invalid');
+        const newError = incomingErrors || new Error(t('Fields are invalid'));
         let errors = incomingErrors
             ? filterRepeatErrors(incomingErrors.details)
             : [];
@@ -349,12 +349,12 @@ function StoryRulesForm({
                         <NestField name=''>
                             <AutoField name='trigger' label='Conditions'>
                                 <ButtonSelectField
-                                    name='when'
-                                    label='When should this event be triggered?'
+                                    name={t('when')}
+                                    label={t('When should this event be triggered?')}
                                     options={[
-                                        { value: 'always', description: 'Always' },
-                                        { value: 'init', description: 'Only if no conversation has started' },
-                                        { value: 'limited', description: 'Limit the number of times the rule will trigger' },
+                                        { value: 'always', description: t('Always') },
+                                        { value: 'init', description: t('Only if no conversation has started') },
+                                        { value: 'limited', description: t('Limit the number of times the rule will trigger') },
                                     ]}
                                 />
 
@@ -363,19 +363,19 @@ function StoryRulesForm({
                                     getError={getEnabledError}
                                     showToggle={false}
                                 >
-                                    <AutoField name='' label='Maximum number of times the rule will be triggered.' />
+                                    <AutoField name='' label={t('Maximum number of times the rule will be triggered.')} />
                                 </OptionalField>
                                 <OptionalField
                                     name='timeLimit'
-                                    label='Minimum time between story activations by this trigger'
+                                    label={t('Minimum time between story activations by this trigger')}
                                     getError={getEnabledError}
                                 >
                                     <AutoField
                                         name=''
-                                        label='Minimum time between story activations, in minutes.'
+                                        label={t('Minimum time between story activations, in minutes.')}
                                     />
                                 </OptionalField>
-                                <OptionalField name='url' label='Trigger based on browsing history' getError={getEnabledError}>
+                                <OptionalField name='url' label={t('Trigger based on browsing history')} getError={getEnabledError}>
                                     <URLIsSequence name='' />
                                     <ListField name=''>
                                         <ListItemField name='$'>
@@ -385,7 +385,7 @@ function StoryRulesForm({
                                                 />
                                                 <AutoField
                                                     name='partialMatch'
-                                                    label='Match this page and subsequent paths'
+                                                    label={t('Match this page and subsequent paths')}
                                                 />
                                             </NestField>
                                         </ListItemField>
@@ -393,24 +393,24 @@ function StoryRulesForm({
                                 </OptionalField>
                                 <OptionalField
                                     name='numberOfVisits'
-                                    label='Trigger based on the number of times the user has visited the website'
+                                    label={t('Trigger based on the number of times the user has visited the website')}
                                     data-cy='toggle-website-visits'
                                     getError={getEnabledError}
                                 >
-                                    <AutoField name='' label='Trigger based on number of website visits' data-cy='website-visits-input' step={1} min={0} />
+                                    <AutoField name='' label={t('Trigger based on number of website visits')} data-cy='website-visits-input' step={1} min={0} />
                                 </OptionalField>
                                 <OptionalField
                                     name='numberOfPageVisits'
-                                    label='Trigger based on the number of times the user has visited this specific page'
+                                    label={t('Trigger based on the number of times the user has visited this specific page')}
                                     data-cy='toggle-page-visits'
                                     getError={getEnabledError}
                                 >
-                                    <AutoField name='' label='Trigger based on number of page visits' data-cy='page-visits-input' step={1} min={0} />
+                                    <AutoField name='' label={t('Trigger based on number of page visits')} data-cy='page-visits-input' step={1} min={0} />
                                 </OptionalField>
 
                                 <OptionalField
                                     name='queryString'
-                                    label='Trigger if specific query string parameters are present in the URL'
+                                    label={t('Trigger if specific query string parameters are present in the URL')}
                                     data-cy='toggle-query-string'
                                     getError={getEnabledError}
                                 >
@@ -423,7 +423,7 @@ function StoryRulesForm({
                                                 </OptionalField>
                                                 <AutoField
                                                     name='sendAsEntity'
-                                                    label='If selected, the query string value will be sent as an entity with the payload'
+                                                    label={t('If selected, the query string value will be sent as an entity with the payload')}
                                                     data-cy='send-as-entity-checkbox'
                                                 />
                                             </NestField>
@@ -432,13 +432,13 @@ function StoryRulesForm({
                                 </OptionalField>
                                 <OptionalField
                                     name='timeOnPage'
-                                    label='Trigger based on time on page'
+                                    label={t('Trigger based on time on page')}
                                     data-cy='toggle-time-on-page'
                                     getError={getEnabledError}
                                 >
-                                    <AutoField name='' label='Number of seconds after which this conversation should be triggered' step={1} min={0} data-cy='time-on-page-input' />
+                                    <AutoField name='' label={t('Number of seconds after which this conversation should be triggered')} step={1} min={0} data-cy='time-on-page-input' />
                                 </OptionalField>
-                                <OptionalField name='eventListeners' label='Trigger based on user actions' data-cy='toggle-event-listeners' getError={getEnabledError}>
+                                <OptionalField name='eventListeners' label={t('Trigger based on user actions')} data-cy='toggle-event-listeners' getError={getEnabledError}>
                                     <ListField name=''>
                                         <ListItemField name='$'>
                                             <NestField name=''>
@@ -446,43 +446,43 @@ function StoryRulesForm({
                                                 <SelectField
                                                     name='event'
                                                     data-cy='event-selector'
-                                                    placeholder='Select an event type'
+                                                    placeholder={t('Select an event type')}
                                                     options={[
-                                                        { value: 'click', text: 'click' },
-                                                        { value: 'dblclick', text: 'dblclick' },
-                                                        { value: 'mouseenter', text: 'mouseenter' },
-                                                        { value: 'mouseleave', text: 'mouseleave' },
-                                                        { value: 'mouseover', text: 'mouseover' },
-                                                        { value: 'mousemove', text: 'mousemove' },
-                                                        { value: 'change', text: 'change' },
-                                                        { value: 'blur', text: 'blur' },
-                                                        { value: 'focus', text: 'focus' },
-                                                        { value: 'focusin', text: 'focusin' },
-                                                        { value: 'focusout', text: 'focusout' },
+                                                        { value: 'click', text: t('click') },
+                                                        { value: 'dblclick', text: t('dblclick') },
+                                                        { value: 'mouseenter', text: t('mouseenter') },
+                                                        { value: 'mouseleave', text: t('mouseleave') },
+                                                        { value: 'mouseover', text: t('mouseover') },
+                                                        { value: 'mousemove', text: t('mousemove') },
+                                                        { value: 'change', text: t('change') },
+                                                        { value: 'blur', text: t('blur') },
+                                                        { value: 'focus', text: t('focus') },
+                                                        { value: 'focusin', text: t('focusin') },
+                                                        { value: 'focusout', text: t('focusout') },
                                                     ]}
                                                 />
                                                 <ButtonSelectField
                                                     name='visualization'
-                                                    label='Show interactivity with'
+                                                    label={t('Show interactivity with')}
                                                     options={[
                                                         {
                                                             value: 'none',
-                                                            text: 'Nothing',
+                                                            text: t('Nothing'),
                                                         },
                                                         {
                                                             value: 'questionMark',
-                                                            text: 'Question mark',
-                                                            description: 'Add a question mark to the top right of the target element',
+                                                            text: t('Question mark'),
+                                                            description: t('Add a question mark to the top right of the target element'),
                                                         },
                                                         {
                                                             value: 'pulsating',
-                                                            text: 'Pulse',
-                                                            description: 'The entire element will pulsate',
+                                                            text: t('Pulse'),
+                                                            description: t('The entire element will pulsate'),
                                                         },
                                                         {
                                                             value: 'pulsatingDot',
-                                                            text: 'Pulsating dot',
-                                                            description: 'Add a pulsating circle to the top right of the target element',
+                                                            text: t('Pulsating dot'),
+                                                            description: t('Add a pulsating circle to the top right of the target element'),
                                                         },
                                                     ]}
                                                 />
@@ -490,21 +490,21 @@ function StoryRulesForm({
                                         </ListItemField>
                                     </ListField>
                                 </OptionalField>
-                                <OptionalField name='device' label='Restrict to a specific device type' getError={getEnabledError}>
+                                <OptionalField name='device' label={t('Restrict to a specific device type')} getError={getEnabledError}>
                                     <SelectField
                                         name=''
-                                        placeholder='Select device type'
-                                        label='Trigger if the user is using a certain type of device'
+                                        placeholder={t('Select device type')}
+                                        label={t('Trigger if the user is using a certain type of device')}
                                         options={[
-                                            { value: 'all', text: 'All' },
-                                            { value: 'mobile', text: 'Mobile' },
-                                            { value: 'desktop', text: 'Desktop' },
+                                            { value: 'all', text: t('All') },
+                                            { value: 'mobile', text: t('Mobile') },
+                                            { value: 'desktop', text: t('Desktop') },
                                         ]}
                                     />
                                 </OptionalField>
                             </AutoField>
-                            <OptionalField name='text' label='Display a user message' data-cy='toggle-payload-text' getError={getEnabledError}>
-                                <AutoField name='' label='User message to display' data-cy='payload-text-input' />
+                            <OptionalField name='text' label={t('Display a user message')} data-cy='toggle-payload-text' getError={getEnabledError}>
+                                <AutoField name='' label={t('User message to display')} data-cy='payload-text-input' />
                             </OptionalField>
                         </NestField>
                     </ListItemField>
@@ -514,8 +514,8 @@ function StoryRulesForm({
                 <br />
                 {can('triggers:w', projectId) && (
                     <div className='submit-rules-buttons' data-cy='submit-rules-buttons'>
-                        <Button onClick={handleDeleteClick} basic color='red' floated='right' data-cy='delete-triggers'>Delete</Button>
-                        <SubmitField value='Save and exit' className='right floated blue' data-cy='submit-triggers' />
+                        <Button onClick={handleDeleteClick} basic color='red' floated='right' data-cy='delete-triggers'>{t('Delete')}</Button>
+                        <SubmitField value={t('Save and exit')} className='right floated blue' data-cy='submit-triggers' />
                     </div>
                 )}
             </RulesForm>
@@ -534,4 +534,4 @@ StoryRulesForm.defaultProps = {
     rules: { rules: [] },
 };
 
-export default withTranslation('stories')(StoryRulesForm);
+export default StoryRulesForm;

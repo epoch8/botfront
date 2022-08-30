@@ -50,9 +50,9 @@ class ErrorBoundary extends React.Component {
                             </Header.Subheader>
                         </Header>
                         <p>
-                            For more information visit the{' '}
+                            {t('For more information visit the')}{' '}
                             <a href='https://botfront.io/docs/installation/server-cluster#environment-variables'>
-                                documentation
+                                {t('documentation')}
                             </a>
                         </p>
                     </div>
@@ -100,6 +100,11 @@ class ErrorBoundary extends React.Component {
 
 ErrorBoundary.propTypes = {
     children: PropTypes.any.isRequired,
+    t: PropTypes.any,
 };
 
-export default withTranslation('components')(ErrorBoundary);
+ErrorBoundary.defaultProps = {
+    t: text => text,
+};
+
+export default withTranslation()(ErrorBoundary);

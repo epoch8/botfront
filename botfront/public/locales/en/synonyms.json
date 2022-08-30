@@ -1,4 +1,8 @@
 {
   "Add": "Add",
+  "Value": "Value",
+  "Gazette": "Gazette",
+  "entity name": "entity name",
+  "match1, match2, ...": "match1, match2, ...",
   "Enter a regular expression": "Enter a regular expression"
 }

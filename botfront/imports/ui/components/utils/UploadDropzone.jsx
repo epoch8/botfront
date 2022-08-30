@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react';
 import { NativeTypes } from 'react-dnd-html5-backend-cjs';
 import { useDrop } from 'react-dnd-cjs';
-import { withTranslation } from 'react-i18next';
 import {
     Message, Icon, Button, Segment,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { Loading } from './Utils';
 
@@ -14,6 +14,7 @@ function UploadDropzone(props) {
     } = props;
     const [processing, setProcessing] = useState(false);
     const fileField = useRef();
+    const { t } = useTranslation('utils');
 
     const handleError = (string) => {
         setProcessing(false);
@@ -24,8 +25,7 @@ function UploadDropzone(props) {
         setProcessing(true);
 
         const accept = acceptString.split(/,\s*/);
-        const { t } = this.props;
-        let acceptedFiles = files.filter(f => accept.includes(f.type) || accept.some(t => f.name.match(new RegExp(`${t}$`))));
+        let acceptedFiles = files.filter(f => accept.includes(f.type) || accept.some(v => f.name.match(new RegExp(`${v}$`))));
         let rejectedFiles = files.filter(f => !acceptedFiles.includes(f));
         if (!acceptString) {
             acceptedFiles = files;
@@ -33,9 +33,9 @@ function UploadDropzone(props) {
         }
 
         if (!acceptedFiles.length && !rejectedFiles.length) return handleError(t('Sorry, could not read you file'));
-        if (rejectedFiles.length) return handleError(t(`${rejectedFiles[0].name} is not of type: ${accept}`));
+        if (rejectedFiles.length) return handleError(`${rejectedFiles[0].name} ${t('is not of type:')} ${accept}`);
         if (acceptedFiles.length > 1) return handleError(t('Please upload only one file'));
-        if (acceptedFiles[0].size > maxSizeInMb * 1000000) return handleError(t(`Your file should not exceed ${maxSizeInMb}Mb.`));
+        if (acceptedFiles[0].size > maxSizeInMb * 1000000) return handleError(`${t('Your file should not exceed')} ${maxSizeInMb}Mb.`);
 
         const file = acceptedFiles[0];
 
@@ -62,7 +62,6 @@ function UploadDropzone(props) {
             canDrop: monitor.canDrop(),
         }),
     });
-    const { t } = this.props;
 
     return (
         <Loading loading={loading || processing}>
@@ -83,7 +82,7 @@ function UploadDropzone(props) {
                             size='small'
                             onClick={() => fileField.current.click()}
                         />
-                        <span className='small grey'>t(or drop a file to upload)</span>
+                        <span className='small grey'>{t('or drop a file to upload')}</span>
                     </div>
                 </Segment>
             ) : (
@@ -108,7 +107,7 @@ UploadDropzone.propTypes = {
     binary: PropTypes.bool,
     maxSizeInMb: PropTypes.number,
 };
-//Todo: translate
+
 UploadDropzone.defaultProps = {
     successMessage: 'Your file is ready',
     success: false,
@@ -118,4 +117,4 @@ UploadDropzone.defaultProps = {
     maxSizeInMb: 2,
 };
 
-export default withTranslation('utils')(UploadDropzone);
+export default UploadDropzone;

@@ -6,6 +6,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import 'react-s-alert/dist/s-alert-default.css';
 import { connect } from 'react-redux';
 import { useQuery, useSubscription, useMutation } from '@apollo/react-hooks';
+import { useTranslation } from 'react-i18next';
+
 import { Projects } from '../../../../api/project/project.collection';
 import TemplatesTable from './TemplatesTable';
 import { GET_BOT_RESPONSES } from '../queries';
@@ -14,7 +16,6 @@ import { Loading } from '../../utils/Utils';
 import PageMenu from '../../utils/PageMenu';
 import { DELETE_BOT_RESPONSE } from '../mutations';
 import { ProjectContext } from '../../../layouts/context';
-import { withTranslation } from 'react-i18next';
 
 import Can from '../../roles/Can';
 
@@ -25,60 +26,66 @@ class Templates extends React.Component {
             activeEditor: null, newResponse: { open: false, type: '' },
         };
     }
-    // Todo: translate
+
     setActiveEditor = (responseKey) => {
         this.setState({ activeEditor: responseKey });
     };
 
-    renderAddResponse = () => (
-        <Dropdown
-            text='Add bot response'
-            icon='plus'
-            floating
-            labeled
-            button
-            className='icon'
-            data-cy='create-response'
-        >
-            <Dropdown.Menu>
-                <Dropdown.Item
-                    text='Text'
-                    onClick={() => this.setState({ newResponse: { open: true, type: 'TextPayload' } })}
-                    data-cy='add-text-response'
-                />
-                <Dropdown.Item
-                    text='Buttons and quick replies'
-                    onClick={() => this.setState({ newResponse: { open: true, type: 'QuickRepliesPayload' } })}
-                    data-cy='add-quickreply-response'
-                />
-                <Dropdown.Item
-                    text='Carousel'
-                    onClick={() => this.setState({ newResponse: { open: true, type: 'CarouselPayload' } })}
-                    data-cy='add-carousel-response'
-                />
-                <Dropdown.Item
-                    text='Image'
-                    onClick={() => this.setState({ newResponse: { open: true, type: 'ImagePayload' } })}
-                    data-cy='add-image-response'
-                />
-                <Dropdown.Item
-                    text='Custom'
-                    onClick={() => this.setState({ newResponse: { open: true, type: 'CustomPayload' } })}
-                    data-cy='add-custom-response'
-                />
-            </Dropdown.Menu>
-        </Dropdown>
-    );
+    renderAddResponse = () => {
+        const { t } = this.props;
+        return (
+            <Dropdown
+                text='Add bot response'
+                icon='plus'
+                floating
+                labeled
+                button
+                className='icon'
+                data-cy='create-response'
+            >
+                <Dropdown.Menu>
+                    <Dropdown.Item
+                        text={t('Text')}
+                        onClick={() => this.setState({ newResponse: { open: true, type: 'TextPayload' } })}
+                        data-cy='add-text-response'
+                    />
+                    <Dropdown.Item
+                        text={t('Buttons and quick replies')}
+                        onClick={() => this.setState({ newResponse: { open: true, type: 'QuickRepliesPayload' } })}
+                        data-cy='add-quickreply-response'
+                    />
+                    <Dropdown.Item
+                        text={t('Carousel')}
+                        onClick={() => this.setState({ newResponse: { open: true, type: 'CarouselPayload' } })}
+                        data-cy='add-carousel-response'
+                    />
+                    <Dropdown.Item
+                        text={t('Image')}
+                        onClick={() => this.setState({ newResponse: { open: true, type: 'ImagePayload' } })}
+                        data-cy='add-image-response'
+                    />
+                    <Dropdown.Item
+                        text={t('Custom')}
+                        onClick={() => this.setState({ newResponse: { open: true, type: 'CustomPayload' } })}
+                        data-cy='add-custom-response'
+                    />
+                </Dropdown.Menu>
+            </Dropdown>
+        );
+    };
 
-    renderMenu = projectId => (
-        <PageMenu title='Bot responses' icon='comment alternate'>
-            <Can I='responses:w' projectId={projectId}>
-                <Menu.Menu position='right'>
-                    <Menu.Item>{this.renderAddResponse()}</Menu.Item>
-                </Menu.Menu>
-            </Can>
-        </PageMenu>
-    );
+    renderMenu = (projectId) => {
+        const { t } = this.props;
+        return (
+            <PageMenu title={t('Bot responses')} icon='comment alternate'>
+                <Can I='responses:w' projectId={projectId}>
+                    <Menu.Menu position='right'>
+                        <Menu.Item>{this.renderAddResponse()}</Menu.Item>
+                    </Menu.Menu>
+                </Can>
+            </PageMenu>
+        );
+    }
 
     render() {
         const { activeEditor, newResponse } = this.state;
@@ -112,6 +119,11 @@ Templates.propTypes = {
     nluLanguages: PropTypes.array.isRequired,
     deleteBotResponse: PropTypes.func.isRequired,
     loading: PropTypes.bool.isRequired,
+    t: PropTypes.any,
+};
+
+Templates.defaultProps = {
+    t: text => text,
 };
 
 const TemplatesContainer = ({ params, ready }) => {
@@ -182,6 +194,8 @@ const TemplatesContainer = ({ params, ready }) => {
         ],
     });
 
+    const { t } = useTranslation('templates');
+
     return (
         <Templates
             loading={!ready && loading}
@@ -190,6 +204,7 @@ const TemplatesContainer = ({ params, ready }) => {
             projectId={params.project_id}
             nluLanguages={languages}
             insertResponse={insertResponse}
+            t={t}
         />
     );
 };
@@ -205,4 +220,4 @@ function mapStateToProps(state) {
     };
 }
 
-export default withTranslation('templates')(connect(mapStateToProps)(TemplatesContainer));
+export default connect(mapStateToProps)(TemplatesContainer);

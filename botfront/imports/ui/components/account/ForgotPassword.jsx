@@ -57,7 +57,7 @@ class ForgotPassword extends React.Component {
                     <SubmitField value={t('Continue')} className='black large basic fluid' disabled={reCatpchaSiteKey && !reCaptcha} />
                     <br />
                     <Link style={{ color: '#000' }} to='/login'>
-                        {t("Back to Sign in")}
+                        {t('Back to Sign in')}
                     </Link>
                 </AutoForm>
             </Segment>
@@ -65,7 +65,14 @@ class ForgotPassword extends React.Component {
     };
 
     renderSent = () => {
-        <Message positive header={t('Check your email inbox')} content={t('If you have an account with us, you will find the instructions to reset your password in your inbox')} />;
+        const { t } = this.props;
+        return (
+            <Message
+                positive
+                header={t('Check your email inbox')}
+                content={t('If you have an account with us, you will find the instructions to reset your password in your inbox')}
+            />
+        );
     };
 
     onCaptcha = (reCaptcha) => {
@@ -94,10 +101,12 @@ class ForgotPassword extends React.Component {
 ForgotPassword.propTypes = {
     settings: PropTypes.object,
     ready: PropTypes.bool.isRequired,
+    t: PropTypes.any,
 };
 
 ForgotPassword.defaultProps = {
     settings: {},
+    t: text => text,
 };
 
 export default withTracker(() => {

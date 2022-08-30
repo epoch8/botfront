@@ -1,4 +1,8 @@
 {
+  "Passwords don't match": "Passwords don't match",
+  "Error:": "Error:",
+  "Password changed": "Password changed",
+  "Change Password": "Change Password",
   "password": "password",
   "Change": "Change",
   "There might be users with that role, what role do you want them to fallback to ?": "There might be users with that role, what role do you want them to fallback to ?",

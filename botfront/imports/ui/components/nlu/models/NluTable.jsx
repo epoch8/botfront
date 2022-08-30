@@ -495,6 +495,6 @@ NluTable.defaultProps = {
     noDrafts: false,
     renderLabelColumn: null,
     additionalIntentOption: '',
-    t: null,
+    t: text => text,
 };
 export default NluTable;

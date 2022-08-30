@@ -5,13 +5,13 @@ import { Segment, Message } from 'semantic-ui-react';
 
 import { safeLoad } from 'js-yaml';
 import { v4 as uuidv4 } from 'uuid';
+import { useTranslation } from 'react-i18next';
+
 
 import BotResponsesContainer from '../../stories/common/BotResponsesContainer';
 import CustomResponseEditor from '../common/CustomResponseEditor';
 import IconButton from '../../common/IconButton';
 import ButtonTypeToggle from '../common/ButtonTypeToggle';
-import { withTranslation } from 'react-i18next';
-
 import { addContentType, defaultTemplate } from '../../../../lib/botResponse.utils';
 
 const SequenceEditor = (props) => {
@@ -20,6 +20,7 @@ const SequenceEditor = (props) => {
     } = props;
 
     const [editorKey, setEditorKey] = useState(uuidv4());
+    const { t } = useTranslation('templates');
 
     const getContent = (variation) => {
         const content = safeLoad((variation || {}).content);
@@ -56,34 +57,34 @@ const SequenceEditor = (props) => {
                     )}
                     <div className='variation-option-menu'>
                         {editable && (
-                        <>
-                            <ButtonTypeToggle
-                                onToggleButtonType={() => {
-                                    if (content.__typename === 'TextWithButtonsPayload') {
-                                        onChangePayloadType('QuickRepliesPayload');
-                                    }
-                                    if (content.__typename === 'QuickRepliesPayload') {
-                                        onChangePayloadType('TextWithButtonsPayload');
-                                    }
-                                }}
-                                responseType={content.__typename}
-                            />
-                            <IconButton
-                                id={`delete-${name}-${index}`} // stop the response from saving if the input blur event is the delete button
-                                onClick={() => {
-                                    if (sequence.length === 1) {
-                                        setEditorKey(uuidv4());
-                                        const blankTemplate = defaultTemplate(
-                                            content.__typename,
-                                        );
-                                        onChange({ payload: blankTemplate }, 0);
-                                        return;
-                                    }
-                                    onDeleteVariation(index);
-                                }}
-                                icon='trash'
-                            />
-                        </>
+                            <>
+                                <ButtonTypeToggle
+                                    onToggleButtonType={() => {
+                                        if (content.__typename === 'TextWithButtonsPayload') {
+                                            onChangePayloadType('QuickRepliesPayload');
+                                        }
+                                        if (content.__typename === 'QuickRepliesPayload') {
+                                            onChangePayloadType('TextWithButtonsPayload');
+                                        }
+                                    }}
+                                    responseType={content.__typename}
+                                />
+                                <IconButton
+                                    id={`delete-${name}-${index}`} // stop the response from saving if the input blur event is the delete button
+                                    onClick={() => {
+                                        if (sequence.length === 1) {
+                                            setEditorKey(uuidv4());
+                                            const blankTemplate = defaultTemplate(
+                                                content.__typename,
+                                            );
+                                            onChange({ payload: blankTemplate }, 0);
+                                            return;
+                                        }
+                                        onDeleteVariation(index);
+                                    }}
+                                    icon='trash'
+                                />
+                            </>
                         )}
                     </div>
                 </>
@@ -100,8 +101,7 @@ const SequenceEditor = (props) => {
                     content={(
                         <>
                             The <b className='monospace'>custom</b> key must be an <b className='monospace'>object</b> and will be dispatched by rasa as is.
-                            Content under other top-level keys may be formatted according to rules
-                            specific to the output channel.
+                            {t('Content under other top-level keys may be formatted according to rules specific to the output channel.')}
                         </>
                     )}
                 />
@@ -124,4 +124,4 @@ SequenceEditor.defaultProps = {
     editable: true,
 };
 
-export default withTranslation('templates')(SequenceEditor);
+export default SequenceEditor;

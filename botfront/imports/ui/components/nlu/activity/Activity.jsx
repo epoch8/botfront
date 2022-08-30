@@ -189,7 +189,7 @@ function Activity(props) {
 
     const handleMarkOoS = (utterances, ooS = true) => {
         const fallbackUtterance = getFallbackUtterance(utterances.map(u => u._id));
-        const message = `${t('Mark ${utterances.length')} ${t('incoming utterances as out of scope?')}`;
+        const message = `${t('Mark')} ${utterances.length} ${t('incoming utterances as out of scope?')}`;
         const action = () => handleUpdate(utterances.map(({ _id }) => ({ _id, ooS })))
             .then(mutationCallback(fallbackUtterance, 'upsertActivity'));
         return utterances.length > 1 ? setConfirm({ message, action }) : action();

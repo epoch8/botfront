@@ -481,7 +481,7 @@ TrainButton.defaultProps = {
     popupContent: '',
     status: '',
     partialTrainning: false,
-    t: null,
+    t: text => text,
 };
 
 export default withTranslation('utils')(withTracker((props) => {

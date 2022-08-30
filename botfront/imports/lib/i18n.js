@@ -104,6 +104,8 @@ i18n
             escapeValue: false, // not needed for react as it escapes by default
         },
 
+        lng: 'en',
+
         // backend: {
         //     loadPath: 'http://localhost:8000/locales/{{lng}}/{{ns}}.json',
         //     crossDomain: true,

@@ -1,4 +1,13 @@
 {
+  "Please configure the ROOT_URL environment variable": "Please configure the ROOT_URL environment variable",
+  "The ROOT_URL environment variable must be set to the public URL where your instance of Botfront can be reached.": "The ROOT_URL environment variable must be set to the public URL where your instance of Botfront can be reached.",
+  "For more information visit the": "For more information visit the",
+  "documentation": "documentation",
+  "Oops!": "Oops!",
+  "Something went wrong. Sorry about that.": "Something went wrong. Sorry about that.",
+  "We're working on it!": "We're working on it!",
+  "Help the Botfront project by reporting the issue.": "Help the Botfront project by reporting the issue.",
+  "&#8617; home": "&#8617; home",
   "Choose this slot": "Choose this slot",
   "Edit slots": "Edit slots"
 }

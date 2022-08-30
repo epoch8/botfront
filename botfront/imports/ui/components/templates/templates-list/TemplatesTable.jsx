@@ -33,15 +33,14 @@ class TemplatesTable extends React.Component {
     getTemplateLanguages = () => sortBy(this.props.nluLanguages);
 
     getColumns = (lang) => {
-        const { projectId } = this.props;
+        const { projectId, t } = this.props;
         const { dialogueActions } = this.context;
-        const { t } = this.props;
         const columns = [
             {
                 id: lang,
                 filterable: true,
-                accessor: (t) => {
-                    const template = find(t.values, { lang });
+                accessor: (v) => {
+                    const template = find(v.values, { lang });
                     const { sequence = [] } = template || {};
                     const filterableText = sequence.map(val => (val || {}).content).join('');
                     return { sequence, filterableText };
@@ -103,10 +102,10 @@ class TemplatesTable extends React.Component {
                 width: 25,
             });
         }
-        //Todo: translate. Интересная ситуация, t уже зарезервировано accessor: t => t.key,
+
         columns.unshift({
             id: 'key',
-            accessor: t => t.key,
+            accessor: v => v.key,
             Header: 'Key',
             filterable: true,
             filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['key'] }),
@@ -156,31 +155,37 @@ class TemplatesTable extends React.Component {
         }
     };
 
-    renderNoLanguagesAvailable = () => (
-        <Message
-            info
-            icon='warning'
-            header={t('Create a NLU model first')}
-            content='Templates are multilingual and Botfront determines available languages from NLU models.
-            Before adding templates, you must create one NLU model for every language your want to handle'
-        />
-    );
+    renderNoLanguagesAvailable = () => {
+        const { t } = this.props;
+        return (
+            <Message
+                info
+                icon='warning'
+                header={t('Create a NLU model first')}
+                content={`${t('Templates are multilingual and Botfront determines available languages from NLU models.')}
+                ${t('Before adding templates, you must create one NLU model for every language your want to handle')}`}
+            />
+        );
+    }
 
-    renderNoTemplate = () => (
-        <Message
-            info
-            icon='warning'
-            header='You haven&#39;t created bot responses yet'
-            content={t(
-                <div>
-                    Click on the&nbsp;
-                    <strong>Add Bot Response</strong>
-                    &nbsp;button to create your first bot response.
-                </div>
-            )}
-            data-cy='no-responses'
-        />
-    );
+    renderNoTemplate = () => {
+        const { t } = this.props;
+        return (
+            <Message
+                info
+                icon='warning'
+                header={t('You haven&#39;t created bot responses yet')}
+                content={(
+                    <div>
+                        {t('Click on the&nbsp;')}
+                        {t('<strong>Add Bot Response</strong>')}
+                        {t('&nbsp;button to create your first bot response.')}
+                    </div>
+                )}
+                data-cy='no-responses'
+            />
+        );
+    }
 
     renderTable = (lang) => {
         const {
@@ -288,10 +293,13 @@ TemplatesTable.propTypes = {
     setActiveEditor: PropTypes.func.isRequired,
     newResponse: PropTypes.object,
     closeNewResponse: PropTypes.func.isRequired,
+    t: PropTypes.any,
 };
 
 TemplatesTable.defaultProps = {
-    activeEditor: '', newResponse: { open: false, type: '' },
+    activeEditor: '',
+    newResponse: { open: false, type: '' },
+    t: text => text,
 };
 
 const mapStateToProps = state => ({
@@ -308,7 +316,7 @@ const mapDispatchToProps = {
     toggleMatch: toggleMatchingTemplatesTable,
 };
 
-export default withTranslation('templates')(connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps,
-)(TemplatesTable));
+)(withTranslation('templates')(TemplatesTable));

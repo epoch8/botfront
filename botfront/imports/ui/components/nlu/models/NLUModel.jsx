@@ -12,6 +12,7 @@ import 'react-select/dist/react-select.css';
 import { connect } from 'react-redux';
 import { debounce } from 'lodash';
 import { useTranslation } from 'react-i18next';
+
 import PageMenu from '../../utils/PageMenu';
 import { cleanDucklingFromExamples } from '../../../../lib/utils';
 import { NLUModels } from '../../../../api/nlu_model/nlu_model.collection';
@@ -172,10 +173,10 @@ function NLUModel(props) {
     ));
 
     const topMenuItems = [
-        ['Training Data', 'database', true],
-        ['Evaluation', 'percent', can('nlu-data:x', projectId)],
-        ['Statistics', 'pie graph', true],
-        ['Settings', 'setting', true],
+        [t('Training Data'), 'database', true],
+        [t('Evaluation'), 'percent', can('nlu-data:x', projectId)],
+        [t('Statistics'), 'pie graph', true],
+        [t('Settings'), 'setting', true],
     ];
 
     const renderTopMenu = () => (
@@ -189,12 +190,12 @@ function NLUModel(props) {
 
     if (!project) return null;
     if (!model) return null;
-    // Todo: translate
+
     return (
         <>
             {renderTopMenu()}
             <Container data-cy='nlu-page'>
-                {['Training Data', 'Evaluation'].includes(activeItem) && (
+                {[t('Training Data'), t('Evaluation')].includes(activeItem) && (
                     <>
                         {renderWarningMessageIntents()}
                         <br />
@@ -202,7 +203,7 @@ function NLUModel(props) {
                     </>
                 )}
                 <br />
-                {activeItem === 'Training Data' && (
+                {activeItem === t('Training Data') && (
                     <Tab
                         menu={{ pointing: true, secondary: true }}
                         // activeIndex === 0 is the example tab, we want to refetch data everytime we land on it
@@ -210,7 +211,7 @@ function NLUModel(props) {
                         onTabChange={(e, { activeIndex }) => { if (activeIndex === 0) refetch(); }}
                         panes={[
                             {
-                                menuItem: 'Examples',
+                                menuItem: t('Examples'),
                                 render: () => (
                                     <NluTable
                                         ref={tableRef}
@@ -246,37 +247,37 @@ function NLUModel(props) {
                                 ),
                             },
                             {
-                                menuItem: 'Synonyms',
+                                menuItem: t('Synonyms'),
                                 render: () => <Synonyms model={model} />,
                             },
                             {
-                                menuItem: 'Gazette',
+                                menuItem: t('Gazette'),
                                 render: () => <Gazette model={model} />,
                             },
                             {
-                                menuItem: 'Out Of Scope',
+                                menuItem: t('Out Of Scope'),
                                 render: () => <OutOfScope />,
                             },
                             {
-                                menuItem: 'Regex',
+                                menuItem: t('Regex'),
                                 render: () => <RegexFeatures model={model} />,
                             },
                             {
-                                menuItem: 'API',
+                                menuItem: t('API'),
                                 render: () => <API model={model} instance={instance} />,
                             },
                             ...(can('nlu-data:w', projectId)
                                 ? [{
-                                    menuItem: 'Chit Chat',
+                                    menuItem: t('Chit Chat'),
                                     render: () => <ChitChat model={model} />,
                                 }] : []),
                         ]}
                     />
                 )}
-                {activeItem === 'Evaluation' && (
+                {activeItem === t('Evaluation') && (
                     <Evaluation validationRender={validationRender} />
                 )}
-                {activeItem === 'Statistics' && (
+                {activeItem === t('Statistics') && (
                     <Statistics
                         synonyms={model.training_data.entity_synonyms.length}
                         gazettes={model.training_data.fuzzy_gazette.length}
@@ -284,18 +285,18 @@ function NLUModel(props) {
                         entities={entities}
                     />
                 )}
-                {activeItem === 'Settings' && (
+                {activeItem === t('Settings') && (
                     <Tab
                         menu={{ pointing: true, secondary: true }}
                         panes={[
                             {
-                                menuItem: 'Pipeline',
+                                menuItem: t('Pipeline'),
                                 render: () => (
                                     <NLUPipeline model={model} projectId={projectId} />
                                 ),
                             },
                             ...(can('projects:w', projectId) ? ([{
-                                menuItem: 'Delete',
+                                menuItem: t('Delete'),
                                 render: () => <DeleteModel />,
                             }]) : []),
                         ]}

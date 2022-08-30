@@ -1,5 +1,7 @@
 {
   "Your changes have been saved.": "Your changes have been saved.",
+  "Trained": "Trained",
+  "Training failed": "Training failed",
   "Commit and push": "Commit and push",
   "Commit message": "Commit message",
   "Push to remote": "Push to remote",
@@ -16,9 +18,12 @@
   "focused story groups": "focused story groups",
   "Train NLU and stories from 1 focused story group.": "Train NLU and stories from 1 focused story group.",
   "Sorry, could not read you file": "Sorry, could not read you file",
+  "is not of type:": "is not of type:",
   "Please upload only one file": "Please upload only one file",
+  "Your file should not exceed": "Your file should not exceed",
   "file reading was aborted": "file reading was aborted",
   "file reading has failed": "file reading has failed",
   "Upload file": "Upload file",
+  "or drop a file to upload": "or drop a file to upload",
   "Success!": "Success!"
 }

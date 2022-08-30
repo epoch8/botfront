@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
+import { withTranslation } from 'react-i18next';
 import { wrapMeteorCallback } from '../utils/Errors';
 import LookupTable from './LookupTable';
 import InlineSearch from '../utils/InlineSearch';
 import MinScoreEdit from './MinScoreEdit';
 import { can } from '../../../lib/scopes';
-import {withTranslation} from 'react-i18next';
 
 function ModeEdit({ gazette, onEdit }) {
     function onUpdateText(value, callback) {
@@ -74,20 +74,19 @@ class GazetteEditor extends React.Component {
     }
 
     render() {
-        const { projectId, model } = this.props;
-        // Todo: translate
+        const { projectId, model, t } = this.props;
         return (
             <LookupTable
                 data={model.training_data.fuzzy_gazette}
-                keyHeader='Value'
+                keyHeader={t('Value')}
                 keyAttribute='value'
-                listHeader='Gazette'
+                listHeader={t('Gazette')}
                 listAttribute='gazette'
                 extraColumns={this.extraColumns()}
                 onItemChanged={this.onItemChanged}
                 onItemDeleted={this.onItemDeleted}
-                valuePlaceholder='entity name'
-                listPlaceholder='match1, match2, ...'
+                valuePlaceholder={t('entity name')}
+                listPlaceholder={t('match1, match2, ...')}
                 projectId={projectId}
             />
         );
@@ -97,8 +96,13 @@ class GazetteEditor extends React.Component {
 GazetteEditor.propTypes = {
     model: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
+    t: PropTypes.any,
 };
 
-export default withTranslation('synonyms')(withTracker(props => ({
+GazetteEditor.defaultProps = {
+    t: text => text,
+};
+
+export default withTracker(props => ({
     model: props.model,
-}))(GazetteEditor));
+}))(withTranslation('synonyms')(GazetteEditor));

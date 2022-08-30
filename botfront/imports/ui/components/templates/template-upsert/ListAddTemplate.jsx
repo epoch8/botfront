@@ -4,20 +4,8 @@ import connectField from 'uniforms/connectField';
 import { Dropdown, Button } from 'semantic-ui-react';
 import yamljs from 'js-yaml';
 import cloneDeep from 'lodash/cloneDeep';
+import { useTranslation } from 'react-i18next';
 import { examples } from './templateExamples';
-import { withTranslation } from 'react-i18next';
-
-//Todo: translate
-const messageTypesOptions = [
-    { value: 0, text: 'Text' },
-    { value: 1, text: 'Text with buttons (quick replies)' },
-    { value: 2, text: 'Image' },
-    { value: 3, text: 'Button template' },
-    { value: 4, text: 'Generic template' },
-    { value: 5, text: 'List template' },
-    { value: 6, text: 'Messenger Handoff' },
-    // { value: 6, text: 'Carousel (deprecated)' },
-];
 
 const insert = (array, index, value) => {
     const arr2 = cloneDeep(array);
@@ -47,6 +35,18 @@ const ListAddTemplate = ({
     };
     const indexClassName = `response-message-${isInsert ? index : 'next'}`;
 
+    const { t } = useTranslation('templates');
+
+    const messageTypesOptions = [
+        { value: 0, text: t('Text') },
+        { value: 1, text: t('Text with buttons (quick replies)') },
+        { value: 2, text: t('Image') },
+        { value: 3, text: t('Button template') },
+        { value: 4, text: t('Generic template') },
+        { value: 5, text: t('List template') },
+        { value: 6, text: t('Messenger Handoff') },
+    ];
+
     return (
         <Button.Group size='big'>
             <Dropdown
@@ -58,7 +58,7 @@ const ListAddTemplate = ({
                 className={`icon ${indexClassName} sequence-add-message`}
             >
                 <Dropdown.Menu>
-                    <Dropdown.Header content='Choose a message template' className='sequence-add-message-menu-header' />
+                    <Dropdown.Header content={t('Choose a message template')} className='sequence-add-message-menu-header' />
                     {messageTypesOptions.map(option => <Dropdown.Item key={option.value} onClick={handleChange} {...option} />)}
                 </Dropdown.Menu>
             </Dropdown>
@@ -66,4 +66,4 @@ const ListAddTemplate = ({
     );
 };
 
-export default withTranslation('templates')(connectField(ListAddTemplate, { includeParent: true, initialValue: false }));
+export default connectField(ListAddTemplate, { includeParent: true, initialValue: false });

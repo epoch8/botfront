@@ -4,6 +4,7 @@ import {
     Icon, Menu, Label, Popup,
 } from 'semantic-ui-react';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import { isTraining } from '../../../api/nlu_model/nlu_model.utils';
 import TrainButton from './TrainButton';
 import { ProjectContext } from '../../layouts/context';
@@ -17,7 +18,8 @@ export default function PageMenu(props) {
         project: { _id: projectId, training: { endTime, status } = {} } = {},
         instance,
     } = useContext(ProjectContext);
-    //Todo: translate. Контенты внутри контентов
+    const { t } = useTranslation('utils');
+
     return (
         <Menu borderless className={`top-menu ${className}`}>
             <Menu.Item>
@@ -46,7 +48,7 @@ export default function PageMenu(props) {
                                         basic
                                         content={(
                                             <div>
-                                                {`Trained ${moment(endTime).fromNow()}`}
+                                                {`${t('Trained')} ${moment(endTime).fromNow()}`}
                                             </div>
                                         )}
                                         style={{
@@ -74,7 +76,7 @@ export default function PageMenu(props) {
                                         color='red'
                                         content={(
                                             <div>
-                                                {`Training failed ${moment(
+                                                {`${t('Training failed')} ${moment(
                                                     endTime,
                                                 ).fromNow()}`}
                                             </div>
