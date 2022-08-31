@@ -33,7 +33,7 @@ class ProjectChat extends React.Component {
     componentWillReceiveProps(props) {
         this.checkRefreshChat(props);
     }
-    
+
     componentWillUnmount() {
         clearTimeout(this.clipboardTimeout);
     }
@@ -121,9 +121,8 @@ class ProjectChat extends React.Component {
             savedTest,
         } = this.state;
         const {
-            triggerChatPane, project: { _id: projectId }, initPayload,
+            triggerChatPane, project: { _id: projectId }, initPayload, t,
         } = this.props;
-        const { t } = this.props;
         return (
             <div className='chat-pane-container' data-cy='chat-pane'>
                 <Menu pointing secondary>
@@ -209,17 +208,17 @@ class ProjectChat extends React.Component {
                     <Message
                         content={(
                             <div>
-                                Go to <Icon name='setting' />
-                                Settings &gt; <Icon name='server' />
-                                Instances to{' '}
+                                {t('Go to')} <Icon name='setting' />
+                                {t('Settings')} &gt; <Icon name='server' />
+                                {t('Instances to')}{' '}
                                 <Link
                                     to={`/project/${projectId}/settings`}
                                     onClick={triggerChatPane}
                                     data-cy='settings-link'
                                 >
-                                    create{' '}
+                                    {t('create')}{' '}
                                 </Link>
-                                a valid instance of Rasa to enable the chat window.
+                                {t('a valid instance of Rasa to enable the chat window.')}
                             </div>
                         )}
                         className='no-core-message'
@@ -256,4 +255,4 @@ const mapDispatchToProps = {
     changeShouldRefreshChat: setShouldRefreshChat,
 };
 
-export default withTranslation('project')(connect(mapStateToProps, mapDispatchToProps)(ProjectChat));
+export default connect(mapStateToProps, mapDispatchToProps)(withTranslation('project')(ProjectChat));

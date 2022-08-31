@@ -2,17 +2,19 @@ import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Meteor } from 'meteor/meteor';
 import { saveAs } from 'file-saver';
+import { useTranslation } from 'react-i18next';
+
 import {
     Dropdown, Button, Message, Icon, Checkbox,
 } from 'semantic-ui-react';
 import JSZIP from 'jszip';
 import { ProjectContext } from '../../layouts/context';
-import { withTranslation } from 'react-i18next';
 
 const ExportProject = ({
     setLoading,
 }) => {
     const { projectLanguages, language, project: { _id: projectId, name: projectName } } = useContext(ProjectContext);
+    const { t } = useTranslation('settings');
 
     const [exportLanguage, setExportLanguage] = useState(projectLanguages.length > 1 ? 'all' : language);
     const [exportConversations, setExportConversations] = useState(false);
@@ -20,13 +22,13 @@ const ExportProject = ({
 
     const [ExportSuccessful, setExportSuccessful] = useState(undefined);
     const [errorMessage, setErrorMessage] = useState({
-        header: 'Export Failed',
-        text: 'There was an unexpected error during the export.',
+        header: t('Export Failed'),
+        text: t('There was an unexpected error during the export.'),
     });
 
     const getLanguageOptions = () => [
         ...(projectLanguages.length > 1
-            ? [{ value: 'all', text: 'All languages' }]
+            ? [{ value: 'all', text: t('All languages') }]
             : []),
         ...projectLanguages,
     ].map(({ value, text }) => ({
@@ -42,7 +44,7 @@ const ExportProject = ({
         const options = { conversations: exportConversations, incoming: exportIncoming };
         Meteor.apply('exportRasa', [projectId, exportLanguage, options], { noRetry: true }, (err, rasaDataZip) => {
             if (err) {
-                setErrorMessage({ header: 'Export Failed!', text: err.message });
+                setErrorMessage({ header: t('Export Failed!'), text: err.message });
                 setExportSuccessful(false);
                 setLoading(false);
             } else {
@@ -73,7 +75,7 @@ const ExportProject = ({
                 data-cy='export-success-message'
                 positive
                 icon='check circle'
-                header='Your project has been successfully exported'
+                header={t('Your project has been successfully exported')}
             />
         );
     }
@@ -96,7 +98,7 @@ const ExportProject = ({
                     key='language'
                     className='export-option'
                     options={getLanguageOptions()}
-                    placeholder='Select a language'
+                    placeholder={t('Select a language')}
                     selection
                     value={exportLanguage}
                     onChange={(x, { value }) => {
@@ -107,7 +109,7 @@ const ExportProject = ({
                     toggle
                     checked={exportConversations}
                     onChange={() => setExportConversations(!exportConversations)}
-                    label='Export Conversations'
+                    label={t('Export Conversations')}
                     className='export-option'
                     key='exportConversations'
                 />
@@ -116,7 +118,7 @@ const ExportProject = ({
                     toggle
                     checked={exportIncoming}
                     onChange={() => setExportIncoming(!exportIncoming)}
-                    label='Export Incoming utterances'
+                    label={t('Export Incoming utterances')}
                     className='export-option'
                     key='exportIncoming'
                 />
@@ -130,7 +132,7 @@ const ExportProject = ({
                 data-cy='export-button'
             >
                 <Icon name='download' />
-                    Export project for Rasa or Botfront
+                {t('Export project for Rasa or Botfront')}
             </Button>
 
 
@@ -142,4 +144,4 @@ ExportProject.propTypes = {
     setLoading: PropTypes.func.isRequired,
 };
 
-export default withTranslation('settings')(ExportProject);
+export default ExportProject;

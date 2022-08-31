@@ -45,9 +45,8 @@ class CorePolicy extends React.Component {
     };
 
     renderPolicies = () => {
-        const { policies, projectId } = this.props;
+        const { policies, projectId, t } = this.props;
         const { saved, showConfirmation, saving } = this.state;
-        const { t } = this.props;
         return (
             <AutoForm
                 disabled={saving}
@@ -81,9 +80,9 @@ class CorePolicy extends React.Component {
                                 target='_blank'
                                 rel='noopener noreferrer'
                             >
-                                Click here
+                                {t('Click here')}
                             </a>
-                            <span> for more information on this setting (if left empty, this will default to 20)</span>
+                            <span> {t('for more information on this setting (if left empty, this will default to 20)')}</span>
                         </>
                     )}
                 />
@@ -94,7 +93,7 @@ class CorePolicy extends React.Component {
                         onDismiss={() => this.setState({ saved: false, showConfirmation: false })}
                         content={(
                             <p>
-                                You need to retrain your model
+                                {t('You need to retrain your model')}
                             </p>
                         )}
                     />
@@ -133,10 +132,10 @@ const PolicyContainer = withTracker(({ projectId }) => {
         ready: handler.ready(),
         policies,
     };
-})(CorePolicy);
+})(withTranslation('settings')(CorePolicy));
 
 const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('settings')(connect(mapStateToProps)(PolicyContainer));
+export default connect(mapStateToProps)(PolicyContainer);

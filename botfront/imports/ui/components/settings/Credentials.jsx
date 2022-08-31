@@ -7,6 +7,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Menu } from 'semantic-ui-react';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
+import { withTranslation } from 'react-i18next';
+
 import { CredentialsSchema, Credentials as CredentialsCollection } from '../../../api/credentials';
 import { Projects as ProjectsCollection } from '../../../api/project/project.collection';
 import { wrapMeteorCallback } from '../utils/Errors';
@@ -16,7 +18,6 @@ import AceField from '../utils/AceField';
 import { can } from '../../../lib/scopes';
 import { ENVIRONMENT_OPTIONS } from '../constants.json';
 import restartRasa from './restartRasa';
-import { withTranslation } from 'react-i18next';
 
 class Credentials extends React.Component {
     constructor(props) {
@@ -75,6 +76,7 @@ class Credentials extends React.Component {
         const {
             saved, showConfirmation, selectedEnvironment, webhook,
         } = this.state;
+        const { t } = this.props;
         const hasWritePermission = can('projects:w', projectId);
         return (
             <AutoForm
@@ -94,7 +96,7 @@ class Credentials extends React.Component {
                 }}
             >
                 {environment}
-                <AceField name='credentials' label='Credentials' mode='yaml' data-cy='ace-field' />
+                <AceField name='credentials' label={t('Credentials')} mode='yaml' data-cy='ace-field' />
                 <ErrorsField />
                 {showConfirmation && (
                     <ChangesSaved
@@ -111,7 +113,7 @@ class Credentials extends React.Component {
                             saving={saving}
                             disabled={!!saving}
                             onSave={() => { this.form.current.submit(); }}
-                            confirmText={webhook && webhook.url ? `Saving will restart the ${selectedEnvironment} rasa instance` : ''}
+                            confirmText={webhook && webhook.url ? `${t('Saving will restart the')} ${selectedEnvironment} ${t('rasa instance')}` : ''}
                         />
                     )}
             </AutoForm>
@@ -219,10 +221,10 @@ const CredentialsContainer = withTracker(({ projectId }) => {
         credentials,
         projectSettings,
     };
-})(Credentials);
+})(withTranslation('settings')(Credentials));
 
 const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('settings')(connect(mapStateToProps)(CredentialsContainer));
+export default connect(mapStateToProps)(CredentialsContainer);

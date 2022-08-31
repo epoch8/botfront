@@ -60,12 +60,11 @@ class NLUPipeline extends React.Component {
 
     render() {
         const { saved, showConfirmation } = this.state;
-        const { projectId } = this.props;
-        const { t } = this.props;
+        const { projectId, t } = this.props;
         return (
             <Tab.Pane>
                 <AutoForm schema={new SimpleSchema2Bridge(new SimpleSchema(this.schema))} model={this.sparseModel()} onSubmit={this.handleSave}>
-                    <AceField name='config' label='NLU Pipeline' readOnly={!can('nlu-data:x', projectId)} />
+                    <AceField name='config' label={t('NLU Pipeline')} readOnly={!can('nlu-data:x', projectId)} />
                     <AutoField name='hasNoWhitespace' label={t('Enable non-whitespace language mode')} data-cy='whitespace-option' />
                     <ErrorsField />
                     {showConfirmation && (
@@ -74,7 +73,7 @@ class NLUPipeline extends React.Component {
                             }
                             content={(
                                 <p>
-                                    You need to <b>re-train</b> your model to deploy them
+                                    {t('You need to <b>re-train</b> your model to deploy them')}
                                 </p>
                             )}
                         />

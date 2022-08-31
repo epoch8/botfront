@@ -3,11 +3,12 @@ import React from 'react';
 import { Tab } from 'semantic-ui-react';
 import ReactTable from 'react-table-v6';
 import _ from 'lodash';
+import { withTranslation } from 'react-i18next';
+
 import KeyMetrics from './KeyMetrics';
 import ReportTable from './ReportTable';
 import UserUtteranceViewer from '../common/UserUtteranceViewer';
 import { Info } from '../../common/Info';
-import { withTranslation } from 'react-i18next';
 
 function ExampleTextComparison({ example, prediction }) {
     return (
@@ -83,11 +84,11 @@ class EntityReport extends React.Component {
 
     constructor(props) {
         super(props);
-        const { t } = this.props;
         this.state = {
             entities: [],
             expanded: {},
         };
+        const { t } = props;
 
         this.errorTypes = ['Overlap', 'Mismatch', 'Not Found', 'Surprise'];
         this.errorInfo = [
@@ -105,16 +106,16 @@ class EntityReport extends React.Component {
     }
 
     getPanes = () => {
-        const { report, predictions } = this.props;
+        const { report, predictions, t } = this.props;
         const tabs = [
             {
-                menuItem: 'Detailed Report',
+                menuItem: t('Detailed Report'),
                 render: () => <ReportTable report={report} labelType='entity' />,
             },
         ];
         if (predictions && predictions.length) {
             tabs.push({
-                menuItem: 'Misclassifications',
+                menuItem: t('Misclassifications'),
                 render: this.renderPredictionsTable,
             });
         }
@@ -188,6 +189,7 @@ class EntityReport extends React.Component {
 
     getFailedExamplesColumns = () => {
         const { entities } = this.state;
+        const { t } = this.props;
         return [
             {
                 id: 'info',
@@ -195,8 +197,8 @@ class EntityReport extends React.Component {
                 Header: '',
                 Cell: () => (
                     <div>
-                        <p>Expected: </p>
-                        <p>Predicted: </p>
+                        <p>{t('Expected:')} </p>
+                        <p>{t('Predicted:')} </p>
                     </div>
                 ),
                 width: 80,
@@ -205,7 +207,7 @@ class EntityReport extends React.Component {
             {
                 id: 'example',
                 accessor: e => e,
-                Header: 'Example',
+                Header: t('Example'),
                 Cell: e => (
                     <ExampleTextComparison
                         example={e.value.example}
@@ -219,7 +221,7 @@ class EntityReport extends React.Component {
             {
                 id: 'error',
                 accessor: 'errorCode',
-                Header: 'Error Type',
+                Header: t('Error Type'),
                 Cell: errorCode => (
                     <div>
                         <p style={{ display: 'inline', color: 'red' }}>
@@ -236,11 +238,12 @@ class EntityReport extends React.Component {
     }
 
     getEntitiesColumns = () => {
+        const { t } = this.props;
         const columns = [
             {
                 id: 'entity',
                 accessor: 'entity',
-                Header: 'Entity',
+                Header: t('Entity'),
                 Cell: e => <p>{e.value}</p>,
             },
         ];
@@ -282,7 +285,7 @@ class EntityReport extends React.Component {
         columns.push({
             id: 'total',
             accessor: e => e,
-            Header: 'Total',
+            Header: t('Total'),
             Cell: e => <p>{_.sum(e.value.errorCount)}</p>,
             sortMethod: (a, b /* , desc */) => {
                 const aValue = _.sum(a.errorCount);

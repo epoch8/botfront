@@ -1,9 +1,9 @@
 import { Container, Menu, Tab } from 'semantic-ui-react';
-import { withTranslation } from 'react-i18next';
 import React from 'react';
 import 'react-s-alert/dist/s-alert-default.css';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { withTranslation } from 'react-i18next';
 
 import PageMenu from '../utils/PageMenu';
 import Credentials from './Credentials';
@@ -34,8 +34,7 @@ class Settings extends React.Component {
     };
 
     getSettingsPanes = () => {
-        const { projectId } = this.props;
-        const { t } = this.props;
+        const { projectId, t } = this.props;
         const canViewProjects = can('projects:r', projectId);
         const canViewResources = can('resources:r', projectId);
         const canExport = can('export:x', projectId);
@@ -100,15 +99,14 @@ class Settings extends React.Component {
                 menuItem: <Menu.Item icon='git' content={t('Git credentials')} key='Git credentials' />,
                 render: () => <Tab.Pane><GitSettings /></Tab.Pane>,
             }] : []),
-                
-            
+
+
         ];
         return panes;
     };
 
     render() {
-        const { t } = this.props;
-        const { params: { setting } = {} } = this.props;
+        const { params: { setting } = {}, t } = this.props;
         return (
             <>
                 <PageMenu title={t('Settings')} icon='setting' />
@@ -138,4 +136,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('settings')(connect(mapStateToProps)(Settings));
+export default connect(mapStateToProps)(withTranslation('settings')(Settings));

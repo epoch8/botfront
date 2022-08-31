@@ -42,9 +42,10 @@ class Appearance extends React.Component {
     };
 
     renderAppearance = () => {
-        const { logoUrl, smallLogoUrl, projectId } = this.props;
+        const {
+            logoUrl, smallLogoUrl, projectId, t,
+        } = this.props;
         const { saved, showConfirmation, saving } = this.state;
-        const { t } = this.props;
         const hasWritePermission = can('projects:w', projectId);
         return (
             <>
@@ -98,10 +99,10 @@ const DefaultDomainContainer = withTracker(({ projectId }) => {
         logoUrl,
         smallLogoUrl,
     };
-})(Appearance);
+})(withTranslation('settings')(Appearance));
 
 const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('settings')(connect(mapStateToProps)(DefaultDomainContainer));
+export default connect(mapStateToProps)(DefaultDomainContainer);

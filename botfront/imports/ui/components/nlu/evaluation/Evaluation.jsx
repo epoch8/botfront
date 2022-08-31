@@ -11,6 +11,8 @@ import {
     Tab,
 } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
+
 import { activityQuery } from '../activity/queries';
 import apolloClient from '../../../../startup/client/apollo';
 
@@ -18,7 +20,6 @@ import IntentReport from './IntentReport';
 import EntityReport from './EntityReport';
 import { InputButtons } from './InputButtons.jsx';
 import { Evaluations } from '../../../../api/nlu_evaluation';
-import { withTranslation } from 'react-i18next';
 import UploadDropzone from '../../utils/UploadDropzone';
 import { Loading } from '../../utils/Utils';
 import { can } from '../../../../lib/scopes';
@@ -65,16 +66,18 @@ class Evaluation extends React.Component {
             } = {},
         } = this.state;
 
+        const { t } = this.props;
+
         const menuItems = [];
         if (intentEvaluation) {
             menuItems.push({
-                menuItem: 'Intents',
+                menuItem: t('Intents'),
                 render: () => <IntentReport {...intentEvaluation} />,
             });
         }
         if (entityEvaluation && Object.keys(entityEvaluation).length > 0) {
             menuItems.push({
-                menuItem: 'Entities',
+                menuItem: t('Entities'),
                 render: () => <EntityReport {...entityEvaluation} />,
             });
         }
@@ -84,14 +87,14 @@ class Evaluation extends React.Component {
 
     evaluate() {
         this.setState({ evaluating: true });
-        const { projectId, workingLanguage } = this.props;
+        const { projectId, workingLanguage, t } = this.props;
 
         const { data } = this.state;
 
         Meteor.apply('rasa.evaluate.nlu', [projectId, workingLanguage, data], { noRetry: true }, (err) => {
             this.setState({ evaluating: false });
             if (err) {
-                Alert.error(`Error: ${JSON.stringify(err.reason)}`, {
+                Alert.error(`${t('Error')}: ${JSON.stringify(err.reason)}`, {
                     position: 'top-right',
                     timeout: 'none',
                 });
@@ -109,7 +112,7 @@ class Evaluation extends React.Component {
 
     async useValidatedSet() {
         this.changeExampleSet('validation', true);
-        const { projectId, workingLanguage: language } = this.props;
+        const { projectId, t, workingLanguage: language } = this.props;
         const { data: { getActivity: { activity: examples } } } = await apolloClient.query({
             query: activityQuery,
             variables: {
@@ -126,8 +129,8 @@ class Evaluation extends React.Component {
         } else {
             const message = (
                 <Message warning>
-                    <Message.Header>No validated examples</Message.Header>
-                    <p>See the activity section to manage incoming traffic to this model</p>
+                    <Message.Header>{t('No validated examples')}</Message.Header>
+                    <p>{t('See the activity section to manage incoming traffic to this model')}</p>
                 </Message>
             );
             this.setState({ errorMessage: message, loading: false });
@@ -172,12 +175,12 @@ class Evaluation extends React.Component {
     }
 
     render() {
-        const { t } = this.props;
         const {
             validationRender,
             evaluation,
             loading: reportLoading,
             projectId,
+            t,
         } = this.props;
 
         const {
@@ -216,7 +219,7 @@ class Evaluation extends React.Component {
                                     <div>
                                         <Button type='submit' basic fluid color='green' loading={evaluating} onClick={this.evaluate} data-cy='start-evaluation'>
                                             <Icon name='percent' />
-                                            Start evaluation
+                                            {t('Start evaluation')}
                                         </Button>
                                         <br />
                                     </div>
@@ -263,11 +266,11 @@ const EvaluationContainer = withTracker((props) => {
         evaluation: Evaluations.findOne({ projectId, language: workingLanguage }),
         loading: !evalsHandler.ready(),
     };
-})(Evaluation);
+})(withTranslation('nlu')(Evaluation));
 
 const mapStateToProps = state => ({
     workingLanguage: state.settings.get('workingLanguage'),
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('nlu')(connect(mapStateToProps)(EvaluationContainer));
+export default connect(mapStateToProps)(EvaluationContainer);

@@ -2,6 +2,11 @@
   "Save conversation as a test case": "Save conversation as a test case",
   "Restart the conversation": "Restart the conversation",
   "Close the conversation": "Close the conversation",
+  "Go to": "Go to",
+  "Settings": "Settings",
+  "Instances to": "Instances to",
+  "create": "create",
+  "a valid instance of Rasa to enable the chat window.": "a valid instance of Rasa to enable the chat window.",
   "Project": "Project",
   "Dialogue": "Dialogue",
   "NLU": "NLU",
@@ -9,7 +14,6 @@
   "Responses": "Responses",
   "Analytics": "Analytics",
   "Chatbot Admin": "Chatbot Admin",
-  "Settings": "Settings",
   "documentation": "documentation",
   "Admin": "Admin"
 }

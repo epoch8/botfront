@@ -45,7 +45,7 @@ class DefaultDomain extends React.Component {
     };
 
     renderDefaultDomain = () => {
-        const { defaultDomain, projectId } = this.props;
+        const { defaultDomain, projectId, t } = this.props;
         const { saved, showConfirmation, saving } = this.state;
         const hasWritePermission = can('projects:w', projectId);
         return (
@@ -55,11 +55,8 @@ class DefaultDomain extends React.Component {
                     icon='question circle'
                     content={(
                         <>
-                            You may put <b>actions</b> and <b>slots </b>
-                            in this domain which cannot be inferred from stories
-                            or slots defined in the <b>Stories</b> section. It will
-                            be merged with the generated domain at the time of
-                            training.
+                            {t('You may put <b>actions</b> and <b>slots </b> in this domain which cannot be inferred from stories or slots defined in the <b>Stories</b> section.')}
+                            {t('It will be merged with the generated domain at the time of training.')}
                         </>
                     )}
                 />
@@ -69,14 +66,14 @@ class DefaultDomain extends React.Component {
                     model={defaultDomain}
                     onSubmit={this.onSave}
                 >
-                    <AceField name='content' label='Default Domain' mode='yaml' data-cy='ace-field' />
+                    <AceField name='content' label={t('Default Domain')} mode='yaml' data-cy='ace-field' />
                     <ErrorsField />
                     {showConfirmation && (
                         <ChangesSaved
                             onDismiss={() => this.setState({ saved: false, showConfirmation: false })}
                             content={(
                                 <p>
-                                    You need to retrain your model
+                                    {t('You need to retrain your model')}
                                 </p>
                             )}
                         />
@@ -110,7 +107,7 @@ const DefaultDomainContainer = withTracker(({ projectId }) => {
         ready: handler.ready(),
         defaultDomain,
     };
-})(DefaultDomain);
+})(withTranslation('settings')(DefaultDomain));
 
 const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),

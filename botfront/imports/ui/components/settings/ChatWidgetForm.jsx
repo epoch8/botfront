@@ -21,6 +21,8 @@ import { connect } from 'react-redux';
 import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
 import { safeLoad } from 'js-yaml';
+import { withTranslation } from 'react-i18next';
+
 import ToggleField from '../common/ToggleField';
 import SelectField from '../form_fields/SelectField';
 import { Credentials as CredentialsCollection } from '../../../api/credentials';
@@ -33,7 +35,6 @@ import ChangesSaved from '../utils/ChangesSaved';
 import IntentField from '../form_fields/IntentField';
 import { ProjectContext } from '../../layouts/context';
 import InfoField from '../utils/InfoField';
-import {withTranslation} from 'react-i18next';
 
 const ColorField = React.lazy(() => import('../form_fields/ColorField'));
 class ChatWidgetForm extends React.Component {
@@ -199,7 +200,7 @@ class ChatWidgetForm extends React.Component {
                             }}
                             className='copy-button'
                             icon='copy'
-                            content={t(copied ? 'Copied' : 'Copy')}
+                            content={copied ? t('Copied') : t('Copy')}
                             data-cy='copy-webchat-snippet'
                         />
                     </Input>
@@ -244,7 +245,7 @@ class ChatWidgetForm extends React.Component {
                 >
                     <Divider />
 
-                    <Header as='h3'>General</Header>
+                    <Header as='h3'>{t('General')}</Header>
                     <AutoField label={t('Widget tile')} name='title' data-cy='widget-title' />
                     <AutoField label={t('Widget subtile')} name='subtitle' />
                     <InfoField
@@ -263,7 +264,7 @@ class ChatWidgetForm extends React.Component {
                     <ErrorsField />
                     <Divider />
 
-                    <Header as='h3'>Colors</Header>
+                    <Header as='h3'>{t('Colors')}</Header>
                     <ColorField label={t('Main webchat color')} name='mainColor' />
                     <ColorField
                         label={t('Conversation background color')}
@@ -294,7 +295,7 @@ class ChatWidgetForm extends React.Component {
                             <Header as='h3' icon>
                                 {' '}
                                 <Icon name='dropdown' />
-                                Advanced
+                                {t('Advanced')}
                             </Header>
                         </Accordion.Title>
                         <Accordion.Content active={advancedVisible}>
@@ -346,8 +347,8 @@ class ChatWidgetForm extends React.Component {
                                 label={t('Open launcher image')}
                                 name='openLauncherImage'
                             />
-                            <AutoField label='Close launcher image' name='closeImage' />
-                            <AutoField label='Avatar path' name='profileAvatar' />
+                            <AutoField label={t('Close launcher image')} name='closeImage' />
+                            <AutoField label={t('Avatar path')} name='profileAvatar' />
                             <Divider />
                             <LongTextField
                                 className='monospaced'
@@ -407,21 +408,21 @@ class ChatWidgetForm extends React.Component {
     static contextType = ProjectContext;
 
     render() {
-        const { ready } = this.props;
+        const { ready, t } = this.props;
         const { activeMenu } = this.state;
         if (ready) {
             return (
                 <div data-cy='widget-form'>
                     <Menu pointing secondary>
                         <Menu.Item
-                            name='Configuration'
-                            active={activeMenu === 'Configuration'}
+                            name={t('Configuration')}
+                            active={activeMenu === t('Configuration')}
                             onClick={this.handleMenuClick}
                         />
                         <Menu.Item
                             data-cy='install'
-                            name='Installation'
-                            active={activeMenu === 'Installation'}
+                            name={t('Installation')}
+                            active={activeMenu === t('Installation')}
                             onClick={this.handleMenuClick}
                         />
                     </Menu>
@@ -461,10 +462,10 @@ const widgetSettingsContainer = withTracker(({ projectId }) => {
         ready: handlerCredentials.ready() && handlerProject.ready(),
         credentials,
     };
-})(ChatWidgetForm);
+})(withTranslation('settings')(ChatWidgetForm));
 
 const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('settings')(connect(mapStateToProps)(widgetSettingsContainer));
+export default connect(mapStateToProps)(widgetSettingsContainer);

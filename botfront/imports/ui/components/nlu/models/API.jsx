@@ -2,7 +2,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React from 'react';
 import moment from 'moment-timezone';
-import { withTranslation } from 'react-i18next';
 import {
     Form, Dropdown, Input, Checkbox,
 } from 'semantic-ui-react';
@@ -10,6 +9,8 @@ import TextArea from 'react-textarea-autosize';
 import ReactJson from 'react-json-view';
 import { debounce } from 'lodash';
 import queryString from 'query-string';
+import { withTranslation } from 'react-i18next';
+
 import { ProjectContext } from '../../../layouts/context';
 
 class API extends React.Component {
@@ -92,10 +93,10 @@ class API extends React.Component {
         const {
             query, output, reftime, tz,
         } = this.state;
-        const tzOptions = moment.tz.names().map(n => ({ value: n, text: n }));
-
-        const codeString = this.getCodeString();
         const { t } = this.props;
+        const tzOptions = moment.tz.names().map(n => ({ value: n, text: n }));
+        const codeString = this.getCodeString();
+
         return (
             <div className='glow-box extra-padding no-margin'>
                 <br />
@@ -120,7 +121,7 @@ class API extends React.Component {
                         <br />
                         {tz && (
                             <Form.Field>
-                                <label>Timezone: </label>
+                                <label>{t('Timezone')}: </label>
                                 <Dropdown
                                     name='tz'
                                     placeholder={t('Select timezone')}
@@ -134,11 +135,11 @@ class API extends React.Component {
                         )}
                         {reftime !== 0 && (
                             <Form.Field>
-                                <label>Ref. time:</label>
+                                <label>{t('Ref. time')}:</label>
                                 <Input
                                     name='reftime'
                                     value={reftime}
-                                    placeholder='Ref. time'
+                                    placeholder={t('Ref. time')}
                                     onChange={this.handleChange}
                                 />
                             </Form.Field>

@@ -6,6 +6,7 @@ import { Menu, Tab } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import { withTranslation } from 'react-i18next';
+
 import ImportRasaFiles from './ImportRasaFiles.jsx';
 import ExportProject from './ExportProject.jsx';
 import { can } from '../../../lib/scopes';
@@ -13,8 +14,8 @@ import { can } from '../../../lib/scopes';
 class ImportExportProject extends React.Component {
     constructor (props) {
         super(props);
-        const { projectId } = props;
-        this.state = { activeMenuItem: can('import:x', projectId) ? 'Import' : 'Export', loading: false };
+        const { projectId, t } = props;
+        this.state = { activeMenuItem: can('import:x', projectId) ? t('Import') : t('Export'), loading: false };
     }
 
     renderMenuItem = (itemText, itemKey = itemText) => {
@@ -37,14 +38,13 @@ class ImportExportProject extends React.Component {
 
     getMenuPanes = () => {
         const { loading } = this.state;
-        const { projectId } = this.props;
+        const { projectId, t } = this.props;
         const panes = [];
-        const { t } = this.props;
         if (can('import:x', projectId)) {
             panes.push({
                 menuItem: this.renderMenuItem(t('Import')),
                 render: () => (
-                    <Tab.Pane loading={loading} key='Import' data-cy='import-project-tab'>
+                    <Tab.Pane loading={loading} key={t('Import')} data-cy='import-project-tab'>
                         <ImportRasaFiles />
                     </Tab.Pane>
                 ),
@@ -54,7 +54,7 @@ class ImportExportProject extends React.Component {
             panes.push({
                 menuItem: this.renderMenuItem(t('Export')),
                 render: () => (
-                    <Tab.Pane loading={loading} key='Export' data-cy='export-project-tab'>
+                    <Tab.Pane loading={loading} key={t('Export')} data-cy='export-project-tab'>
                         <ExportProject setLoading={this.setLoading} />
                     </Tab.Pane>
                 ),
@@ -78,4 +78,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('settings')(connect(mapStateToProps)(ImportExportProject));
+export default connect(mapStateToProps)(withTranslation('settings')(ImportExportProject));

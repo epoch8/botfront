@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import matchSorter from 'match-sorter';
 import ReactTable from 'react-table-v6';
 import { Popup, Icon } from 'semantic-ui-react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 function ReportTable(props) {
     const { labelType } = props;
-    const { t } = this.props;
+    const { t } = useTranslation('nlu');
 
     const getReportData = () => {
         const { report } = props;
@@ -100,4 +100,4 @@ ReportTable.propTypes = {
     labelType: PropTypes.string.isRequired,
 };
 
-export default withTranslation('nlu')(ReportTable);
+export default ReportTable;

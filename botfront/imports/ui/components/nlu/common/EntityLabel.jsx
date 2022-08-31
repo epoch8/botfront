@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import {
     Popup, Grid, Button, Header,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 import EntityDropdown from './EntityDropdown';
+
 import EntityValueEditor from '../../stories/common/EntityValueEditor';
 import getColor from '../../../../lib/getColors';
 import { useEventListener } from '../../utils/hooks';
-import { withTranslation } from 'react-i18next';
 
 function Entity({
     value,
@@ -28,7 +29,7 @@ function Entity({
     const [newValue, setNewValue] = useState(value);
     const [toBeDeleted, setToBeDeleted] = useState(false);
     const [createdAt] = useState(new Event('click').timeStamp);
-    const { t } = this.props;
+    const { t } = useTranslation('nlu');
     useEffect(() => {
         if (openInitially) setPopupOpen(true);
     }, []);
@@ -71,7 +72,7 @@ function Entity({
         <Grid columns='1'>
             <Grid.Row centered style={{ padding: '0.9em 0 0.4em 0' }}>
                 <Header as='h4' style={{ fontWeight: '300' }}>
-                    {!openInitially ? 'Change' : 'Add'} entity
+                    {!openInitially ? t('Change') : t('Add')} {t('entity')}
                 </Header>
             </Grid.Row>
             <Grid.Row style={{ padding: '0 0.7em' }}>
@@ -91,7 +92,7 @@ function Entity({
                 {showDeleteConfirmation
                     ? (
                         <Button negative size='mini' onClick={() => setToBeDeleted(true)} data-cy='confirm-entity-deletion'>
-                        Confirm deletion
+                            {t('Confirm deletion')}
                         </Button>
                     )
                     : renderAdvancedEditing()
@@ -185,4 +186,4 @@ Entity.defaultProps = {
 };
 
 
-export default withTranslation('nlu')(Entity);
+export default Entity;

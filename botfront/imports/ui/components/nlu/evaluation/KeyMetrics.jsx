@@ -10,8 +10,9 @@ class KeyMetrics extends React.PureComponent {
     };
 
     render() {
-        const { f1, precision, accuracy } = this.props;
-        const { t } = this.props;
+        const {
+            f1, precision, accuracy, t,
+        } = this.props;
         const data = [
             {
                 label: t('F1-Score'),

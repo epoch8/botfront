@@ -6,6 +6,7 @@ import { Menu, Divider } from 'semantic-ui-react';
 import { Link } from 'react-router';
 import { withTracker } from 'meteor/react-meteor-data';
 import { withTranslation } from 'react-i18next';
+
 import { Projects } from '../../../api/project/project.collection';
 import ProjectsDropdown from './ProjectsDropdown';
 import { can, isUserPermissionGlobal } from '../../../lib/scopes';

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { useQuery } from '@apollo/react-hooks';
 import { withTracker } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
 import {
     Button, Confirm, Icon, Message, Tab,
 } from 'semantic-ui-react';
@@ -11,6 +10,8 @@ import 'brace/mode/json';
 import 'brace/theme/github';
 import { saveAs } from 'file-saver';
 import moment from 'moment';
+import { withTranslation } from 'react-i18next';
+
 import { ProjectContext } from '../../../layouts/context';
 import { wrapMeteorCallback } from '../../utils/Errors';
 import { setWorkingLanguage } from '../../../store/actions/actions';
@@ -34,7 +35,9 @@ class DeleteModel extends React.Component {
     };
 
     onConfirm = () => {
-        const { projectId, language, changeWorkingLanguage } = this.props;
+        const {
+            projectId, language, changeWorkingLanguage, t,
+        } = this.props;
         const { projectLanguages } = this.context;
         const { value: fallbackLang } = projectLanguages.find(({ value }) => value !== language) || {};
         Meteor.call(
@@ -44,7 +47,7 @@ class DeleteModel extends React.Component {
             wrapMeteorCallback(() => {
                 changeWorkingLanguage(fallbackLang);
                 this.setState({ confirmOpen: false });
-            }, 'Model deleted!'),
+            }, t('Model deleted!')),
         );
     };
 
@@ -84,7 +87,7 @@ class DeleteModel extends React.Component {
                     header={t('Default language cannot be deleted')}
                     icon='warning'
                     content={t(
-                        'You can\'t delete the default language, to delete this language change the default language of the project.'
+                        'You can\'t delete the default language, to delete this language change the default language of the project.',
                     )}
                     warning
                 />
@@ -93,7 +96,7 @@ class DeleteModel extends React.Component {
         return (
             <Message
                 negative
-                header={t(`All the ${language} data of your model will be deleted !`)}
+                header={`${t('All the ')}${language} ${t('data of your model will be deleted')} !`}
                 icon='warning circle'
                 content={t('Please use the button below to download a backup of your data before proceeding.')}
             />
@@ -104,17 +107,16 @@ class DeleteModel extends React.Component {
 
     render() {
         const { backupDownloaded, confirmOpen } = this.state;
-        const { language, examples } = this.props;
+        const { language, examples, t } = this.props;
         const { projectLanguages } = this.context;
         const { text: languageName } = projectLanguages.find(
             lang => lang.value === language,
         );
-        const { t } = this.props;
         return (
             <Tab.Pane>
                 <Confirm
                     open={confirmOpen}
-                    header={`Delete ${languageName} data from your model? (${examples} examples)`}
+                    header={`${t('Delete')} ${languageName} ${t('data from your model?')} (${examples} ${t('examples')})`}
                     content={t('This cannot be undone!')}
                     onCancel={this.onCancel}
                     onConfirm={this.onConfirm}
@@ -130,7 +132,7 @@ class DeleteModel extends React.Component {
                             data-cy='download-backup'
                         >
                             <Icon name='download' />
-                            Backup {languageName} data of your model
+                            {t('Backup')} {languageName} {t('data of your model')}
                         </Button>
                     </div>
                 )}
@@ -148,7 +150,7 @@ class DeleteModel extends React.Component {
                         disabled={!backupDownloaded || this.cannotDelete()}
                     >
                         <Icon name='trash' />
-                        Delete <strong>{languageName}</strong> data from your model
+                        {t('Delete')} <strong>{languageName}</strong> {t('data from your model')}
                     </Button>
                 )}
             </Tab.Pane>
@@ -172,7 +174,7 @@ const DeleteModelWithTracker = withTracker((props) => {
     const { data } = useQuery(GET_EXAMPLE_COUNT, { variables: { projectId, language } });
     const { totalLength: examples } = data?.examples?.pageInfo || {};
     return { examples, language };
-})(DeleteModel);
+})(withTranslation('nlu')(DeleteModel));
 
 const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
@@ -183,4 +185,4 @@ const mapDispatchToProps = {
     changeWorkingLanguage: setWorkingLanguage,
 };
 
-export default withTranslation('nlu')(connect(mapStateToProps, mapDispatchToProps)(DeleteModelWithTracker));
+export default connect(mapStateToProps, mapDispatchToProps)(DeleteModelWithTracker);

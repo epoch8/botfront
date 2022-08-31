@@ -7,6 +7,8 @@ import React from 'react';
 import { Menu } from 'semantic-ui-react';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
 import { safeLoad } from 'js-yaml';
+import { withTranslation } from 'react-i18next';
+
 import { Endpoints as EndpointsCollection } from '../../../api/endpoints/endpoints.collection';
 import { Projects as ProjectsCollection } from '../../../api/project/project.collection';
 import { EndpointsSchema } from '../../../api/endpoints/endpoints.schema';
@@ -18,7 +20,6 @@ import { can } from '../../../lib/scopes';
 import { ENVIRONMENT_OPTIONS } from '../constants.json';
 import restartRasa from './restartRasa';
 import HttpRequestsForm from '../common/HttpRequestsForm';
-import { withTranslation } from 'react-i18next';
 
 class Endpoints extends React.Component {
     constructor(props) {
@@ -86,10 +87,10 @@ class Endpoints extends React.Component {
 
 
     handleActionEndpointSave = (value, callback) => {
-        const { projectId } = this.props;
+        const { projectId, t } = this.props;
         const { selectedEnvironment } = this.state;
         if (!value[selectedEnvironment]) {
-            callback(new Error('Actions server not saved'));
+            callback(new Error(t('Actions server not saved')));
         }
         Meteor.call('actionsEndpoints.save', projectId, selectedEnvironment, value[selectedEnvironment].url, (...args) => {
             callback(...args);
@@ -99,11 +100,12 @@ class Endpoints extends React.Component {
 
     renderActionEndpoints = (saving, data, projectId) => {
         const { selectedEnvironment } = this.state;
+        const { t } = this.props;
         if (!data) return <></>;
         const endpointSettings = safeLoad(data.endpoints);
         const urls = {
             [selectedEnvironment]: {
-                name: 'Actions Server',
+                name: t('Actions Server'),
                 url: endpointSettings.action_endpoint.url,
             },
         };
@@ -121,6 +123,7 @@ class Endpoints extends React.Component {
         const {
             saved, showConfirmation, selectedEnvironment, webhook,
         } = this.state;
+        const { t } = this.props;
         const hasWritePermission = can('resources:w', projectId);
         return (
             <AutoForm
@@ -139,7 +142,7 @@ class Endpoints extends React.Component {
                     return newModel;
                 }}
             >
-                <AceField name='endpoints' label='Endpoints' mode='yaml' data-cy='ace-field' />
+                <AceField name='endpoints' label={t('Endpoints')} mode='yaml' data-cy='ace-field' />
                 <ErrorsField />
                 {showConfirmation && (
                     <ChangesSaved
@@ -156,7 +159,7 @@ class Endpoints extends React.Component {
                             saving={saving}
                             disabled={!!saving}
                             onSave={() => { this.form.current.submit(); }}
-                            confirmText={webhook && webhook.url ? `Saving will restart the ${selectedEnvironment} rasa instance` : ''}
+                            confirmText={webhook && webhook.url ? `${t('Saving will restart the')} ${selectedEnvironment} ${t('rasa instance')}` : ''}
                         />
                     )}
             </AutoForm>
@@ -271,10 +274,10 @@ const EndpointsContainer = withTracker(({ projectId }) => {
         endpoints,
         projectSettings,
     };
-})(Endpoints);
+})(withTranslation('settings')(Endpoints));
 
 const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('settings')(connect(mapStateToProps)(EndpointsContainer));
+export default connect(mapStateToProps)(EndpointsContainer);

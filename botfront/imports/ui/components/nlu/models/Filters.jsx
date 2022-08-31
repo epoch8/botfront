@@ -4,9 +4,10 @@ import {
     Input, Dropdown, Button, Icon,
 } from 'semantic-ui-react';
 import moment from 'moment';
+import { withTranslation } from 'react-i18next';
+
 import DatePicker from '../../common/DatePicker';
 import { ProjectContext } from '../../../layouts/context';
-import { withTranslation } from 'react-i18next';
 import { applyTimezoneOffset } from '../../../../lib/graphs';
 import getColor from '../../../../lib/getColors';
 
@@ -77,6 +78,7 @@ class Filters extends React.Component {
             intents,
             entities,
             className,
+            t,
         } = this.props;
         const { startDate, endDate } = dateRange || {};
         const { sortDropdownOpen } = this.state;
@@ -88,7 +90,6 @@ class Filters extends React.Component {
             color: getColor(label.text, true),
             content: `${label.text}`,
         });
-        const { t } = this.props;
 
         return (
             <div className={`side-by-side narrow middle ${className}`}>
@@ -163,8 +164,8 @@ class Filters extends React.Component {
                                     value={sortKey}
                                     floating
                                     options={[
-                                        { text: 'Date', value: 'updatedAt' },
-                                        { text: 'Intent', value: 'intent' },
+                                        { text: t('Date'), value: 'updatedAt' },
+                                        { text: t('Intent'), value: 'intent' },
                                     ]}
                                 />
                             )}

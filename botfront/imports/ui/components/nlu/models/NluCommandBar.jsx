@@ -1,9 +1,10 @@
 import React, { useImperativeHandle, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import IconButton from '../../common/IconButton';
 import IntentLabel from '../common/IntentLabel';
-import { withTranslation } from 'react-i18next';
 
 const NluCommandBar = React.forwardRef((props, ref) => {
     const {
@@ -15,7 +16,7 @@ const NluCommandBar = React.forwardRef((props, ref) => {
     const selectionIncludesNonDraft = selection.some(d => !d.metadata?.draft);
     const selectionIncludesNullIntent = selection.some(d => !d.intent);
     const selectionIncludesDeleted = selection.some(d => d.deleted);
-    const { t } = this.props;
+    const { t } = useTranslation('nlu');
 
     useImperativeHandle(ref, () => ({
         openIntentPopup: () => intentLabelRef.current.openPopup(),
@@ -23,7 +24,7 @@ const NluCommandBar = React.forwardRef((props, ref) => {
 
     return (
         <div className='activity-command-bar' data-cy='activity-command-bar'>
-            <span>{selection.length} selected</span>
+            <span>{selection.length} {t('selected')}</span>
             <div className='side-by-side narrow right'>
                 {onSetIntent && onCloseIntentPopup && (
                     <>
@@ -62,27 +63,27 @@ const NluCommandBar = React.forwardRef((props, ref) => {
                     </>
                 )}
                 {onDelete && (
-                <>
-                    <span className='shortcut'>D</span>
-                    <Popup
-                        size='mini'
-                        inverted
-                        disabled={!selectionIncludesCanonical}
-                        content={t('Cannot delete with a selection containing canonicals')}
-                        trigger={(
-                            <div>
-                                <IconButton
-                                    size='small'
-                                    disabled={selectionIncludesCanonical}
-                                    onClick={() => onDelete(selection.map(({ _id }) => _id))}
-                                    color='grey'
-                                    icon='trash'
-                                    data-cy='trash-shortcut'
-                                />
-                            </div>
-                        )}
-                    />
-                </>
+                    <>
+                        <span className='shortcut'>D</span>
+                        <Popup
+                            size='mini'
+                            inverted
+                            disabled={!selectionIncludesCanonical}
+                            content={t('Cannot delete with a selection containing canonicals')}
+                            trigger={(
+                                <div>
+                                    <IconButton
+                                        size='small'
+                                        disabled={selectionIncludesCanonical}
+                                        onClick={() => onDelete(selection.map(({ _id }) => _id))}
+                                        color='grey'
+                                        icon='trash'
+                                        data-cy='trash-shortcut'
+                                    />
+                                </div>
+                            )}
+                        />
+                    </>
                 )}
                 {onUndraft && !selectionIncludesNonDraft && (
                     <>
@@ -90,7 +91,7 @@ const NluCommandBar = React.forwardRef((props, ref) => {
                         <Popup
                             size='mini'
                             inverted
-                            content={t(!selectionIncludesNullIntent ? 'Save' : 'Cannot save as some examples do not have intents')}
+                            content={!selectionIncludesNullIntent ? t('Save') : t('Cannot save as some examples do not have intents')}
                             trigger={(
                                 <div>
                                     <IconButton
@@ -129,4 +130,4 @@ NluCommandBar.defaultProps = {
 
 };
 
-export default withTranslation('nlu')(NluCommandBar);
+export default NluCommandBar;

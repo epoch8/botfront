@@ -5,7 +5,8 @@ import PropTypes from 'prop-types';
 import {
     Icon, Popup, Input, Button, Modal, Item, Label, Dropdown,
 } from 'semantic-ui-react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+
 import UserUtteranceViewer from './UserUtteranceViewer';
 import { ProjectContext } from '../../../layouts/context';
 import { OOS_LABEL } from '../../constants.json';
@@ -25,7 +26,6 @@ const Intent = React.forwardRef((props, ref) => {
         multiple,
         width,
         onlyDataTable,
-        t,
     } = props;
     const { getCanonicalExamples } = useContext(ProjectContext);
     const [popupOpen, setPopupOpen] = useState(false);
@@ -33,6 +33,7 @@ const Intent = React.forwardRef((props, ref) => {
     const labelRef = useRef();
     const tableRef = useRef();
     const showReset = allowEditing && enableReset && ((value && value !== OOS_LABEL) || detachedModal);
+    const { t } = useTranslation('nlu');
 
     const getIntentsFromValue = () => {
         if (Array.isArray(value)) {
@@ -266,7 +267,7 @@ const Intent = React.forwardRef((props, ref) => {
                 <Popup
                     open
                     basic
-                    content={t(renderContent())}
+                    content={renderContent()}
                     position='bottom right'
                     on='click'
                     context={labelRef.current}
@@ -358,4 +359,4 @@ Intent.defaultProps = {
     additionalIntentOption: '',
 };
 
-export default withTranslation('nlu')(Intent);
+export default Intent;
