@@ -123,7 +123,7 @@ Project.defaultProps = {
 Project.propTypes = {
     loading: PropTypes.bool.isRequired,
     project: PropTypes.object,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 const ProjectContainer = withTracker(({ params }) => {

@@ -120,7 +120,7 @@ class ResetPassword extends React.Component {
 
 ResetPassword.propTypes = {
     settings: PropTypes.object,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 ResetPassword.defaultProps = {

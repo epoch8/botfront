@@ -101,7 +101,7 @@ class ErrorBoundary extends React.Component {
 
 ErrorBoundary.propTypes = {
     children: PropTypes.any.isRequired,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 ErrorBoundary.defaultProps = {

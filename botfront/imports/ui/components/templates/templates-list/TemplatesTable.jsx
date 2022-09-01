@@ -294,7 +294,7 @@ TemplatesTable.propTypes = {
     setActiveEditor: PropTypes.func.isRequired,
     newResponse: PropTypes.object,
     closeNewResponse: PropTypes.func.isRequired,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 TemplatesTable.defaultProps = {

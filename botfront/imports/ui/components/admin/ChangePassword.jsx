@@ -100,7 +100,7 @@ class ChangePassword extends React.Component {
 
 ChangePassword.propTypes = {
     userId: PropTypes.string.isRequired,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 ChangePassword.defaultProps = {

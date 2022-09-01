@@ -97,7 +97,7 @@ class GazetteEditor extends React.Component {
 GazetteEditor.propTypes = {
     model: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 GazetteEditor.defaultProps = {

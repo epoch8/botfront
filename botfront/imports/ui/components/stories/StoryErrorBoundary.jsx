@@ -24,7 +24,7 @@ class StoryErrorBoundary extends React.Component {
                     <Message
                         icon='warning'
                         header={t('Sorry, something went wrong with the story')}
-                        content={
+                        content={(
                             <>
                                 <p>
                                     {t('Please try to refresh the page.')}
@@ -42,8 +42,8 @@ class StoryErrorBoundary extends React.Component {
                                         onLoad={rep => this.setState({ reported: rep })}
                                     />
                                 </p>
-                            </>,
-                        }
+                            </>
+                        )}
                         negative
                     />
                 </div>

@@ -232,7 +232,7 @@ User.propTypes = {
     user: PropTypes.object,
     ready: PropTypes.bool.isRequired,
     projectOptions: PropTypes.array.isRequired,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 // TODO test

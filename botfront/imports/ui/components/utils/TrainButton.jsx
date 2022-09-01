@@ -475,7 +475,7 @@ TrainButton.propTypes = {
     status: PropTypes.string,
     partialTrainning: PropTypes.bool,
     ready: PropTypes.bool.isRequired,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 TrainButton.defaultProps = {

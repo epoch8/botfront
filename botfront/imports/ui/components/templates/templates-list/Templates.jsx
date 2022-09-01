@@ -119,7 +119,7 @@ Templates.propTypes = {
     nluLanguages: PropTypes.array.isRequired,
     deleteBotResponse: PropTypes.func.isRequired,
     loading: PropTypes.bool.isRequired,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 Templates.defaultProps = {

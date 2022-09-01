@@ -101,7 +101,7 @@ class ForgotPassword extends React.Component {
 ForgotPassword.propTypes = {
     settings: PropTypes.object,
     ready: PropTypes.bool.isRequired,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 ForgotPassword.defaultProps = {

@@ -480,7 +480,7 @@ NluTable.propTypes = {
     noDrafts: PropTypes.bool,
     renderLabelColumn: PropTypes.func,
     additionalIntentOption: PropTypes.string,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 NluTable.defaultProps = {

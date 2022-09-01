@@ -106,7 +106,7 @@ class ProjectsList extends React.Component {
 ProjectsList.propTypes = {
     projects: PropTypes.arrayOf(PropTypes.object).isRequired,
     loading: PropTypes.bool.isRequired,
-    t: PropTypes.any,
+    t: PropTypes.func,
 };
 
 ProjectsList.defaultProps = {
