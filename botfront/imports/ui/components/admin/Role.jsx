@@ -113,7 +113,7 @@ const Role = (props) => {
 
     return (
         <>
-            <PageMenu icon='shield alternate' title={t(roleName || 'New Role')} />
+            <PageMenu icon='shield alternate' title={roleName || t('New Role')} />
             <Container>
                 {disabled && (
                     <Message info>

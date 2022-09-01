@@ -2,11 +2,10 @@ import { ResponsiveBar } from '@nivo/bar';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Icon } from 'semantic-ui-react';
-import { useTranslation } from 'react-i18next';
+
 import { labelWithPercent, formatOrIdent } from './PieChart';
 
 function BarChart(props) {
-    const { t } = useTranslation('charts');
     const {
         data, margin, x, y, tooltip, label, formats, linkToConversations, tooltipLabels, ...otherProps
     } = props;
@@ -37,7 +36,7 @@ function BarChart(props) {
                 tooltip={tooltip({
                     relMap, formats, x, tooltipLabels,
                 })}
-                label={t(label)}
+                label={label}
                 labelSkipWidth={16}
                 labelSkipHeight={16}
                 animate

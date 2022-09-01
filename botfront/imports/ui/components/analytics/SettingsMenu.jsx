@@ -4,13 +4,13 @@ import {
     Dropdown, Icon, Button, Popup,
 } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+
 import SettingsPortal from './SettingsPortal';
 
 export const filters = ['includeActions', 'excludeAction', 'includeActions', 'excludeIntents', 'selectedSequence', 'conversationLength', 'limit', 'eventFilter'];
 export const conversationTypes = ['userInitiatedConversations', 'triggeredConversations'];
 
 const SettingsMenu = (props) => {
-    const { t } = useTranslation('analytics');
     const {
         settings,
         titleDescription,
@@ -21,6 +21,7 @@ const SettingsMenu = (props) => {
         canExport,
     } = props;
 
+    const { t } = useTranslation('analytics');
     const displayTypeHeader = useMemo(() => (
         displayConfigs.some(setting => conversationTypes.includes(setting))
     ), [displayConfigs]);
@@ -36,7 +37,7 @@ const SettingsMenu = (props) => {
                 data-cy={`edit-${setting}`}
                 className='toggle-item'
                 onClick={() => onChangeSettings({ [setting]: !value })}
-                content={<>{t(text)}{value && <Icon name='check' className='card-settings-checkmark' />}</>}
+                content={<>{text}{value && <Icon name='check' className='card-settings-checkmark' />}</>}
             />
         </React.Fragment>
     );
@@ -84,7 +85,7 @@ const SettingsMenu = (props) => {
         return (
             <React.Fragment key={setting}>
                 <SettingsPortal
-                    text={t(text)}
+                    text={text}
                     setting={setting}
                     onClose={() => setSettingsOpen(false)}
                     open={settingsOpen === setting}
@@ -99,7 +100,7 @@ const SettingsMenu = (props) => {
                     }
                 />
                 <Dropdown.Item
-                    text={t(`${text}${valueText}`)}
+                    text={`${text}${valueText}`}
                     data-cy={`edit-${setting}`}
                     onClick={() => setSettingsOpen(setting)}
                 />
@@ -148,8 +149,8 @@ const SettingsMenu = (props) => {
                     />
                 )}
                 {displayTypeHeader && <Dropdown.Header content={t('Types of conversations')} onClick={e => e.stopPropagation()} /> }
-                {displayConfigs.includes('userInitiatedConversations') && renderCheckOption('User initiated conversations', 'userInitiatedConversations', settings.userInitiatedConversations)}
-                {displayConfigs.includes('triggerConversations') && renderCheckOption('Triggered conversations', 'triggerConversations', settings.triggerConversations)}
+                {displayConfigs.includes('userInitiatedConversations') && renderCheckOption(t('User initiated conversations'), 'userInitiatedConversations', settings.userInitiatedConversations)}
+                {displayConfigs.includes('triggerConversations') && renderCheckOption(t('Triggered conversations'), 'triggerConversations', settings.triggerConversations)}
                 {displayFiltersHeader && <Dropdown.Header content={t('Filters')} onClick={e => e.stopPropagation()} />}
                 {(displayConfigs || []).map(renderExtraOptionsLink)}
                 <Dropdown.Header content={t('Extras')} onClick={e => e.stopPropagation()} />

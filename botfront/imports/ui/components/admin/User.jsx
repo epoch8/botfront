@@ -189,7 +189,7 @@ class User extends React.Component {
         const { user, ready, t } = this.props;
         return (
             <>
-                <PageMenu icon='users' title={t(!!user ? t('Edit user') : t('New user'))} />
+                <PageMenu icon='users' title={!!user ? t('Edit user') : t('New user')} />
                 {ready && (
                     <Container>
                         {!!user ? (
