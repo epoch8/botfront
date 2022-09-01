@@ -30,7 +30,7 @@ function ReportTable(props) {
             accessor: 'f1-score',
             Header: () => (
                 <div>
-                    F1-Score{' '}
+                    {t('F1-Score')}{' '}
                     <Popup
                         trigger={<Icon name='question circle' color='grey' />}
                         content={t('A general measure of the quality of your model based on precision and accuracy')}
@@ -44,7 +44,7 @@ function ReportTable(props) {
             accessor: 'precision',
             Header: () => (
                 <div>
-                    Precision{' '}
+                    {t('Precision')}{' '}
                     <Popup
                         trigger={<Icon name='question circle' color='grey' />}
                         content={t('On 100 predictions for label, how many were actually labeled as such in test set')}
@@ -58,7 +58,7 @@ function ReportTable(props) {
             accessor: 'recall',
             Header: () => (
                 <div>
-                    Recall{' '}
+                    {t('Recall')}{' '}
                     <Popup
                         trigger={<Icon name='question circle' color='grey' />}
                         content={t('On 100 instances of label in test set, how many were actually predicted')}
@@ -72,7 +72,7 @@ function ReportTable(props) {
             accessor: 'support',
             Header: () => (
                 <div>
-                    Support{' '}
+                    {t('Support')}{' '}
                     <Popup
                         trigger={<Icon name='question circle' color='grey' />}
                         content={t('The number of examples for that label')}

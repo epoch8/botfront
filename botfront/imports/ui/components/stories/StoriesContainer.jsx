@@ -2,6 +2,7 @@ import { Loader, Menu } from 'semantic-ui-react';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
+
 import LanguageDropdown from '../common/LanguageDropdown';
 import SearchBar from './search/SearchBar';
 import PageMenu from '../utils/PageMenu';

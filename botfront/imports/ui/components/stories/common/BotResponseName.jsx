@@ -4,6 +4,7 @@ import {
     Loader, Header, List, Input, Popup,
 } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+
 import HoverablePopup from '../../common/HoverablePopup';
 import { ConversationOptionsContext } from '../Context';
 import { generateRenamingErrorMessage } from '../../../../lib/botResponse.utils';

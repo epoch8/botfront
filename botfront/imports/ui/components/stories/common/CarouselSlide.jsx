@@ -76,7 +76,7 @@ function CarouselSlide(props) {
                 onChange={url => setValue({ image_url: url })}
                 otherActions={[
                     [
-                        'Set default action',
+                        t('Set default action'),
                         () => setModalOpen(true),
                         'set-default-action',
                     ],

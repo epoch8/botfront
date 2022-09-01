@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ToggleButtonGroup from '../../../common/ToggleButtonGroup';
 import { useTranslation } from 'react-i18next';
+
+import ToggleButtonGroup from '../../../common/ToggleButtonGroup';
 
 const ConditionConjunction = (props) => {
     const {

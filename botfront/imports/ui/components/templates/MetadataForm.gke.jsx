@@ -199,14 +199,14 @@ function ResponseMetadataForm({
                     <ToggleField name='domHighlight.enabled' className='toggle' label={t('Highlight element on page')} />
                     <DisplayIf condition={context => context.model.domHighlight && context.model.domHighlight.enabled}>
                         <>
-                            <InfoField name='domHighlight.selector' label='CSS selector' info={t('The CSS selector of the DOM element to highlight')} />
+                            <InfoField name='domHighlight.selector' label={t('CSS selector')} info={t('The CSS selector of the DOM element to highlight')} />
                             <ButtonSelectField name='domHighlight.style' />
 
                             <DisplayIf condition={context => context.model.domHighlight && context.model.domHighlight.style === 'class'}>
-                                <AutoField name='domHighlight.css' label='Class name' />
+                                <AutoField name='domHighlight.css' label={t('Class name')} />
                             </DisplayIf>
                             <DisplayIf condition={context => context.model.domHighlight && context.model.domHighlight.style === 'custom'}>
-                                <LongTextField className='monospaced' name='domHighlight.css' label='Custom css' />
+                                <LongTextField className='monospaced' name='domHighlight.css' label={t('Custom css')} />
                             </DisplayIf>
                             <ButtonSelectField name='domHighlight.tooltipPlacement' />
                             <ToggleField name='domHighlight.tooltipCloseEnabled' className='toggle' label={t('Send intent on tooltip close')} />
@@ -285,10 +285,10 @@ function ResponseMetadataForm({
                         <>
                             <ButtonSelectField name='customCss.style' data-cy='style-dropdown' />
                             <DisplayIf condition={context => context.model.customCss && context.model.customCss.style === 'custom'}>
-                                <LongTextField className='monospaced' name='customCss.css' label='Custom CSS' data-cy='custom-message-css' />
+                                <LongTextField className='monospaced' name='customCss.css' label={t('Custom CSS')} data-cy='custom-message-css' />
                             </DisplayIf>
                             <DisplayIf condition={context => context.model.customCss && context.model.customCss.style === 'class'}>
-                                <AutoField name='customCss.css' label='Custom class' data-cy='custom-message-css' />
+                                <AutoField name='customCss.css' label={t('Custom class')} data-cy='custom-message-css' />
                             </DisplayIf>
                         </>
                     </DisplayIf>

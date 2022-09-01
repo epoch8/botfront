@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { useQuery } from '@apollo/react-hooks';
 import { saveAs } from 'file-saver';
 import { useTranslation } from 'react-i18next';
+
 import { Stories as StoriesCollection } from '../../../../api/story/stories.collection';
 import { Loading } from '../../utils/Utils';
 import IntentLabel from '../common/IntentLabel';
@@ -84,7 +85,7 @@ const Statistics = (props) => {
 
     const renderExample = (row) => {
         const { datum } = row;
-        if (!datum.example) return <i>No example defined.</i>;
+        if (!datum.example) return <i>{t('No example defined.')}</i>;
         return datum.example;
     };
 
@@ -96,10 +97,10 @@ const Statistics = (props) => {
 
     const columns = [
         {
-            key: 'intent', header: 'Intent', style: { width: '200px', minWidth: '200px', overflow: 'hidden' }, render: renderIntent,
+            key: 'intent', header: t('Intent'), style: { width: '200px', minWidth: '200px', overflow: 'hidden' }, render: renderIntent,
         },
         {
-            key: 'example', header: 'Example', style: { width: '100%' }, render: renderExample,
+            key: 'example', header: t('Example'), style: { width: '100%' }, render: renderExample,
         },
         ...countColumns,
     ];

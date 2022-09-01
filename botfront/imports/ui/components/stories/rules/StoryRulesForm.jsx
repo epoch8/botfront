@@ -172,7 +172,7 @@ function StoryRulesForm({
         when: { type: String, optional: true, defaultValue: 'always' },
     });
 
-    export const RulesSchema = new SimpleSchema({
+    const RulesSchema = new SimpleSchema({
         text: { type: String, optional: true },
         text__DISPLAYIF: { type: Boolean, optional: true },
         trigger: {
@@ -181,7 +181,7 @@ function StoryRulesForm({
         },
     });
 
-    export const rootSchema = new SimpleSchema({
+    const rootSchema = new SimpleSchema({
         rules: { type: Array, optional: true, minCount: 1 },
         'rules.$': { type: RulesSchema },
         hasToggles: { type: Boolean, optional: true },
@@ -349,7 +349,7 @@ function StoryRulesForm({
                         <NestField name=''>
                             <AutoField name='trigger' label='Conditions'>
                                 <ButtonSelectField
-                                    name={t('when')}
+                                    name='when'
                                     label={t('When should this event be triggered?')}
                                     options={[
                                         { value: 'always', description: t('Always') },

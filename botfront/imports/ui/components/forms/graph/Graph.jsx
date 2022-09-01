@@ -5,6 +5,7 @@ import {
 } from 'semantic-ui-react';
 import React, { useState, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { v4 as uuidv4 } from 'uuid';
 import { useEventListener } from '../../utils/hooks';
@@ -15,7 +16,6 @@ import StartNode from './StartNode';
 import SlotNode from './SlotNode';
 import SlotSetNode from './SlotSetNode';
 import FormEditorContainer from '../FormEditorContainer';
-import { useTranslation } from 'react-i18next';
 
 const nodeTypes = {
     start: StartNode,
@@ -411,26 +411,25 @@ const SlotsGraph = (props) => {
                 }
             >
                 <Popup.Content>
-                    Some tips to help you.
+                    {t('Some tips to help you.')}
                     <br /> <br />
-                    <b>Add a question:</b> Click on the <code>+</code> icon below the nodes.
+                    {t('<b>Add a question:</b> Click on the <code>+</code> icon below the nodes.')}
                     <br /> <br />
-                    <b>Link to an existing question:</b> Enable <code>edge edition mode</code> and drag
-                    from the blue square that appears to the question node you want to link. <br />{' '}
-                    A backlink made this way will be displayed in orange.
+                    {t('<b>Link to an existing question:</b> Enable <code>edge edition mode</code> and drag')}
+                    {t('from the blue square that appears to the question node you want to link.')} <br />{' '}
+                    {t('A backlink made this way will be displayed in orange.')}
                     <br />
                     <br />
-                    Note: You can&#39;t link to a question that was already answered in
-                    your flow.
+                    {t('Note: You can&#39;t link to a question that was already answered in your flow.')}
                     <br />
                     <br />
-                    <b>Delete a link:</b> Enable <code>edge edition mode</code> and delete the red buttons that will appear on links.
+                    {t('<b>Delete a link:</b> Enable <code>edge edition mode</code> and delete the red buttons that will appear on links.')}
                 </Popup.Content>
             </Popup>
             <Checkbox
                 toggle
                 // eslint-disable-next-line jsx-a11y/label-has-for
-                label={(<label data-cy='shift-mode'>Edge edition mode <span className='shortcut'>(Shift key)</span></label>)}
+                label={(<label data-cy='shift-mode'>{t('Edge edition mode')} <span className='shortcut'>{t('(Shift key)')}</span></label>)}
                 checked={shiftKey}
                 onChange={() => setShiftKey(sk => !sk)}
                 className='shift-mode-toggle'
@@ -458,7 +457,7 @@ const SlotsGraph = (props) => {
                                 onClick={() => handleRemoveSlot(selectedNode.id)}
                             >
                                 <Icon name='trash' />
-                            Remove this slot
+                                {t('Remove this slot')}
                             </Button>
                         </>
                     )}

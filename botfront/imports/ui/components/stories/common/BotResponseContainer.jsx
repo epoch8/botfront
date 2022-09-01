@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 import TextareaAutosize from 'react-autosize-textarea';
 import { useTranslation } from 'react-i18next';
+
 import ImageThumbnail from './ImageThumbnail';
 import CarouselEditor from './CarouselEditor';
 import QuickReplies from './QuickReplies';

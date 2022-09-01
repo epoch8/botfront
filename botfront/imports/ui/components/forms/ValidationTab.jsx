@@ -4,48 +4,16 @@ import {
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 import BotResponsesContainer from '../stories/common/BotResponsesContainer';
 import { ProjectContext } from '../../layouts/context';
 import ChangeResponseType from './ChangeResponseType';
 import { can } from '../../../lib/scopes';
 import StrictNumberInput from '../common/StrictNumberInput';
-import { useTranslation } from 'react-i18next';
 
-const validationOptions = [
-    { key: 'is_in', value: 'is_in', text: 'be in' },
-    { key: 'is_exactly', value: 'is_exactly', text: 'be exactly' },
-    { key: 'contains', value: 'contains', text: 'contain' },
-    { key: 'longer', value: 'longer', text: 'have a character count greater than' },
-    {
-        key: 'longer_or_equal',
-        value: 'longer_or_equal',
-        text: 'have a character count greater or equal to',
-    },
-    { key: 'shorter', value: 'shorter', text: 'have a character count less than' },
-    {
-        key: 'shorter_or_equal',
-        value: 'shorter_or_equal',
-        text: 'have a character count less or equal to',
-    },
-    {
-        key: 'word',
-        value: 'word',
-        text: 'be a single word, with no whitespace or special characters',
-    },
-    { key: 'starts_with', value: 'starts_with', text: 'start with' },
-    { key: 'ends_with', value: 'ends_with', text: 'end with' },
-    { key: 'matches', value: 'matches', text: 'match a regex expression' },
-    { key: 'eq', value: 'eq', text: 'be equal to' },
-    { key: 'gt', value: 'gt', text: 'be greater than' },
-    { key: 'gte', value: 'gte', text: 'be greater than or equal to ' },
-    { key: 'lt', value: 'lt', text: 'be less than' },
-    { key: 'lte', value: 'lte', text: 'be less than or equal to' },
-    { key: 'email', value: 'email', text: 'be an email' },
-];
 
 const ValidationTab = (props) => {
-    const { t } = useTranslation('forms');
     const {
         validation,
         onChange,
@@ -56,6 +24,8 @@ const ValidationTab = (props) => {
         onToggleUtterValidSlot,
         projectId,
     } = props;
+
+    const { t } = useTranslation('forms');
 
     const initialValue = { operator: 'is_in', comparatum: null };
 
@@ -79,7 +49,7 @@ const ValidationTab = (props) => {
         if (operator === 'is_in') {
             return (
                 <Dropdown
-                    placeholder='Add values'
+                    placeholder={t('Add values')}
                     allowAdditions
                     multiple
                     disabled={!canEdit}
@@ -144,6 +114,38 @@ const ValidationTab = (props) => {
         return <></>;
     };
 
+    const validationOptions = [
+        { key: 'is_in', value: 'is_in', text: t('be in') },
+        { key: 'is_exactly', value: 'is_exactly', text: t('be exactly') },
+        { key: 'contains', value: 'contains', text: t('contain') },
+        { key: 'longer', value: 'longer', text: t('have a character count greater than') },
+        {
+            key: 'longer_or_equal',
+            value: 'longer_or_equal',
+            text: t('have a character count greater or equal to'),
+        },
+        { key: 'shorter', value: 'shorter', text: 'have a character count less than' },
+        {
+            key: 'shorter_or_equal',
+            value: 'shorter_or_equal',
+            text: t('have a character count less or equal to'),
+        },
+        {
+            key: 'word',
+            value: 'word',
+            text: t('be a single word, with no whitespace or special characters'),
+        },
+        { key: 'starts_with', value: 'starts_with', text: t('start with') },
+        { key: 'ends_with', value: 'ends_with', text: t('end with') },
+        { key: 'matches', value: 'matches', text: t('match a regex expression') },
+        { key: 'eq', value: 'eq', text: t('be equal to') },
+        { key: 'gt', value: 'gt', text: t('be greater than') },
+        { key: 'gte', value: 'gte', text: t('be greater than or equal to ') },
+        { key: 'lt', value: 'lt', text: t('be less than') },
+        { key: 'lte', value: 'lte', text: t('be less than or equal to') },
+        { key: 'email', value: 'email', text: t('be an email') },
+    ];
+
     return (
         <div className='validation-tab'>
             <Checkbox
@@ -156,7 +158,7 @@ const ValidationTab = (props) => {
             {!!validation && (
                 <>
                     <div className='validation-criteria'>
-                        <span>The value of the slot must </span>
+                        <span>{t('The value of the slot must')} </span>
                         <br />
                         <Select
                             options={validationOptions}
@@ -175,8 +177,7 @@ const ValidationTab = (props) => {
                     </div>
                     <div className='response-form first'>
                         <Header size='small'>
-                            If the collected value is invalid, utter the following
-                            message:
+                            {t('If the collected value is invalid, utter the following message:')}
                         </Header>
                         <BotResponsesContainer
                             deletable={false}

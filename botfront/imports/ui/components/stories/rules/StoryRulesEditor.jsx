@@ -62,7 +62,6 @@ const StoryRulesEditor = (props) => {
     const handleChangeRules = (model) => {
         setRules(model);
     };
-    const { t } = this.props;
 
     const handleOnSave = (model) => {
         setRules(model);

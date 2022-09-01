@@ -7,7 +7,6 @@ import { safeLoad } from 'js-yaml';
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
 
-
 import BotResponsesContainer from '../../stories/common/BotResponsesContainer';
 import CustomResponseEditor from '../common/CustomResponseEditor';
 import IconButton from '../../common/IconButton';
@@ -100,7 +99,7 @@ const SequenceEditor = (props) => {
                     style={{ margin: '10px' }}
                     content={(
                         <>
-                            The <b className='monospace'>custom</b> key must be an <b className='monospace'>object</b> and will be dispatched by rasa as is.
+                            {t('The ')}<b className='monospace'>{t('custom')}</b>{t(' key must be an ')}<b className='monospace'>{t('object')}</b>{t(' and will be dispatched by rasa as is.')}
                             {t('Content under other top-level keys may be formatted according to rules specific to the output channel.')}
                         </>
                     )}

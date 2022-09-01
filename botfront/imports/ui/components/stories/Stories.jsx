@@ -15,6 +15,7 @@ import PropTypes from 'prop-types';
 import SplitPane from 'react-split-pane';
 import shortId from 'shortid';
 import { useTranslation } from 'react-i18next';
+
 import { setStoriesCurrent } from '../../store/actions/actions';
 import { StoryGroups } from '../../../api/storyGroups/storyGroups.collection';
 import { Stories as StoriesCollection } from '../../../api/story/stories.collection';
@@ -320,10 +321,10 @@ function Stories(props) {
             >
                 {modalWrapper(
                     slotsModal,
-                    'Slots',
+                    t('Slots'),
                     <SlotsEditor slots={slots} projectId={projectId} />,
                 )}
-                {modalWrapper(policiesModal, 'Policies', <PoliciesEditor />, false)}
+                {modalWrapper(policiesModal, t('Policies'), <PoliciesEditor />, false)}
                 <SplitPane
                     split='vertical'
                     minSize={200}

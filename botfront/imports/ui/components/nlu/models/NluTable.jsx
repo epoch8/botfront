@@ -391,8 +391,8 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
                 <Confirm
                     open
                     className='with-shortcuts'
-                    cancelButton='No'
-                    confirmButton='Yes'
+                    cancelButton={t('No')}
+                    confirmButton={t('Yes')}
                     content={confirm.message}
                     onCancel={() => {
                         setConfirm(null);

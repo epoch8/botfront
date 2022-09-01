@@ -10,6 +10,7 @@ import React, {
 import PropTypes from 'prop-types';
 import { Menu, Confirm, Portal } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+
 import EmbeddedTree from '../common/EmbeddedTree';
 import { useStoryGroupTree } from './hooks/useStoryGroupTree';
 import StoryGroupTreeNode from './StoryGroupTreeNode';

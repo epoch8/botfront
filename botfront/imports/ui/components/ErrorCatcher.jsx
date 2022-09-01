@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { Container, Header } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
+
 import CrashReportButton from './utils/CrashReportButton';
 
 class ErrorBoundary extends React.Component {

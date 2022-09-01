@@ -4,8 +4,9 @@ import { useDrop } from 'react-dnd-cjs';
 import {
     Message, Icon, Button, Segment,
 } from 'semantic-ui-react';
-import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
+
 import { Loading } from './Utils';
 
 function UploadDropzone(props) {
@@ -90,7 +91,7 @@ function UploadDropzone(props) {
                     positive
                     header={t('Success!')}
                     icon='check circle'
-                    content={successMessage}
+                    content={successMessage || t('Your file is ready')}
                 />
             )}
         </Loading>
@@ -109,7 +110,7 @@ UploadDropzone.propTypes = {
 };
 
 UploadDropzone.defaultProps = {
-    successMessage: 'Your file is ready',
+    successMessage: '',
     success: false,
     loading: false,
     binary: true,

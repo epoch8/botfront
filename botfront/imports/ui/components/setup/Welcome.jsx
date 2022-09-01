@@ -7,7 +7,7 @@ export default () => {
     const { t } = useTranslation('setup');
     return (
         <div style={{ textAlign: 'center' }}>
-            <Header as='h1' content='Welcome to Botfront' className='setup-welcome-header' />
+            <Header as='h1' content={t('Welcome to Botfront')} className='setup-welcome-header' />
             <br />
             <span className='step-text'>{t('Let&apos;s create your admin account')}</span>
             <br />

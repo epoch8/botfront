@@ -407,8 +407,8 @@ function Activity(props) {
                 <Confirm
                     open
                     className='with-shortcuts'
-                    cancelButton='No'
-                    confirmButton='Yes'
+                    cancelButton={t('No')}
+                    confirmButton={t('Yes')}
                     content={confirm.message}
                     onCancel={() => {
                         setConfirm(null);
@@ -439,7 +439,7 @@ function Activity(props) {
                         disabled={!validated.length}
                     >
                         <Icon name='lab' />
-                        Run evaluation
+                        {t('Run evaluation')}
                     </Button>
                     <Button
                         color='green'

@@ -35,7 +35,7 @@ class Templates extends React.Component {
         const { t } = this.props;
         return (
             <Dropdown
-                text='Add bot response'
+                text={t('Add bot response')}
                 icon='plus'
                 floating
                 labeled

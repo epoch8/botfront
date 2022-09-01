@@ -7,6 +7,7 @@ import {
     Tab,
 } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+
 import { upsertActivity as upsertActivityMutation } from './mutations';
 import apolloClient from '../../../../startup/client/apollo';
 import { ProjectContext } from '../../../layouts/context';
@@ -44,8 +45,6 @@ function ActivityInsertions() {
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { t } = useTranslation('nlu');
-
     const onTextChanged = (e, { value }) => setText(value.split('\n').slice(0, MAX_LINES).join('\n'));
 
     const saveExamples = () => {
@@ -58,6 +57,8 @@ function ActivityInsertions() {
             populateActivity(instance, examples, projectId, language, () => { setText(''); setLoading(false); });
         } catch (e) { setLoading(false); }
     };
+
+    const { t } = useTranslation('nlu');
 
     return (
         <Tab.Pane>
@@ -72,7 +73,7 @@ function ActivityInsertions() {
                 />
                 <br />
                 <br />
-                <Button loading={loading} onClick={saveExamples} disabled={!text || loading}>Add Utterances</Button>
+                <Button loading={loading} onClick={saveExamples} disabled={!text || loading}>{t('Add Utterances')}</Button>
             </Form>
         </Tab.Pane>
     );

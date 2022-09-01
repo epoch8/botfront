@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
+
 import { slotSchemas } from '../../../api/slots/slots.schema';
 import ConfirmPopup from '../common/ConfirmPopup';
 import SaveButton from '../utils/SaveButton';
@@ -51,27 +52,27 @@ function SlotEditor(props) {
                 }
                 disabled={!canEditSlots}
             >
-                <AutoField name={t('name')} data-cy='slot-name' disabled={!deletable || !canEditSlots} />
+                <AutoField name='name' data-cy='slot-name' disabled={!deletable || !canEditSlots} />
                 {type !== 'unfeaturized' && (
                     <AutoField
-                        name={t('initialValue')}
+                        name='initialValue'
                         placeholder={t('Leave empty for no initial value')}
                     />
                 )}
                 {type === 'float' && (
                     <>
-                        <AutoField name={t('minValue')} placeholder='0.0' />
-                        <AutoField name={t('maxValue')} placeholder='1.0' />
+                        <AutoField name='minValue' placeholder='0.0' />
+                        <AutoField name='maxValue' placeholder='1.0' />
                     </>
                 )}
-                {type === 'categorical' && <AutoField name={t('categories')} />}
+                {type === 'categorical' && <AutoField name='categories' />}
                 <AutoField
                     name='projectId'
                     value={projectId}
                     label={false}
                     hidden
                 />
-                <b>{`${('Type:')}  ${type}`}</b>
+                <b>{`${t('Type:')}  ${type}`}</b>
                 <br />
                 <ErrorsField data-cy='errors-field' />
                 { canEditSlots && (

@@ -4,6 +4,7 @@ import {
     Icon, Menu, Input, Popup, Dropdown,
 } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+
 import { formNameIsValid } from '../../../lib/client.safe.utils';
 import { tooltipWrapper } from '../utils/Utils';
 import { storyTypeCustomizations } from '../../../lib/story.types';
@@ -188,7 +189,7 @@ const StoryGroupTreeNode = (props) => {
                                         {addStoryOrRule('rule')}
                                         <Dropdown.Item
                                             icon='wpforms'
-                                            content='Form'
+                                            content={t('Form')}
                                             data-cy='add-form'
                                             className='add-form-item'
                                             {...(!somethingIsMutating
@@ -206,7 +207,7 @@ const StoryGroupTreeNode = (props) => {
                                         />
                                     </Dropdown.Menu>
                                 </Dropdown>,
-                                'Add story or form',
+                                t('Add story or form'),
                             )}
                         </>
                     )}

@@ -5,6 +5,7 @@ import {
 } from 'semantic-ui-react';
 import { saveAs } from 'file-saver';
 import { useTranslation } from 'react-i18next';
+
 import IntentLabel from '../common/IntentLabel';
 import UserUtteranceViewer from '../common/UserUtteranceViewer';
 import { useActivity } from '../activity/hooks';
@@ -170,10 +171,10 @@ function OutOfScope() {
                     selection={sortType}
                     updateSelection={option => setSortType(option.value)}
                     options={[
-                        { value: 'Newest', text: 'Newest' },
-                        { value: 'Oldest', text: 'Oldest' },
+                        { value: 'Newest', text: t('Newest') },
+                        { value: 'Oldest', text: t('Oldest') },
                     ]}
-                    prefix='Sort by'
+                    prefix={t('Sort by')}
                 />
             </div>
             <br />

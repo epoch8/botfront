@@ -92,8 +92,8 @@ function NLUModel(props) {
     );
     const [activeItem, setActiveItem] = useState(
         incomingState && incomingState.isActivityLinkRender === true
-            ? 'Evaluation'
-            : 'Training Data',
+            ? t('Evaluation')
+            : t('Training Data'),
     );
 
     const validationRender = () => {
