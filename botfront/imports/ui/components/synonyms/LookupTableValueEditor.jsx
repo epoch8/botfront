@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Input } from 'semantic-ui-react';
-import { withTranslation } from 'react-i18next';
 
 class LookupTableValueEditor extends React.Component {
     constructor(props) {
@@ -41,12 +40,11 @@ class LookupTableValueEditor extends React.Component {
     render() {
         const { placeholder, keyAttribute, autoFocus } = this.props;
         const { entitySynonym } = this.state;
-        const { t } = this.props;
         return (
             <Input
                 className='lookup-table-key-input'
                 autoFocus={autoFocus}
-                placeholder={t(placeholder)}
+                placeholder={placeholder}
                 name='value'
                 value={entitySynonym[keyAttribute]}
                 onBlur={this.handleDone}
@@ -75,4 +73,4 @@ LookupTableValueEditor.defaultProps = {
     autoFocus: true,
 };
 
-export default withTranslation('synonyms')(LookupTableValueEditor);
+export default LookupTableValueEditor;

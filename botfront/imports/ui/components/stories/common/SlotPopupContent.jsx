@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Dropdown, Button, Popup } from 'semantic-ui-react';
 import { groupBy } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import { ProjectContext } from '../../../layouts/context';
 import { ConversationOptionsContext } from '../Context';
 import { slotValueToLabel } from '../SlotLabel';
-import { withTranslation } from 'react-i18next';
 
 const SlotPopupContent = (props) => {
     const {
@@ -24,6 +24,7 @@ const SlotPopupContent = (props) => {
     } = props;
     const { browseToSlots } = useContext(ConversationOptionsContext);
     const { slots, requestedSlot } = useContext(ProjectContext);
+    const { t } = useTranslation('stories');
     let slotsToUse = requestedSlot ? [...(slots.filter(x => x.name !== 'requested_slot')), requestedSlot] : slots;
     slotsToUse = slotsToUse.filter(x => !slotsToRemove.some(slot => slot === x.name));
     const [popupOpen, setPopupOpen] = useState();
@@ -56,7 +57,7 @@ const SlotPopupContent = (props) => {
         if (type === 'categorical') return [...slot.categories, null];
         return [null];
     }
-    const { t } = this.props;
+
     const renderDropdown = () => (
         <Dropdown
             trigger={trigger}
@@ -73,7 +74,7 @@ const SlotPopupContent = (props) => {
             onClose={() => setMenuOpen(false)}
         >
             <Dropdown.Menu>
-                <Dropdown.Header>Select a slot</Dropdown.Header>
+                <Dropdown.Header>{t('Select a slot')}</Dropdown.Header>
                 {cats.map(c => (
                     <Dropdown.Item
                         data-cy={`slot-category-${c}`}
@@ -109,7 +110,7 @@ const SlotPopupContent = (props) => {
                                         }}
                                     >
                                         <Dropdown
-                                            text={t(s.name)}
+                                            text={s.name}
                                             fluid
                                             // The upward here prevents a visual bug
                                             upward={false}
@@ -165,7 +166,7 @@ const SlotPopupContent = (props) => {
             disabled={hasFeaturizedSlots}
         >
             <p>
-            No featurized slot found to insert.
+                {t('No featurized slot found to insert.')}
             </p>
             <div>
                 <Button

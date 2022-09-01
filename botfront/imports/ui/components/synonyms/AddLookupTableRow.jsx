@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Grid } from 'semantic-ui-react';
+import { withTranslation } from 'react-i18next';
+
 import LookupTableValueEditor from './LookupTableValueEditor';
 import LookupTableListEditor from './LookupTableListEditor';
 import LookupTableStringEditor from './LookupTableStringEditor';
-import { withTranslation } from 'react-i18next';
 
 class AddLookupTableRow extends React.Component {
     constructor(props) {

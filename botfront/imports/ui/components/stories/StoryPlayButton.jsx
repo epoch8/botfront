@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Icon, Popup } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import { insertSmartPayloads } from '../../../lib/client.safe.utils';
 import { runTestCaseStories } from '../utils/runTestCaseStories';
-import { withTranslation } from 'react-i18next';
 
 import {
     setShowChat,
@@ -44,7 +45,7 @@ const StoryPlayButton = (props) => {
         changeChatInitPayload(`/${getInitialPayload()}`);
         refreshChat(true);
     };
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     const runTestCase = () => {
         if (!storyId) throw new Error(t('a storyId is required to run a single test'));
@@ -69,12 +70,11 @@ const StoryPlayButton = (props) => {
             )}
             content={type === 'test_case' ? (
                 <>
-                    Run this test
+                    {t('Run this test')}
                 </>
             ) : (
                 <>
-                    To start a conversation from the story editor, the story must start
-                    with a user utterance.
+                    {t('To start a conversation from the story editor, the story must start with a user utterance.')}
                 </>
             )}
             disabled={disabled}
@@ -106,4 +106,4 @@ const mapDispatchToProps = {
     refreshChat: setShouldRefreshChat,
 };
 
-export default withTranslation('stories')(connect(mapStateToProps, mapDispatchToProps)(StoryPlayButton));
+export default connect(mapStateToProps, mapDispatchToProps)(StoryPlayButton);

@@ -14,6 +14,8 @@ import {
     Container, Button, Popup, Label,
 } from 'semantic-ui-react';
 import 'react-select/dist/react-select.css';
+import { useTranslation } from 'react-i18next';
+
 import NluTable from '../../../nlu/models/NluTable';
 import InsertNlu from '../../../example_editor/InsertNLU';
 import ConfirmPopup from '../../../common/ConfirmPopup';
@@ -21,7 +23,6 @@ import { ConversationOptionsContext } from '../../Context';
 import { can } from '../../../../../lib/scopes';
 import { useExamples, useLazyExamples } from '../../../nlu/models/hooks';
 import { ProjectContext } from '../../../../layouts/context';
-import { withTranslation } from 'react-i18next';
 
 function sameCanonicalGroup(example, payload) {
     // check if these examples are in the same canonical group
@@ -52,6 +53,7 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
         entities: payload.entities,
         matchEntityName: true,
     });
+    const { t } = useTranslation('stories');
     const canEdit = can('nlu-data:w', projectId);
     const fetchExamples = useLazyExamples({ projectId, language });
 
@@ -248,7 +250,6 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
                 edited, isNew, deleted, entities: cellEntities, intent,
             } = {},
         } = row;
-        const { t } = this.props;
         let text;
         let color;
         let title;
@@ -294,8 +295,7 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
         );
     };
 
-    if (loadingExamples) return <div>Loading</div>;
-    const { t } = this.props;
+    if (loadingExamples) return <div>{t('Loading')}</div>;
     return (
         <Container>
             <br />
@@ -326,7 +326,7 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
                                         disabled={hasInvalidExamples}
                                         data-cy='save-nlu'
                                     >
-                                    Save and exit
+                                        {t('Save and exit')}
                                     </Button>
                                 </span>
                             )}
@@ -337,7 +337,7 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
                         <Popup
                             trigger={(
                                 <Button onClick={handleCancel} data-cy='cancel-nlu-changes' ref={cancelButtonRef}>
-                                Cancel
+                                    {t('Cancel')}
                                 </Button>
                             )}
                             content={(
@@ -356,7 +356,7 @@ const NLUModalContent = React.forwardRef((props, forwardedRef) => {
                     </>
                 ) : (
                     <Button onClick={closeModal} data-cy='close-nlu-modal'>
-                    Close
+                        {t('Close')}
                     </Button>
                 )}
             </div>
@@ -370,4 +370,4 @@ NLUModalContent.propTypes = {
 };
 
 
-export default withTranslation('stories')(NLUModalContent);
+export default NLUModalContent;

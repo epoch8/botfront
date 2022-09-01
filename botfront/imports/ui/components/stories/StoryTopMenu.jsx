@@ -8,6 +8,8 @@ import React, {
 import PropTypes from 'prop-types';
 import 'brace/theme/github';
 import 'brace/mode/text';
+import { useTranslation } from 'react-i18next';
+
 import StoryPlayButton from './StoryPlayButton';
 import ConfirmPopup from '../common/ConfirmPopup';
 import StoryVisualEditor from './common/StoryVisualEditor';
@@ -15,7 +17,6 @@ import { ConversationOptionsContext } from './Context';
 import StoryRulesEditor from './rules/StoryRulesEditor';
 import { can } from '../../../lib/scopes';
 import StoryPrefix from './common/StoryPrefix';
-import { withTranslation } from 'react-i18next';
 
 const StoryTopMenu = ({
     fragment,
@@ -39,7 +40,7 @@ const StoryTopMenu = ({
     const [triggerEditorOpen, setTriggerEditorOpen] = useState(false);
     const [confirmPopupOpen, setConfirmPopupOpen] = useState(false);
     const [confirmOverwriteOpen, setConfirmOverwriteOpen] = useState(false);
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     const testCaseFailing = useMemo(() => type === 'test_case' && fragment.success === false, [type, fragment]);
 
@@ -72,7 +73,6 @@ const StoryTopMenu = ({
     };
 
     const renderWarnings = () => {
-        const pluralize = warnings > 1 ? 's' : '';
         if (warnings <= 0) {
             return <></>;
         }
@@ -83,20 +83,19 @@ const StoryTopMenu = ({
                 data-cy='top-menu-warning-alert'
             >
                 <Icon name='exclamation circle' />
-                {warnings} Warning{pluralize}
+                {warnings} {warnings > 1 ? t('Warnings') : t('Warning')}
             </Label>
         );
     };
 
     const renderErrors = () => {
-        const pluralize = errors > 1 ? 's' : '';
         if (errors <= 0) {
             return <></>;
         }
         return (
             <Label className='exception-label' color='red' data-cy='top-menu-error-alert'>
                 <Icon name='times circle' />
-                {errors}{!testCaseFailing && ` Error${pluralize}`}
+                {errors}{!testCaseFailing && ` ${errors > 1 ? t('Errors') : t('Error')}`}
             </Label>
         );
     };
@@ -130,7 +129,7 @@ const StoryTopMenu = ({
                 onClose={() => setConfirmPopupOpen(false)}
                 content={(
                     <ConfirmPopup
-                        title='Conditions will be deleted!'
+                        title={t('Conditions will be deleted!')}
                         onYes={() => {
                             setConfirmPopupOpen(false);
                             updateStory({ _id, conversation_start: !convStart, condition: [] });
@@ -205,8 +204,8 @@ const StoryTopMenu = ({
             header='Warning'
             className='warning'
             content={t('The current expected results will be overwritten. This action cannot be undone.')}
-            cancelButton='Cancel'
-            confirmButton='Overwrite'
+            cancelButton={t('Cancel')}
+            confirmButton={t('Overwrite')}
             open={confirmOverwriteOpen && testCaseFailing}
             onCancel={() => setConfirmOverwriteOpen(false)}
             onConfirm={() => {
@@ -229,7 +228,7 @@ const StoryTopMenu = ({
                     ) : (
                         <StoryPrefix fragment={fragment} />
                     )}
-                    {status === 'unpublished' && <Label content='Unpublished' /> }
+                    {status === 'unpublished' && <Label content={t('Unpublished')} /> }
                     <input
                         data-cy='story-title'
                         disabled={!can('stories:w', projectId)}
@@ -286,8 +285,8 @@ const StoryTopMenu = ({
                             data-cy='connected-to'
                         >
                             <Icon name='info circle' />
-                            There are one or more stories linked to this story. You can
-                            only delete it after unlinking all stories.
+                            {t('There are one or more stories linked to this story.')}
+                            {t('You can only delete it after unlinking all stories.')}
                         </Message>
                     )}
                 >
@@ -303,7 +302,7 @@ const StoryTopMenu = ({
                     onClick={() => setTriggerEditorOpen(true)}
                 >
                     <Icon name='info circle' />
-                    This story will be triggered automatically when the conditions set with the stopwatch icon are met.
+                    {t('This story will be triggered automatically when the conditions set with the stopwatch icon are met.')}
                 </Message>
             )}
             {type === 'rule' && !convStart && (
@@ -325,7 +324,7 @@ const StoryTopMenu = ({
                     data-cy='connected-to'
                 >
                     <span className='test-failure-message'>
-                        The most recent run of this test failed.
+                        {t('The most recent run of this test failed.')}
                     </span>
                 </Message>
             )}
@@ -349,4 +348,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('stories')(connect(mapStateToProps)(StoryTopMenu));
+export default connect(mapStateToProps)(StoryTopMenu);

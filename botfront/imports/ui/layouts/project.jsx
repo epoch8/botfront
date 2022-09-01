@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { DndProvider } from 'react-dnd-cjs';
-import { withTranslation } from 'react-i18next';
 import HTML5Backend from 'react-dnd-html5-backend-cjs';
 import Alert from 'react-s-alert';
 import yaml from 'js-yaml';
@@ -21,6 +20,8 @@ import {
     Popup,
     Image,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import { useIntentAndEntityList } from '../components/nlu/models/hooks';
 import { wrapMeteorCallback } from '../components/utils/Errors';
 import ProjectSidebarComponent from '../components/project/ProjectSidebar';
@@ -77,6 +78,7 @@ function Project(props) {
         resetResponseInCache,
         setResponseInCache,
     } = useResponsesContext({ projectId, workingLanguage, projectLanguages });
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (refreshEntitiesAndIntents) {
@@ -248,7 +250,7 @@ function Project(props) {
                                                     data-cy='open-chat'
                                                 />
                                             )}
-                                            content='Try out your chatbot'
+                                            content={t('Try out your chatbot')}
                                         />
                                     )}
                                 </div>
@@ -266,7 +268,7 @@ function Project(props) {
                     )}
                 </SplitPane>
             </div>
-            <Alert stack={{ limit: 3 }} html={true} />
+            <Alert stack={{ limit: 3 }} html />
         </div>
     );
 }

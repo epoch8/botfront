@@ -10,6 +10,7 @@ import {
 } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
+
 import StoryPathPopup from './StoryPathPopup.jsx';
 import { ConversationOptionsContext } from './Context';
 import { can } from '../../../lib/scopes';

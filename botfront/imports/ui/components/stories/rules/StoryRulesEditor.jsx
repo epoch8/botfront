@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Alert from 'react-s-alert';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import StoryRulesForm from './StoryRulesForm';
 
@@ -23,6 +23,8 @@ const StoryRulesEditor = (props) => {
     } = props;
 
     const [rules, setRules] = useState({ rules: incommingRules });
+
+    const { t } = useTranslation('stories');
 
     useEffect(() => {
         setRules({ rules: incommingRules });
@@ -66,7 +68,7 @@ const StoryRulesEditor = (props) => {
         setRules(model);
         Meteor.call('stories.updateRules', projectId, storyId, clearOptionalFields(model), (err) => {
             if (err) {
-                Alert.error(t(`Error: the rules could not be saved: ${err}`));
+                Alert.error(`${t('Error: the rules could not be saved')}: ${err}`);
                 return;
             }
             setOpen(false);
@@ -76,7 +78,7 @@ const StoryRulesEditor = (props) => {
     const deleteTriggers = () => {
         Meteor.call('stories.deleteRules', projectId, storyId, (err) => {
             if (err) {
-                Alert.error(t(`Error: the rules could not be deleted: ${err}`));
+                Alert.error(`${t('Error: the rules could not be deleted')}: ${err}`);
                 return;
             }
             setOpen(false);
@@ -98,7 +100,7 @@ const StoryRulesEditor = (props) => {
                         open={open}
                     >
                         <Modal.Header>
-                            Triggers
+                            {t('Triggers')}
                             <Icon name='close' onClick={handleCancelChanges} className='close-rules-editor' link />
                         </Modal.Header>
                         <Modal.Content className={can('triggers:w', projectId) ? '' : 'read-only'}>
@@ -139,4 +141,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('stories')(connect(mapStateToProps)(StoryRulesEditor));
+export default connect(mapStateToProps)(StoryRulesEditor);

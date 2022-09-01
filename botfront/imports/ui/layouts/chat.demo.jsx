@@ -4,8 +4,9 @@ import {
     Responsive, Button, Dropdown, Image,
 } from 'semantic-ui-react';
 import Widget from 'rasa-webchat';
+import { useTranslation } from 'react-i18next';
+
 import { Loading } from '../components/utils/Utils';
-import { withTranslation } from 'react-i18next';
 
 const ResponsiveAlternants = ({ cutoff, children, ...props }) => (
     <>
@@ -33,6 +34,7 @@ const ChatDemo = (props) => {
     const [updateKey, setUpdateKey] = useState();
     const [error, setError] = useState();
     const [logos, setLogos] = useState({});
+    const { t } = useTranslation();
 
     const handleChangeLanguage = (lang) => {
         window.localStorage.removeItem('chat_session');
@@ -106,8 +108,8 @@ const ChatDemo = (props) => {
             </ResponsiveAlternants>
             <ResponsiveAlternants cutoff={1000} as='span' className='large grey'>
                 <>
-                    Try out the&nbsp;
-                    <b>{widgetProps.projectName}</b> assistant!
+                    {t('Try out the&nbsp;')}
+                    <b>{widgetProps.projectName}</b> {t('assistant!')}
                 </>
                 <b>{widgetProps.projectName}</b>
             </ResponsiveAlternants>
@@ -120,7 +122,7 @@ const ChatDemo = (props) => {
                         value={language}
                         onChange={(_, { value }) => handleChangeLanguage(value)}
                         className='icon basic'
-                        text='Change language'
+                        text={t('Change language')}
                         options={widgetProps.languages}
                     />
                     {environments.length > 1 && (
@@ -130,7 +132,7 @@ const ChatDemo = (props) => {
                             icon={null}
                             options={environments}
                             className='icon basic'
-                            text='Change environment'
+                            text={t('Change environment')}
                             onChange={(_, { value }) => handleChangeEnvironment(value)}
                             value={selectedEnv}
                         />
@@ -143,7 +145,7 @@ const ChatDemo = (props) => {
                             text='Restart'
                             onClick={handleRestart}
                         />
-                        <Dropdown.Header content='Change language' />
+                        <Dropdown.Header content={t('Change language')} />
                         {widgetProps.languages.map(({ text, value }) => (
                             <Dropdown.Item
                                 content={text}
@@ -168,7 +170,7 @@ const ChatDemo = (props) => {
                     initPayload={widgetProps.initPayload}
                     socketUrl={widgetProps.socketUrl}
                     socketPath={widgetProps.socketPath}
-                    inputTextFieldHint='Try out your chatbot...'
+                    inputTextFieldHint={t('Try out your chatbot...')}
                     hideWhenNotConnected={false}
                     customData={{ language }}
                     embedded

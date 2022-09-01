@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Input, Button, Label } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import IconButton from '../../common/IconButton';
-import { withTranslation } from 'react-i18next';
 
 function EntityValueEditor({
     entity,
@@ -12,10 +13,9 @@ function EntityValueEditor({
     disabled,
 }) {
     const exists = field => field in entity && entity[field] !== null;
-    const capitalize = key => key.charAt(0).toUpperCase() + key.slice(1);
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
-    const renderField = key => (
+    const renderField = (label, key) => (
         <div className='side-by-side middle entity-value-input-container'>
             <Input
                 disabled={disabled}
@@ -29,7 +29,7 @@ function EntityValueEditor({
                 labelPosition='left'
                 className={`entity-${key}-input`}
             >
-                <Label>{capitalize(key)}</Label>
+                <Label>{label}</Label>
                 <input />
             </Input>
             {(key !== 'value' || exists('text')) && !disabled && (
@@ -47,10 +47,10 @@ function EntityValueEditor({
         </div>
     );
 
-    const renderAddButton = key => (
+    const renderAddButton = (label, key) => (
         <Button
             onClick={() => onChange({ ...entity, [key]: '' })}
-            content={t(capitalize(key))}
+            content={label}
             icon='add'
             disabled={disabled}
             data-cy={`add-entity-${key}`}
@@ -65,9 +65,9 @@ function EntityValueEditor({
         if (showValue && showRole && showGroup) return null;
         return (
             <Button.Group size='tiny' className='entity-option-buttons'>
-                {!showValue && renderAddButton('value')}
-                {!showRole && renderAddButton('role')}
-                {!showGroup && renderAddButton('group')}
+                {!showValue && renderAddButton(t('Value'), 'value')}
+                {!showRole && renderAddButton(t('Role'), 'role')}
+                {!showGroup && renderAddButton(t('Group'), 'group')}
             </Button.Group>
         );
     };
@@ -75,9 +75,9 @@ function EntityValueEditor({
 
     return (
         <div className='optional-entity-values-container'>
-            {!disallowValueEditing && showValue && renderField('value')}
-            {!disallowAdvancedEditing && showRole && renderField('role')}
-            {!disallowAdvancedEditing && showGroup && renderField('group')}
+            {!disallowValueEditing && showValue && renderField(t('Value'), 'value')}
+            {!disallowAdvancedEditing && showRole && renderField(t('Role'), 'role')}
+            {!disallowAdvancedEditing && showGroup && renderField(t('Group'), 'group')}
             {!disallowAdvancedEditing && renderAddButtons()}
         </div>
     );
@@ -98,4 +98,4 @@ EntityValueEditor.defaultProps = {
 };
 
 
-export default withTranslation('stories')(EntityValueEditor);
+export default EntityValueEditor;

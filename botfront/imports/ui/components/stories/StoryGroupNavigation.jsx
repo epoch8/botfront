@@ -5,12 +5,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
+
 import { setStoryMode, setStoriesCurrent } from '../../store/actions/actions';
 import { Slots } from '../../../api/slots/slots.collection';
 import { ConversationOptionsContext } from './Context';
 import { formNameIsValid } from '../../../lib/client.safe.utils';
 import { tooltipWrapper } from '../utils/Utils';
-import { withTranslation } from 'react-i18next';
 
 class StoryGroupNavigation extends React.Component {
     constructor(props) {
@@ -77,9 +78,8 @@ class StoryGroupNavigation extends React.Component {
 
     renderNavigation = () => {
         const {
-            modals, storyMode, onSwitchStoryMode, allowAddition,
+            modals, storyMode, onSwitchStoryMode, allowAddition, t,
         } = this.props;
-        const { t } = this.props;
         return (
             <div className='navigation'>
                 <Button.Group fluid>
@@ -96,7 +96,7 @@ class StoryGroupNavigation extends React.Component {
                     )}
                     {tooltipWrapper(
                         <Button
-                            content='Slots'
+                            content={t('Slots')}
                             onClick={() => modals.setSlotsModal(true)}
                             data-cy='slots-modal'
                         />,
@@ -104,7 +104,7 @@ class StoryGroupNavigation extends React.Component {
                     )}
                     {tooltipWrapper(
                         <Button
-                            content='Policies'
+                            content={t('Policies')}
                             onClick={() => modals.setPoliciesModal(true)}
                             data-cy='policies-modal'
                         />,
@@ -118,7 +118,7 @@ class StoryGroupNavigation extends React.Component {
                         >
                             <Icon name={storyMode === 'visual' ? 'code' : 'commenting'} />
                         </Button>,
-                        storyMode === 'visual' ? 'Switch to YAML edit mode' : 'Switch to visual edit mode',
+                        storyMode === 'visual' ? t('Switch to YAML edit mode') : t('Switch to visual edit mode'),
                     )}
                 </Button.Group>
             </div>
@@ -126,7 +126,7 @@ class StoryGroupNavigation extends React.Component {
     };
 
     render() {
-        const { allowAddition } = this.props;
+        const { allowAddition, t } = this.props;
         const { addMode, newItemName } = this.state;
 
         return !allowAddition || !addMode
@@ -135,7 +135,7 @@ class StoryGroupNavigation extends React.Component {
                 <Popup
                     size='mini'
                     inverted
-                    content={<span>Form names must end with <i>_form</i> and have no special characters.</span>}
+                    content={<span>{t('Form names must end with <i>_form</i> and have no special characters.')}</span>}
                     disabled={addMode !== 'form' || formNameIsValid(newItemName)}
                     position='bottom center'
                     open
@@ -182,13 +182,13 @@ const mapDispatchToProps = {
     setStoryMenuSelection: setStoriesCurrent,
 };
 
-const BrowserWithState = connect(mapStateToProps, mapDispatchToProps)(StoryGroupNavigation);
+const BrowserWithState = connect(mapStateToProps, mapDispatchToProps)(withTranslation('stories')(StoryGroupNavigation));
 
-export default withTranslation('stories')(withTracker(props => ({
+export default withTracker(props => ({
     ...props,
     slots: Slots.find({}).fetch(),
 }))(props => (
     <ConversationOptionsContext.Consumer>
         {value => <BrowserWithState {...props} {...value} />}
     </ConversationOptionsContext.Consumer>
-)));
+));

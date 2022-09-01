@@ -1,8 +1,9 @@
 import { Message } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import React from 'react';
-import CrashReportButton from '../utils/CrashReportButton';
 import { withTranslation } from 'react-i18next';
+
+import CrashReportButton from '../utils/CrashReportButton';
 
 class StoryErrorBoundary extends React.Component {
     constructor(props) {
@@ -26,13 +27,13 @@ class StoryErrorBoundary extends React.Component {
                         content={t(
                             <>
                                 <p>
-                                    Please try to refresh the page. If the problem
-                                    persists, try editing the story in text mode.
+                                    {t('Please try to refresh the page.')}
+                                    {t('If the problem persists, try editing the story in text mode.')}
                                 </p>
                                 <p>
                                     {reported
-                                        ? 'We\'re working on it!'
-                                        : 'Help the Botfront project by reporting the issue.'}
+                                        ? t('We\'re working on it!')
+                                        : t('Help the Botfront project by reporting the issue.')}
                                 </p>
                                 <p>
                                     <CrashReportButton
@@ -41,7 +42,7 @@ class StoryErrorBoundary extends React.Component {
                                         onLoad={rep => this.setState({ reported: rep })}
                                     />
                                 </p>
-                            </>
+                            </>,
                         )}
                         negative
                     />

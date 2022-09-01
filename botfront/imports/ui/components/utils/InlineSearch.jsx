@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Menu, Popup } from 'semantic-ui-react';
+import { useTranslation, withTranslation } from 'react-i18next';
 
 import TextInput from './TextInput';
-import { withTranslation } from 'react-i18next';
 
 function SearchMenuItem({ name, activeName, onItemClick }) {
     function onClick() {
@@ -37,6 +37,7 @@ function SearchMenu(props) {
         onItemClick,
     } = props;
 
+    const { t } = useTranslation('utils');
     const searchOn = activeText !== text;
     const menuItems = data.filter(name => (
         !searchOn || name.includes(activeText)
@@ -47,7 +48,7 @@ function SearchMenu(props) {
     return (
         <Menu vertical style={{ overflowX: 'hidden', overflowY: 'auto' }}>
             {searchOn && (
-                <SearchMenuItem name={`${searchPrompt}: ${activeText}`} onItemClick={() => onItemClick(activeText)} />
+                <SearchMenuItem name={`${searchPrompt || t('Search')}: ${activeText}`} onItemClick={() => onItemClick(activeText)} />
             )}
             {menuItems}
         </Menu>
@@ -64,7 +65,7 @@ SearchMenu.propTypes = {
 
 SearchMenu.defaultProps = {
     activeText: '',
-    searchPrompt: 'Search',
+    searchPrompt: '',
     onItemClick: () => {},
 };
 
@@ -145,25 +146,26 @@ class InlineSearch extends React.Component {
     }
 
     render() {
-        const { text, data, searchPrompt, placeholder } = this.props;
+        const {
+            text, data, searchPrompt, placeholder, t,
+        } = this.props;
         const { menuOpen, text: activeText } = this.state;
-        const { t } = this.props;
 
         return (
             <Popup
                 className='inline_search fill_contents'
                 trigger={(
                     <div className='trigger' ref={(node) => { this.inputContainer = node; }}>
-                        <TextInput text={t(activeText)} onTextChange={this.onTextChange} onEnter={this.onEnter} placeholder={placeholder} staticText={t(text)} />
+                        <TextInput text={activeText} onTextChange={this.onTextChange} onEnter={this.onEnter} placeholder={placeholder} staticText={text} />
                     </div>
                 )}
                 content={(
                     <SearchMenu
-                        activeText={t(activeText)}
-                        text={t(text)}
+                        activeText={activeText}
+                        text={text}
                         data={data}
                         onItemClick={this.onItemClick}
-                        searchPrompt={searchPrompt}
+                        searchPrompt={searchPrompt || t('Search')}
                     />
                 )}
                 basic
@@ -186,8 +188,8 @@ InlineSearch.propTypes = {
 
 InlineSearch.defaultProps = {
     onUpdateText: () => {},
-    searchPrompt: 'Search',
+    searchPrompt: '',
     placeholder: false,
 };
 
-export default withTranslation('utilds')(InlineSearch);
+export default withTranslation('utils')(InlineSearch);

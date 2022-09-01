@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import {
     Dropdown, Modal, Button,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import PayloadEditor from './PayloadEditor';
-import { withTranslation } from 'react-i18next';
 
 const UserUtterancePopupContent = (props) => {
     const {
@@ -13,7 +14,7 @@ const UserUtterancePopupContent = (props) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [payload, setPayload] = useState({ intent: null, entities: [] });
     const [menuOpen, setMenuOpen] = useState();
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     const payloadValid = () => {
         if (!payload.intent) return false;
@@ -63,8 +64,8 @@ const UserUtterancePopupContent = (props) => {
                 onClose={() => setMenuOpen(false)}
             >
                 <Dropdown.Menu className='first-column'>
-                    <Dropdown.Item onClick={() => onCreateFromInput()} data-cy='user-line-from-input'>Text</Dropdown.Item>
-                    <Dropdown.Item onClick={() => setModalOpen(true)} data-cy='user-line-from-payload'>Payload</Dropdown.Item>
+                    <Dropdown.Item onClick={() => onCreateFromInput()} data-cy='user-line-from-input'>{t('Text')}</Dropdown.Item>
+                    <Dropdown.Item onClick={() => setModalOpen(true)} data-cy='user-line-from-payload'>{t('Payload')}</Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
         </>
@@ -84,4 +85,4 @@ UserUtterancePopupContent.defaultProps = {
     trackOpenMenu: () => {},
 };
 
-export default withTranslation('stories')(UserUtterancePopupContent);
+export default UserUtterancePopupContent;

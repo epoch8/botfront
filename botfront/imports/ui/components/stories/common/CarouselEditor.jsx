@@ -3,10 +3,11 @@ import uuidv4 from 'uuid/v4';
 import PropTypes from 'prop-types';
 import { Icon, Popup } from 'semantic-ui-react';
 import { useDrop } from 'react-dnd-cjs';
+import { useTranslation } from 'react-i18next';
+
 import CarouselSlide from './CarouselSlide';
 import { useEventListener } from '../../utils/hooks';
 import { defaultCarouselSlide } from '../../../../lib/botResponse.utils';
-import { withTranslation } from 'react-i18next';
 
 function CarouselEditor(props) {
     const {
@@ -31,7 +32,7 @@ function CarouselEditor(props) {
         updatedSlides[draggedSlideIndex] = elements[index];
         setSlides(updatedSlides);
     };
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     const handleMouseWheel = (e) => {
         // turns vertical scroll into horizontal scroll
@@ -85,4 +86,4 @@ CarouselEditor.defaultProps = {
     max: 10,
 };
 
-export default withTranslation('stories')(CarouselEditor);
+export default CarouselEditor;

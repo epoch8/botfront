@@ -7,10 +7,11 @@ import {
 } from 'semantic-ui-react';
 import { NativeTypes } from 'react-dnd-html5-backend-cjs';
 import { useDrop } from 'react-dnd-cjs';
+import { useTranslation } from 'react-i18next';
+
 import { ResponseContext } from './BotResponsesContainer';
 import { ProjectContext } from '../../../layouts/context';
 import { wrapMeteorCallback } from '../../utils/Errors';
-import { withTranslation } from 'react-i18next';
 
 function ImageThumbnail(props) {
     const {
@@ -20,6 +21,7 @@ function ImageThumbnail(props) {
     const [modalOpen, setModalOpen] = useState(false);
     const { uploadImage, name } = useContext(ResponseContext) || {};
     const { project: { _id: projectId }, language } = useContext(ProjectContext);
+    const { t } = useTranslation('stories');
     useEffect(() => setNewValue(value), [value]);
 
     const imageUrlRef = useRef();
@@ -66,33 +68,32 @@ function ImageThumbnail(props) {
         ['Set image', () => setModalOpen(true), 'set-image'],
         ...otherActions,
     ];
-    const { t } = this.props;
 
     const renderSetImage = () => (
         <div className={`image-modal ${canDrop && isOver ? 'upload-target' : ''}`} ref={drop}>
             {uploadImage && (
-            <>
-                <div className='align-center'>
-                    <Icon name='image' size='huge' color='grey' />
-                    <input
-                        type='file'
-                        ref={fileField}
-                        style={{ display: 'none' }}
-                        onChange={e => handleFileDrop(e.target.files)}
-                    />
-                    <Button
-                        primary
-                        basic
-                        content={t('Upload image')}
-                        size='small'
-                        onClick={() => fileField.current.click()}
-                    />
-                    <span className='small grey'>or drop an image file to upload</span>
-                </div>
-                <div className='or'> or </div>
-            </>
+                <>
+                    <div className='align-center'>
+                        <Icon name='image' size='huge' color='grey' />
+                        <input
+                            type='file'
+                            ref={fileField}
+                            style={{ display: 'none' }}
+                            onChange={e => handleFileDrop(e.target.files)}
+                        />
+                        <Button
+                            primary
+                            basic
+                            content={t('Upload image')}
+                            size='small'
+                            onClick={() => fileField.current.click()}
+                        />
+                        <span className='small grey'>{t('or drop an image file to upload')}</span>
+                    </div>
+                    <div className='or'> {t('or')} </div>
+                </>
             )}
-            <b>Insert image from URL</b>
+            <b>{t('Insert image from URL')}</b>
             <br />
             <div className='side-by-side middle'>
                 <Input
@@ -106,7 +107,7 @@ function ImageThumbnail(props) {
                     data-cy='image-url-input'
                     className='image-url-input'
                 />
-                <Button primary onClick={setImageFromUrlBox} size='small' content='Save' />
+                <Button primary onClick={setImageFromUrlBox} size='small' content={t('Save')} />
             </div>
         </div>
     );
@@ -133,7 +134,7 @@ function ImageThumbnail(props) {
                 : (
                     <Dimmer active inverted>
                         <Loader inverted size='small'>
-                            <span className='small grey'>Uploading</span>
+                            <span className='small grey'>{t('Uploading')}</span>
                         </Loader>
                     </Dimmer>
                 )
@@ -166,4 +167,4 @@ ImageThumbnail.defaultProps = {
     className: '',
 };
 
-export default withTranslation('stories')(ImageThumbnail);
+export default ImageThumbnail;

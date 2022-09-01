@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { safeDump, safeLoad } from 'js-yaml';
 import { useMutation, useSubscription, useQuery } from '@apollo/react-hooks';
-import { withTranslation } from 'react-i18next';
 import {
     Segment, Menu, MenuItem, Modal, Button,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 // connections
 import { UPSERT__FULL_BOT_RESPONSE, DELETE_VARIATION } from '../mutations';
 import { RESPONSES_MODIFIED } from './subscriptions';
@@ -61,7 +61,7 @@ const BotResponseEditor = (props) => {
     const [responseKey, setResponseKey] = useState(name);
     const [renameError, setRenameError] = useState();
     const [triggerClose, setTriggerClose] = useState(false);
-    const { t } = this.props;
+    const { t } = useTranslation('templates');
 
     useEffect(() => {
         if (botResponse) {
@@ -261,15 +261,15 @@ const BotResponseEditor = (props) => {
                             renameable={renameable}
                             onChange={(_e, target) => setResponseKey(target.value)}
                             saveResponseName={handleChangeKey}
-                            errorMessage={t(renameError)}
+                            errorMessage={renameError}
                             responseName={responseKey}
                             disabledMessage={t('Responses in forms cannot be renamed.')}
                         />
                     </div>
                     <div className='response-editor-topbar-section'>
                         <Menu pointing secondary activeIndex={activeTab}>
-                            <MenuItem onClick={() => { setActiveTab(0); }} active={activeTab === 0} className='response-variations' data-cy='variations-tab'>Variations</MenuItem>
-                            <MenuItem onClick={() => { setActiveTab(1); }} active={activeTab === 1} className='metadata' data-cy='metadata-tab'>Behaviour</MenuItem>
+                            <MenuItem onClick={() => { setActiveTab(0); }} active={activeTab === 0} className='response-variations' data-cy='variations-tab'>{t('Variations')}</MenuItem>
+                            <MenuItem onClick={() => { setActiveTab(1); }} active={activeTab === 1} className='metadata' data-cy='metadata-tab'>{t('Behaviour')}</MenuItem>
                         </Menu>
                     </div>
                     <div className='response-editor-topbar-section' />
@@ -399,4 +399,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default withTranslation('templates')(connect(mapStateToProps)(BotResponseEditorWrapper));
+export default connect(mapStateToProps)(BotResponseEditorWrapper);

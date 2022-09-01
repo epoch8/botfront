@@ -3,10 +3,10 @@ import { Container, Segment, Step } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 
 import StepAccount from './StepAccount';
 import { wrapMeteorCallback } from '../utils/Errors';
-import { withTranslation } from 'react-i18next';
 
 class SetupSteps extends React.Component {
     constructor(props) {

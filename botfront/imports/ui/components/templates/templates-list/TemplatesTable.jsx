@@ -4,12 +4,13 @@ import {
     Icon, Label, Tab, Message, Popup,
 } from 'semantic-ui-react';
 import React from 'react';
-import { withTranslation } from 'react-i18next';
 import { find, sortBy } from 'lodash';
 import { connect } from 'react-redux';
 import 'react-s-alert/dist/s-alert-default.css';
 import { browserHistory } from 'react-router';
 import matchSorter from 'match-sorter';
+import { withTranslation } from 'react-i18next';
+
 import TemplatesTableItem from './TemplatesTableItem';
 import {
     changePageTemplatesTable, setWorkingLanguage, changeFilterTemplatesTable, toggleMatchingTemplatesTable,
@@ -106,7 +107,7 @@ class TemplatesTable extends React.Component {
         columns.unshift({
             id: 'key',
             accessor: v => v.key,
-            Header: 'Key',
+            Header: t('Key'),
             filterable: true,
             filterMethod: (filter, rows) => matchSorter(rows, filter.value, { keys: ['key'] }),
             Cell: props => <div data-cy='template-intent'><Label horizontal basic size='tiny'>{props.value}</Label></div>,

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Meteor } from 'meteor/meteor';
 import { withTracker } from 'meteor/react-meteor-data';
 import { withTranslation } from 'react-i18next';
+
 import { wrapMeteorCallback } from '../utils/Errors';
 import LookupTable from './LookupTable';
 import InlineSearch from '../utils/InlineSearch';
@@ -38,12 +39,12 @@ class GazetteEditor extends React.Component {
     };
 
     extraColumns() {
-        const { projectId } = this.props;
+        const { projectId, t } = this.props;
         return [
             {
                 id: 'mode',
                 accessor: e => e,
-                Header: 'Mode',
+                Header: t('Mode'),
                 Cell: (props) => {
                     if (can('nlu-data:w', projectId)) {
                         return (
@@ -60,7 +61,7 @@ class GazetteEditor extends React.Component {
             {
                 id: 'min_score',
                 accessor: e => e,
-                Header: 'Min Score',
+                Header: t('Min Score'),
                 Cell: (props) => {
                     if (can('nlu-data:w', projectId)) {
                         return <MinScoreEdit gazette={props.value} onEdit={this.onItemChanged} />;

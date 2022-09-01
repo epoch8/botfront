@@ -1,13 +1,14 @@
 import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Dropdown, Input } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import BotResponsePopupContent from './BotResponsePopupContent';
 import ActionPopupContent from './ActionPopupContent';
 import SlotPopupContent from './SlotPopupContent';
 import DashedButton from './DashedButton';
 import UserUtterancePopupContent from './UserUtterancePopupContent';
 import { ConversationOptionsContext } from '../Context';
-import { withTranslation } from 'react-i18next';
 
 const AddStoryLine = React.forwardRef((props, ref) => {
     const {
@@ -32,7 +33,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
     const [loopMenuOpen, setLoopMenuOpen] = useState(false);
     const [actionName, setActionName] = useState('');
     const { forms = [] } = useContext(ConversationOptionsContext);
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     const handleCreateLoopLines = (name = null, activate) => {
         if (typeof name === 'string' && !name.trim()) return;
@@ -49,7 +50,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
 
     const renderLoopNameMenu = activate => (
         <Dropdown.Menu data-cy='loop-selection-menu'>
-            <Dropdown.Header>By name</Dropdown.Header>
+            <Dropdown.Header>{t('By name')}</Dropdown.Header>
             <Dropdown.Item>
                 <Input
                     autoFocus
@@ -63,7 +64,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
             {!!forms.length && (
                 <>
                     <Dropdown.Divider />
-                    <Dropdown.Header>Or select a form</Dropdown.Header>
+                    <Dropdown.Header>{t('Or select a form')}</Dropdown.Header>
                     {forms.map(f => (
                         <Dropdown.Item
                             key={`formname-${f.name}`}
@@ -126,7 +127,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
                 <UserUtterancePopupContent
                     trigger={(
                         <DashedButton color='blue' size={size} data-cy='add-user-line'>
-                            User
+                            {t('User')}
                         </DashedButton>
                     )}
                     onCreateFromInput={onCreateUtteranceFromInput}
@@ -143,7 +144,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
                     disableExisting
                     trigger={(
                         <DashedButton color='green' size={size} data-cy='add-bot-line'>
-                            Bot
+                            {t('Bot')}
                         </DashedButton>
                     )}
                     trackOpenMenu={trackOpenMenu}
@@ -154,7 +155,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
                     onSelect={a => onCreateGenericLine({ action: a })}
                     trigger={(
                         <DashedButton color='pink' size={size} data-cy='add-action-line'>
-                            Action
+                            {t('Action')}
                         </DashedButton>
                     )}
                     trackOpenMenu={trackOpenMenu}
@@ -166,7 +167,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
                     }
                     trigger={(
                         <DashedButton color='orange' size={size} data-cy='add-slot-line'>
-                            Slot
+                            {t('Slot')}
                         </DashedButton>
                     )}
                     trackOpenMenu={trackOpenMenu}
@@ -181,7 +182,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
                             size={size}
                             data-cy='add-loop-line'
                         >
-                            Loop
+                            {t('Loop')}
                         </DashedButton>
                     )}
                     className='dropdown-button-trigger'
@@ -224,4 +225,4 @@ AddStoryLine.defaultProps = {
     trackOpenMenu: () => {},
 };
 
-export default withTranslation('stories')(AddStoryLine);
+export default AddStoryLine;

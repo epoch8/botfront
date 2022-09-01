@@ -1,13 +1,13 @@
 import React from 'react';
 import { Icon, Popup } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const ExceptionWrapper = (props) => {
     const { children, exceptions } = props;
     const errors = exceptions.filter(({ type }) => type === 'error');
     const warnings = exceptions.filter(({ type }) => type === 'warning');
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     if (!exceptions.length) return children;
 
@@ -22,8 +22,8 @@ const ExceptionWrapper = (props) => {
                 <Popup
                     wide
                     position='left center'
-                    header={t(`Error${errors.length > 1 ? 's' : ''}`)}
-                    content={t(renderPopupContent(errors))}
+                    header={errors.length > 1 ? t('Errors') : t('Error')}
+                    content={renderPopupContent(errors)}
                     trigger={
                         <Icon name='times circle' color='red' className='error-indicator' />
                     }
@@ -33,8 +33,8 @@ const ExceptionWrapper = (props) => {
                 <Popup
                     wide
                     position='left center'
-                    header={t(`Warning${warnings.length > 1 ? 's' : ''}`)}
-                    content={t(renderPopupContent(warnings))}
+                    header={warnings.length > 1 ? t('Warnings') : t('Warning')}
+                    content={renderPopupContent(warnings)}
                     trigger={(
                         <Icon name='exclamation circle' color='yellow' className='warning-indicator' />
                     )}
@@ -55,4 +55,4 @@ ExceptionWrapper.defaultProps = {
     exceptions: [{ type: null, message: '' }],
 };
 
-export default withTranslation('stories')(ExceptionWrapper);
+export default ExceptionWrapper;

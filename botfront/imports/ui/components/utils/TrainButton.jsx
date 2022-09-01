@@ -15,6 +15,7 @@ import { get } from 'lodash';
 import Alert from 'react-s-alert';
 import 'react-s-alert/dist/s-alert-default.css';
 import { withTranslation } from 'react-i18next';
+
 import { wrapMeteorCallback } from './Errors';
 import { StoryGroups } from '../../../api/storyGroups/storyGroups.collection';
 import { Projects } from '../../../api/project/project.collection';
@@ -177,17 +178,16 @@ class TrainButton extends React.Component {
             project: { deploymentEnvironments: environments = [] },
             instance,
         } = this.context;
-        const { status } = this.props;
+        const { status, t } = this.props;
         const trainingInProgress = status === 'training' || status === 'notReachable' || !instance;
         const { webhook } = this.state;
         const { modalOpen } = this.state;
-        const { t } = this.props;
         const deployOptions = !webhook?.url
             ? []
             : environments.map(env => ({
                 key: env,
                 value: env,
-                text: `Deploy to ${env}`,
+                text: `${t('Deploy to')} ${env}`,
             }));
         // explicitly define the dropdown so we don't get the highlighted selection
         return (
@@ -222,7 +222,7 @@ class TrainButton extends React.Component {
                                     this.showModal(opt.value, false);
                                     e.stopPropagation();
                                 }}
-                                content={t(`Do you really want to deploy your project to ${opt.value}`)}
+                                content={`${t('Do you really want to deploy your project to')} ${opt.value}`}
                             />
                         </React.Fragment>
                     ))}
@@ -248,7 +248,7 @@ class TrainButton extends React.Component {
             }
             Meteor.call('deploy.model', projectId, target, isTest, (err, response) => {
                 if (err || response === undefined || response.status !== 200) {
-                    Alert.error(`Deployment failed: ${err.message}`, {
+                    Alert.error(`${t('Deployment failed')}: ${err.message}`, {
                         position: 'top-right',
                         timeout: 120000,
                     });
@@ -289,6 +289,7 @@ class TrainButton extends React.Component {
             project: { _id: projectId },
             language,
         } = this.context;
+        const { t } = this.props;
         const languageName = languages[language]?.name;
         return (
             <>
@@ -296,14 +297,14 @@ class TrainButton extends React.Component {
                     onClick={() => runTestCaseStories(projectId)}
                     data-cy='run-all-tests'
                 >
-                    Run all tests
+                    {t('Run all tests')}
                 </Dropdown.Item>
                 {!!languageName && (
                     <Dropdown.Item
                         onClick={() => runTestCaseStories(projectId, { language })}
                         data-cy='run-lang-tests'
                     >
-                        Run all {languages[language]?.name} tests
+                        {t('Run all')} {languages[language]?.name} {t('tests')}
                     </Dropdown.Item>
                 )}
             </>
@@ -312,8 +313,9 @@ class TrainButton extends React.Component {
 
     renderButton = () => {
         const { instance } = this.context;
-        const { popupContent, status, partialTrainning } = this.props;
-        const { t } = this.props;
+        const {
+            popupContent, status, partialTrainning, t,
+        } = this.props;
         return (
             <Popup
                 content={popupContent}
@@ -350,10 +352,9 @@ class TrainButton extends React.Component {
             project: { gitSettings: { gitString } = {} },
             instance,
         } = this.context;
-        const { status } = this.props;
+        const { status, t } = this.props;
         const rasaDown = !instance || status === 'notReachable';
         const { modalOpen, gitWorking } = this.state;
-        const { t } = this.props;
         if (!gitString) return null;
         const button = (
             <>

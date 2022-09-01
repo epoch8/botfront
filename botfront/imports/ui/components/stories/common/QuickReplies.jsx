@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { Icon, Popup } from 'semantic-ui-react';
 import uuidv4 from 'uuid/v4';
 import { useDrop } from 'react-dnd-cjs';
+import { useTranslation } from 'react-i18next';
+
 import QuickReply, { isButtonValid } from './QuickReply';
-import { withTranslation } from 'react-i18next';
 
 function QuickReplies({
     value, onChange, min, max, fluid,
@@ -13,7 +14,7 @@ function QuickReplies({
 
     const id = useMemo(() => uuidv4(), [false]);
     const [, drop] = useDrop({ accept: `qr-for-${id}` });
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     const handleChange = (button, i) => {
         const newButtons = [...buttons.slice(0, i), button, ...buttons.slice(i + 1)];
@@ -115,4 +116,4 @@ QuickReplies.defaultProps = {
     fluid: false,
 };
 
-export default withTranslation('stories')(QuickReplies);
+export default QuickReplies;

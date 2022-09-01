@@ -3,13 +3,14 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import { Button, Modal, Segment } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import { OOS_LABEL } from '../../constants.json';
 import UserUtteranceViewer from '../../nlu/common/UserUtteranceViewer';
 import { ProjectContext } from '../../../layouts/context';
 import UtteranceInput from '../../utils/UtteranceInput';
 import NluModalContent from './nlu_editor/NluModalContent';
 import { USER_LINE_EDIT_MODE } from '../../../../lib/story.utils';
-import { withTranslation } from 'react-i18next';
 
 const UtteranceContainer = (props) => {
     const {
@@ -22,7 +23,7 @@ const UtteranceContainer = (props) => {
     const closeModal = useCallback(() => setModalOpen(false), []);
     const containerBody = useRef();
     const modalContentRef = useRef();
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     useEffect(() => {
         if (value.text || !value.intent) setStateValue(value);
@@ -97,7 +98,7 @@ const UtteranceContainer = (props) => {
             if (stateValue.intent === USER_LINE_EDIT_MODE) {
                 return (
                     <UtteranceInput
-                        placeholder='User says...'
+                        placeholder={t('User says...')}
                         fluid
                         value={input}
                         onChange={u => setInput(u)}
@@ -176,4 +177,4 @@ UtteranceContainer.defaultProps = {
     allowEmptyIntent: false,
 };
 
-export default withTranslation('stories')(UtteranceContainer);
+export default UtteranceContainer;

@@ -1,7 +1,13 @@
 {
   "Create your admin account": "Create your admin account",
+  "The passwords are not matching. Make sure you enter the same password in both fields": "The passwords are not matching. Make sure you enter the same password in both fields",
+  "Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters": "Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters",
+  "Your first name": "Your first name",
+  "Your last name": "Your last name",
+  "Your email": "Your email",
   "Choose a password": "Choose a password",
   "Confirm your password": "Confirm your password",
+  "Create": "Create",
   "Let&apos;s create your admin account": "Let&apos;s create your admin account",
   "Let&apos;s get started": "Let&apos;s get started"
 }

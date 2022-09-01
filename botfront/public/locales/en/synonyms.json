@@ -1,8 +1,13 @@
 {
   "Add": "Add",
+  "Mode": "Mode",
+  "Min Score": "Min Score",
   "Value": "Value",
   "Gazette": "Gazette",
   "entity name": "entity name",
   "match1, match2, ...": "match1, match2, ...",
+  "Name": "Name",
+  "Regex": "Regex",
+  "name": "name",
   "Enter a regular expression": "Enter a regular expression"
 }

@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import {
     Form, Grid, Divider, Button,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import PayloadEditor from './PayloadEditor';
 import {
     stringPayloadToObject,
     objectPayloadToString,
 } from '../../../../lib/story.utils';
-import { withTranslation } from 'react-i18next';
 
 function ResponseButtonEditor({
     value: {
@@ -28,7 +29,7 @@ function ResponseButtonEditor({
         { text: 'Postback', value: 'postback' },
         { text: 'Web URL', value: 'web_url' },
     ];
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
     return (
         <Form className='response-button-editor'>
             <Grid columns={16} textAlign='left'>
@@ -36,7 +37,7 @@ function ResponseButtonEditor({
                     {!noButtonTitle && (
                         <Grid.Column width={12}>
                             <Form.Input
-                                label='Button title'
+                                label={t('Button title')}
                                 data-cy='enter-button-title'
                                 autoFocus
                                 placeholder={t('Button title')}
@@ -52,7 +53,7 @@ function ResponseButtonEditor({
                     )}
                     <Grid.Column width={noButtonTitle ? 6 : 4}>
                         <Form.Select
-                            label={noButtonTitle ? 'Type' : 'Button type'}
+                            label={noButtonTitle ? t('Type') : t('Button type')}
                             onChange={(event, { value }) => {
                                 const updatedVal = { title, type: value };
                                 updatedVal.payload = '';
@@ -133,4 +134,4 @@ ResponseButtonEditor.defaultProps = {
     noButtonTitle: false,
 };
 
-export default withTranslation('stories')(ResponseButtonEditor);
+export default ResponseButtonEditor;

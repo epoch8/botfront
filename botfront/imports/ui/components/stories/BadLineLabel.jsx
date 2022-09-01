@@ -1,24 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const BadLineLabel = (props) => {
     const { lineMd, lineIndex } = props;
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
     return (
         <Popup
             on='click'
             trigger={(
                 <div className='label-container black'>
-                    <div>bad line</div>
+                    <div>{t('bad line')}</div>
                     <div>
                         {lineMd}
                     </div>
                 </div>
             )}
             header={t(`Bad line on line ${lineIndex}`)}
-            content={<p>t(Please fix this line in YAML mode)</p>}
+            content={<p>{t('Please fix this line in YAML mode')}</p>}
         />
     );
 };
@@ -32,4 +32,4 @@ BadLineLabel.defaultProps = {
     lineMd: '',
 };
 
-export default withTranslation('stories')(BadLineLabel);
+export default BadLineLabel;

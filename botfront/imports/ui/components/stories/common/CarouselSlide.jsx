@@ -3,10 +3,11 @@ import PropTypes from 'prop-types';
 import { Header, Modal, Message } from 'semantic-ui-react';
 import { useDrag, useDrop } from 'react-dnd-cjs';
 import TextareaAutosize from 'react-autosize-textarea';
+import { useTranslation } from 'react-i18next';
+
 import QuickReplies from './QuickReplies';
 import ImageThumbnail from './ImageThumbnail';
 import ResponseButtonEditor from './ResponseButtonEditor';
-import { withTranslation } from 'react-i18next';
 
 function CarouselSlide(props) {
     const {
@@ -22,7 +23,7 @@ function CarouselSlide(props) {
     useEffect(() => doSetNewValue(value), [value]);
     const setNewValue = (update = {}) => doSetNewValue({ ...newValue, ...update });
     const [modalOpen, setModalOpen] = useState(false);
-    const { t } = this.props;
+    const { t } = useTranslation('stories');
 
     const setValue = (update = {}) => onChange({ ...newValue, ...update });
 
@@ -80,7 +81,7 @@ function CarouselSlide(props) {
                         'set-default-action',
                     ],
                     ...(onDelete
-                        ? [['Delete card', onDelete, 'delete-slide', 'red-text']]
+                        ? [[t('Delete card'), onDelete, 'delete-slide', 'red-text']]
                         : []),
                 ]}
                 className={hasUrlOrPayload ? 'highlight' : ''}
@@ -89,24 +90,24 @@ function CarouselSlide(props) {
                 <Modal
                     open
                     size='tiny'
-                    header='Change default action'
+                    header={t('Change default action')}
                     onClose={() => {
                         setValue();
                         setModalOpen(false);
                     }}
-                    content={t(renderDefaultActionModal())}
+                    content={renderDefaultActionModal()}
                 />
             )}
             <Header as='h3'>
                 <TextareaAutosize
-                    placeholder='Title'
+                    placeholder={t('Title')}
                     value={newValue.title}
                     onChange={event => setNewValue({ title: event.target.value })}
                     onBlur={() => setValue()}
                 />
                 <Header.Subheader>
                     <TextareaAutosize
-                        placeholder='Description'
+                        placeholder={t('Description')}
                         value={newValue.subtitle}
                         onChange={event => setNewValue({ subtitle: event.target.value })}
                         onBlur={() => setValue()}
@@ -141,5 +142,4 @@ CarouselSlide.defaultProps = {
     onReorder: () => {},
 };
 
-export default withTranslation('stories')(CarouselSlide);
-
+export default CarouselSlide;

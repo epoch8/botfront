@@ -2,11 +2,12 @@
 import { Menu, Icon, Popup } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { withTranslation } from 'react-i18next';
+
 import { can } from '../../../lib/scopes';
 import ConfirmPopup from '../common/ConfirmPopup';
 import ToolTipPopup from '../common/ToolTipPopup';
 import { ProjectContext } from '../../layouts/context';
-import { withTranslation } from 'react-i18next';
 
 class BranchTabLabel extends React.Component {
     constructor(props) {
@@ -103,16 +104,14 @@ class BranchTabLabel extends React.Component {
     renderDeletePopup = () => {
         const { deletePopupOpened } = this.state;
         const {
-            onDelete, siblings, isLinked, isParentLinked, value,
+            onDelete, siblings, isLinked, isParentLinked, value, t,
         } = this.props;
         const confirmMessage = {};
-        const { t } = this.props;
         if (siblings.length < 3) {
             const strandedBranchName = siblings.filter(s => s.title !== value)[0]?.title;
             confirmMessage.content = (
                 <>
-                    The content of <strong>{strandedBranchName}</strong> will be added to
-                    the previous story.
+                    {t('The content of')} <strong>{strandedBranchName}</strong> {t('will be added to the previous story.')}
                 </>
             );
         }
@@ -220,4 +219,5 @@ BranchTabLabel.defaultProps = {
     errors: 0,
     isLinked: true,
 };
+
 export default withTranslation('stories')(BranchTabLabel);
