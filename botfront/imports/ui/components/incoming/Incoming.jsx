@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import { Container, Menu } from 'semantic-ui-react';
 import { browserHistory } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 import LanguageDropdown from '../common/LanguageDropdown';
 import EnvSelector from '../common/EnvSelector';
@@ -13,7 +14,6 @@ import ConversationsBrowserContainer from '../conversations/ConversationsBrowser
 import FormResults from './FormResults';
 import { updateIncomingPath } from './incoming.utils';
 import { ProjectContext } from '../../layouts/context';
-import { useTranslation } from 'react-i18next';
 
 export default function Incoming(props) {
     const { router } = props;
@@ -65,7 +65,7 @@ export default function Incoming(props) {
             { value: 'populate', text: t('Populate') },
         ].map(({ value, text }) => (
             <Menu.Item
-                content={t(text)}
+                content={text}
                 key={value}
                 data-cy={value}
                 active={value === activeTab}

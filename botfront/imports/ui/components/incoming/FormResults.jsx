@@ -6,9 +6,10 @@ import {
 } from 'semantic-ui-react';
 import { saveAs } from 'file-saver';
 import { useQuery } from '@apollo/react-hooks';
+import { useTranslation } from 'react-i18next';
+
 import { GET_FORMS } from '../stories/graphql/queries';
 import { Loading } from '../utils/Utils';
-import { useTranslation } from 'react-i18next';
 
 const FormResults = (props) => {
     const { projectId, environment } = props;
@@ -55,14 +56,14 @@ const FormResults = (props) => {
             ? !form.collect_in_botfront
                 ? t('Form not set to receive submissions')
                 : t('No submissions for this form')
-            : t(`Export ${count} submission${count > 1 ? 's' : ''} to CSV format`);
+            : `${t('Export')} ${count} ${count > 1 ? t('submissions to CSV format') : t('submission to CSV format')}`;
         return (
             <Segment key={form.name}>
                 <Header>
                     {form.name}
                     {(form.slots || []).length > 0 && (
                         <Header.Subheader>
-                            Slots: <i>{form.slots.map(s => s.name).join(', ')}</i>
+                            {t('Slots')}: <i>{form.slots.map(s => s.name).join(', ')}</i>
                         </Header.Subheader>
                     )}
                 </Header>

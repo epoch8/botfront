@@ -57,7 +57,7 @@ class AddLookupTableRow extends React.Component {
                         <LookupTableValueEditor
                             listAttribute={listAttribute}
                             keyAttribute={keyAttribute}
-                            placeholder={t(valuePlaceholder)}
+                            placeholder={valuePlaceholder}
                             entitySynonym={item}
                             onEdit={this.onItemChanged}
                             autoFocus={false}
@@ -67,7 +67,7 @@ class AddLookupTableRow extends React.Component {
                         { multiple ? (
                             <LookupTableListEditor
                                 listAttribute={listAttribute}
-                                placeholder={t(listPlaceholder)}
+                                placeholder={listPlaceholder}
                                 entitySynonym={item}
                                 onEdit={this.onItemChanged}
                                 autoFocus={false}
@@ -75,7 +75,7 @@ class AddLookupTableRow extends React.Component {
                         ) : (
                             <LookupTableStringEditor
                                 listAttribute={listAttribute}
-                                placeholder={t(listPlaceholder)}
+                                placeholder={listPlaceholder}
                                 item={item}
                                 onEdit={this.onItemChanged}
                                 autoFocus={false}

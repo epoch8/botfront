@@ -4,6 +4,7 @@ import {
     Popup, Grid, Button, Header,
 } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+
 import EntityDropdown from './EntityDropdown';
 
 import EntityValueEditor from '../../stories/common/EntityValueEditor';
@@ -126,7 +127,7 @@ function Entity({
                     open
                     basic
                     wide
-                    content={t(renderContent())}
+                    content={renderContent()}
                     position='bottom right'
                     on='click'
                     context={labelRef.current}

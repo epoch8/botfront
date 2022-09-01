@@ -10,6 +10,7 @@ import {
     Dropdown, Label, Icon, Popup,
 } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+
 import ConfirmPopup from '../common/ConfirmPopup';
 
 const getOptions = (allowedValues, props = {}) => {
@@ -33,7 +34,7 @@ const renderCheckboxes = ({
                     on='click'
                     content={(
                         <ConfirmPopup
-                            title={t(`Remove ${text} from this form?`)}
+                            title={`${t('Remove')} ${text} ${t('from this form?')}`}
                             description={t('This will delete all the slot settings associated with this form')}
                             onYes={() => {
                                 setPopupOpen(null);

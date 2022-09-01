@@ -1,12 +1,13 @@
 import React, {
     useContext, useMemo, forwardRef, useImperativeHandle,
 } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Container } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 import { useDrop } from 'react-dnd-cjs';
 import { useApolloClient } from '@apollo/react-hooks';
+import { useTranslation } from 'react-i18next';
+
 import AnalyticsCard from './AnalyticsCard';
 import conversationLengths from '../../../api/graphql/conversations/queries/conversationLengths.graphql';
 import conversationDurations from '../../../api/graphql/conversations/queries/conversationDurations.graphql';
@@ -201,7 +202,7 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
                     return 'rgb(174, 214, 243)';
                 },
             },
-        
+
         },
     };
 
@@ -219,7 +220,7 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
             { accessor: y.relative, header: '%' },
         ];
     });
-    
+
     const [, drop] = useDrop({ accept: 'card' });
 
     const handleChangeCardSettings = index => (updateInput, all = false) => {
@@ -279,7 +280,7 @@ const AnalyticsDashboard = ({ dashboard, onUpdateDashboard }, ref) => {
                 allNames.push(name);
             }));
         });
-        
+
         await Promise.all(promises);
         const workbook = generateXLSX(dataToExport, allQueryParams, allGraphParams, allBuckets, allNames, projectTimezoneOffset);
         if (window.Cypress) {

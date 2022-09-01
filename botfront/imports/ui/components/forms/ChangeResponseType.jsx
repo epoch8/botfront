@@ -2,11 +2,11 @@ import { Dropdown, Confirm, Button } from 'semantic-ui-react';
 import React, { useContext, useState } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 import { defaultTemplate } from '../../../lib/botResponse.utils';
 import { ProjectContext } from '../../layouts/context';
 import { can } from '../../../lib/scopes';
-import { useTranslation } from 'react-i18next';
 
 const ChangeResponseType = (props) => {
     const {
@@ -18,11 +18,11 @@ const ChangeResponseType = (props) => {
     const { t } = useTranslation('forms');
 
     const options = [
-        { value: 'TextPayload', text: 'text' },
-        { value: 'QuickRepliesPayload', text: 'quick reply' },
-        { value: 'TextWithButtonsPayload', text: 'buttons' },
-        { value: 'CarouselPayload', text: 'carousel' },
-        { value: 'CustomPayload', text: 'custom' },
+        { value: 'TextPayload', text: t('text') },
+        { value: 'QuickRepliesPayload', text: t('quick reply') },
+        { value: 'TextWithButtonsPayload', text: t('buttons') },
+        { value: 'CarouselPayload', text: t('carousel') },
+        { value: 'CustomPayload', text: t('custom') },
     ];
 
     const handleChangeResponseType = () => {

@@ -17,7 +17,7 @@ const BadLineLabel = (props) => {
                     </div>
                 </div>
             )}
-            header={t(`Bad line on line ${lineIndex}`)}
+            header={`${t('Bad line on line')} ${lineIndex}`}
             content={<p>{t('Please fix this line in YAML mode')}</p>}
         />
     );

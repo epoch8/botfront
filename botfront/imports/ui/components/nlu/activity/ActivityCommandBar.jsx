@@ -1,9 +1,10 @@
 import React, { useImperativeHandle, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Popup } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import IconButton from '../../common/IconButton';
 import IntentLabel from '../common/IntentLabel';
-import { withTranslation } from 'react-i18next';
 
 const ActivityCommandBar = React.forwardRef((props, ref) => {
     const {
@@ -15,7 +16,7 @@ const ActivityCommandBar = React.forwardRef((props, ref) => {
     const someLackingIntent = selection.some(d => !d.intent);
     const someHavingIntent = selection.some(d => d.intent);
     const intentLabelRef = useRef();
-    const { t } = this.props;
+    const { t } = useTranslation('nlu');
 
     useImperativeHandle(ref, () => ({
         openIntentPopup: () => intentLabelRef.current.openPopup(),
@@ -48,7 +49,7 @@ const ActivityCommandBar = React.forwardRef((props, ref) => {
                 <Popup
                     size='mini'
                     inverted
-                    content={t(someNotValidated ? 'Mark valid' : 'Mark invalid')}
+                    content={someNotValidated ? t('Mark valid') : t('Mark invalid')}
                     disabled={someLackingIntent || someOutdated}
                     trigger={(
                         <div>
@@ -120,4 +121,4 @@ ActivityCommandBar.defaultProps = {
     selection: [],
 };
 
-export default withTranslation('nlu')(ActivityCommandBar);
+export default ActivityCommandBar;

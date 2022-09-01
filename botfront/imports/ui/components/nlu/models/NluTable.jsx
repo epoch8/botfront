@@ -6,6 +6,7 @@ import {
 } from 'semantic-ui-react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
+
 import DataTable from '../../common/DataTable';
 import 'react-s-alert/dist/s-alert-default.css';
 import Filters from './Filters';
@@ -77,9 +78,9 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
                 postion='left'
                 content={(
                     <>
-                        Remove canonical &#x27E8;
+                        {t('Remove canonical')} &#x27E8;
                         <Icon name='gem' style={{ margin: 0 }} />
-                        &#x27E9; status to edit
+                        &#x27E9; {t('status to edit')}
                     </>
                 )}
             />
@@ -185,18 +186,17 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
             );
         }
         if (!canEdit) return null;
-        let tooltip = <div>Mark as canonical</div>;
+        let tooltip = <div>{t('Mark as canonical')}</div>;
         if (canonical) {
             tooltip = (
                 <>
-                    <Popup.Header>Canonical Example</Popup.Header>
+                    <Popup.Header>{t('Canonical Example')}</Popup.Header>
                     <Popup.Content className='popup-canonical'>
-                        This example is canonical for the intent
+                        {t('This example is canonical for the intent')}
                         <span className='intent-name'> {datum.intent}</span>
                         {datum.entities && datum.entities.length > 0 ? (
                             <>
-                                &nbsp; and for the following entity - entity value
-                                combinations: <br />
+                                &nbsp; {t('and for the following entity - entity value combinations:')} <br />
                                 {datum.entities.map(entity => (
                                     <span>
                                         <strong
@@ -308,9 +308,9 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
         const someOriginallyNotDeleted = selectionWithFullData.some(
             ({ deleted }) => !deleted,
         );
-        const verb = someOriginallyNotDeleted ? 'Delete' : 'Undelete';
+        const verb = someOriginallyNotDeleted ? t('Delete') : t('Undelete');
         const fallbackUtterance = getFallbackUtterance(ids);
-        const message = `${verb} ${ids.length} NLU examples?`;
+        const message = `${verb} ${ids.length} ${t('NLU examples?')}`;
         const action = () => deleteExamples(ids).then(
             mutationCallback(fallbackUtterance, 'deleteExamples'),
         );
@@ -321,14 +321,14 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
         if (selectionWithFullData.some(d => !d.intent || !d?.metadata?.draft)) {
             return null;
         }
-        const message = t(`Remove draft status of  ${ids.length} NLU examples`);
+        const message = `${t('Remove draft status of')}  ${ids.length} ${t('NLU examples')}`;
         const examplesToUpdate = ids.map(_id => ({ _id, metadata: { draft: false } }));
         const action = () => updateExamples(examplesToUpdate);
         return ids.length > 1 ? setConfirm({ message, action }) : action();
     }
 
     function handleSetIntent(ids, intent) {
-        const message = t(`Change intent to ${intent} for ${ids.length} NLU examples?`);
+        const message = `${t('Change intent to')} ${intent} ${t('for')} ${ids.length} ${t('NLU examples')}?`;
         const examplesToUpdate = ids.map(_id => ({ _id, intent }));
         const action = () => updateExamples(examplesToUpdate);
         return ids.length > 1 ? setConfirm({ message, action }) : action();
@@ -377,11 +377,11 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
     });
 
     const rowClassName = (datum) => {
-        if (datum?.metadata?.draft && !noDrafts) return t('yellow');
-        if (datum?.deleted) return t('grey');
-        if (datum?.invalid) return t('red');
-        if (datum?.isNew) return t('yellow');
-        if (datum?.edited) return t('olive');
+        if (datum?.metadata?.draft && !noDrafts) return 'yellow';
+        if (datum?.deleted) return 'grey';
+        if (datum?.invalid) return 'red';
+        if (datum?.isNew) return 'yellow';
+        if (datum?.edited) return 'olive';
         return '';
     };
 
@@ -393,7 +393,7 @@ const NluTable = React.forwardRef((props, forwardedRef) => {
                     className='with-shortcuts'
                     cancelButton='No'
                     confirmButton='Yes'
-                    content={t(confirm.message)}
+                    content={confirm.message}
                     onCancel={() => {
                         setConfirm(null);
                         return tableRef?.current?.focusTable();

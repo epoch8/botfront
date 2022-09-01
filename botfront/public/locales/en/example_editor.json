@@ -1,6 +1,8 @@
 {
   "User says...": "User says...",
+  "Press [Enter] to add or edit example": "Press [Enter] to add or edit example",
   "No user id is associated with this utterance": "No user id is associated with this utterance",
   "Change Filters": "Change Filters",
-  "Show all conversations with this user": "Show all conversations with this user"
+  "Show all conversations with this user": "Show all conversations with this user",
+  "Apply filter": "Apply filter"
 }

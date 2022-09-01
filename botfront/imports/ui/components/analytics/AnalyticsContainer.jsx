@@ -6,10 +6,11 @@ import moment from 'moment';
 import {
     Menu, Dropdown, Icon, Header, Button,
 } from 'semantic-ui-react';
-import { useTranslation } from 'react-i18next';
 import { useDrop } from 'react-dnd-cjs';
 import { connect } from 'react-redux';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useTranslation } from 'react-i18next';
+
 import { LIST_DASHBOARDS, UPDATE_DASHBOARD } from './graphql';
 import { setWorkingDashboard } from '../../store/actions/actions';
 import EnvSelector from '../common/EnvSelector';
@@ -215,7 +216,7 @@ function AnalyticsContainer(props) {
                 >
                     <Header as='h3' color='red' textAlign='center'>
                         <Icon name='trash' />
-                        {t("Drop here to delete")}
+                        {t('Drop here to delete')}
                     </Header>
                 </div>
             )}
@@ -252,7 +253,7 @@ function AnalyticsContainer(props) {
                                 data-cy='export-all'
                             >
                                 <Icon name='download' />
-                                {t("Export to Excel")}
+                                {t('Export to Excel')}
                             </Button>
                         </Menu.Item>
                         <Menu.Item>{renderAddCard()}</Menu.Item>

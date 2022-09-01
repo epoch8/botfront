@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import {
     Dropdown, List, Divider, Input,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import { can } from '../../../lib/scopes';
 import IconButton from '../common/IconButton';
 import SequenceSelector from '../common/SequenceSelector';
 import EntityDropdown from '../nlu/common/EntityDropdown';
 import EntityValueEditor from '../stories/common/EntityValueEditor';
-import { useTranslation } from 'react-i18next';
 
 const ExtractionItem = (props) => {
     const {
@@ -207,7 +208,7 @@ const ExtractionItem = (props) => {
             </div>
             <div className={`extraction-line ${type || 'from_text'}`}>
                 <span className='slot-value-from'>
-                    Get the slot value
+                    {t('Get the slot value')}
                 </span>
                 <Dropdown
                     disabled={!canEdit}

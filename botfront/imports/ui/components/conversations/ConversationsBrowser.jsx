@@ -62,7 +62,7 @@ function ConversationsBrowser(props) {
 
     useEffect(() => {
         if (labelConvData && !labelConvData.setConversationLabel.success) {
-            Alert.warning('Something went wrong, the conversation was not labeled', {
+            Alert.warning(t('Something went wrong, the conversation was not labeled'), {
                 position: 'top-right',
                 timeout: 5000,
             });
@@ -180,7 +180,7 @@ function ConversationsBrowser(props) {
     const renderNoMessages = () => (
         <Grid.Row>
             <Message data-cy='no-conv' info>
-                No conversation to load
+                {t('No conversation to load')}
             </Message>
         </Grid.Row>
     );

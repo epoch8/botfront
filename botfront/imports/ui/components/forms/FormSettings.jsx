@@ -12,12 +12,12 @@ import { buildASTSchema, parse } from 'graphql';
 import {
     Popup, Checkbox, Icon, Header, Container,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 
 import { can } from '../../../lib/scopes';
 import ToggleField from '../common/ToggleField';
 import { clearTypenameField } from '../../../lib/client.safe.utils';
 import { useMethod } from '../utils/hooks.js';
-import { useTranslation } from 'react-i18next';
 
 const CreateForm = (props) => {
     const {
@@ -77,7 +77,7 @@ const CreateForm = (props) => {
 
     return (
         <div>
-            <Header className='graph-sidebar-header' secondary size='small'>Form settings</Header>
+            <Header className='graph-sidebar-header' secondary size='small'>{t('Form settings')}</Header>
             <AutoForm autosave model={getFormattedModel()} schema={new GraphQLBridge(schema, validator, {})} onSubmit={handleSubmit} disabled={!can('stories:w', projectId)}>
                 <Container>
                     <LongTextField name='description' className='create-form-field' data-cy='form-description-field' />

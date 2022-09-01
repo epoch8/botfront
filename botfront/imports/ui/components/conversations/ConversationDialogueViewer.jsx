@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import { useTranslation } from 'react-i18next';
 import ReactJson from 'react-json-view';
 import {
     Button, Comment, Grid, Message,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import { generateTurns } from './utils';
 
 import UserUtteredEventViewer from '../example_editor/UserUtteredEventViewer';
@@ -19,10 +20,9 @@ function BotResponse({
     if (data) Object.keys(data).forEach(key => (data[key] == null) && delete data[key]);
 
     const dataEmpty = !data || !Object.keys(data).length;
-    const { t } = useTranslation('conversations');
     return (
         <div className='bot-response-message'>
-            {text && <p className='bot-response-text'>{t(text)}</p>}
+            {text && <p className='bot-response-text'>{text}</p>}
             {!dataEmpty && <ReactJson className='bot-response-json' src={data} collapsed name={type} />}
         </div>
     );

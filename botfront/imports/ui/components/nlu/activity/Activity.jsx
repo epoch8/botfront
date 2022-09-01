@@ -7,6 +7,7 @@ import {
     Message, Button, Icon, Confirm,
 } from 'semantic-ui-react';
 import { useTranslation } from 'react-i18next';
+
 import IntentLabel from '../common/IntentLabel';
 import UserUtteranceViewer from '../common/UserUtteranceViewer';
 import { useActivity, useDeleteActivity, useUpsertActivity } from './hooks';
@@ -408,7 +409,7 @@ function Activity(props) {
                     className='with-shortcuts'
                     cancelButton='No'
                     confirmButton='Yes'
-                    content={t(confirm.message)}
+                    content={confirm.message}
                     onCancel={() => {
                         setConfirm(null);
                         return tableRef?.current?.focusTable();
@@ -443,7 +444,7 @@ function Activity(props) {
                     <Button
                         color='green'
                         icon
-                        labelPosition={t('right')}
+                        labelPosition='right'
                         data-cy='add-to-training-data'
                         onClick={() => setConfirm({
                             message:
@@ -454,7 +455,7 @@ function Activity(props) {
                         disabled={!validated.length}
                     >
                         <Icon name='add square' />
-                        Add to training data
+                        {t(' Add to training data')}
                     </Button>
                 </Button.Group>
             </Can>
@@ -469,7 +470,7 @@ function Activity(props) {
                     { value: '% ascending', text: t('% ascending') },
                     { value: '% decending', text: t('% decending') },
                 ]}
-                prefix='Sort by'
+                prefix={t('Sort by')}
             />
             <Filters
                 intents={intents}
@@ -517,7 +518,7 @@ function Activity(props) {
                 <Message
                     success
                     icon='check'
-                    header='No activity'
+                    header={t('No activity')}
                     data-cy='no-activity'
                     content={t('No activity was found for the given criteria.')}
                 />

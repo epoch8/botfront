@@ -1,5 +1,6 @@
 {
   "bad line": "bad line",
+  "Bad line on line": "Bad line on line",
   "Please fix this line in YAML mode": "Please fix this line in YAML mode",
   "The content of": "The content of",
   "will be added to the previous story.": "will be added to the previous story.",
@@ -177,6 +178,10 @@
   "The test": "The test",
   "Stories": "Stories",
   "Sorry, something went wrong with the story": "Sorry, something went wrong with the story",
+  "Please try to refresh the page.": "Please try to refresh the page.",
+  "If the problem persists, try editing the story in text mode.": "If the problem persists, try editing the story in text mode.",
+  "We're working on it!": "We're working on it!",
+  "Help the Botfront project by reporting the issue.": "Help the Botfront project by reporting the issue.",
   "Connect": "Connect",
   "Continue To Linked Story": "Continue To Linked Story",
   "Branch Story": "Branch Story",

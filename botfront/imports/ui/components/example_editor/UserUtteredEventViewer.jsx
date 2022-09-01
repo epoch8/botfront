@@ -1,10 +1,10 @@
 import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Comment, Confirm, Popup } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
 
 import UserUtteranceViewer from '../nlu/common/UserUtteranceViewer';
 import { ConversationBrowserContext } from '../conversations/context';
-import { useTranslation } from 'react-i18next';
 
 export default function UserUtteredEventViewer({ event, author }) {
     const [open, setOpen] = useState(false);
@@ -41,7 +41,7 @@ export default function UserUtteredEventViewer({ event, author }) {
                 onCancel={() => setOpen(false)}
                 header={t('Change Filters')}
                 content={t('Show all conversations with this user')}
-                confirmButton='Apply filter'
+                confirmButton={t('Apply filter')}
                 data-cy='filter-by-user-id-modal'
             />
             <Comment.Metadata>

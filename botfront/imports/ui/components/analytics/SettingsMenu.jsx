@@ -164,7 +164,7 @@ const SettingsMenu = (props) => {
                             className={!canExport ? 'disabled-popup-item' : ''}
                             data-cy='export-card'
                         >
-                            Export this card (.csv)
+                            {t('Export this card (.csv)')}
                         </Dropdown.Item>
                     )}
                 />

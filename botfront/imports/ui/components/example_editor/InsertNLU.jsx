@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import shortid from 'shortid';
 import { Form, Segment } from 'semantic-ui-react';
 import TextArea from 'react-textarea-autosize';
-import { useTranslation } from 'react-i18next';
 import { debounce } from 'lodash';
+import { useTranslation } from 'react-i18next';
+
 import UserUtteranceViewer from '../nlu/common/UserUtteranceViewer';
 import { ProjectContext } from '../../layouts/context';
 
@@ -112,7 +113,7 @@ function InsertNlu(props) {
                                 </>
                             )}
                             <div className='instructions'>
-                                Press [Enter] to add or edit example
+                                {t('Press [Enter] to add or edit example')}
                                 {value.split('\n').filter(l => l.trim()).length >= 2
                                     && 's'}
                                 .

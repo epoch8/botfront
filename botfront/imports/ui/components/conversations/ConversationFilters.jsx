@@ -2,7 +2,6 @@ import React, {
     useState, useEffect, useContext, useMemo,
 } from 'react';
 import PropTypes from 'prop-types';
-import { useTranslation } from 'react-i18next';
 import {
     Segment,
     Input,
@@ -14,6 +13,8 @@ import {
     Popup,
     Message,
 } from 'semantic-ui-react';
+import { useTranslation } from 'react-i18next';
+
 import DatePicker from '../common/DatePicker';
 import IntentAndActionSelector from '../common/IntentAndActionSelector';
 import ToggleButtonGroup from '../common/ToggleButtonGroup';
@@ -112,8 +113,8 @@ const ConversationFilters = ({
                 <Icon name='dropdown' />
                 <span className='toggle-filters'>
                     {activeAccordion
-                        ? `Hide Filters ${numberOfActiveFilterString}`
-                        : `Show Filters ${numberOfActiveFilterString}`}
+                        ? `${t('Hide Filters')} ${numberOfActiveFilterString}`
+                        : `${t('Show Filters')} ${numberOfActiveFilterString}`}
                 </span>
                 {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events */}
                 <span
@@ -123,7 +124,7 @@ const ConversationFilters = ({
                     tabIndex='0'
                     className='reset-button'
                 >
-                    <Icon name='redo' size='small' /> Reset
+                    <Icon name='redo' size='small' /> {t('Reset')}
                 </span>
             </Accordion.Title>
             <Accordion.Content active={activeAccordion}>
@@ -151,8 +152,8 @@ const ConversationFilters = ({
                             onChange={(name, value) => setFilter(name, value)
                             }
                             options={[
-                                { text: 'User initiated', value: 'userInitiatedConversations' },
-                                { text: 'Triggered', value: 'triggeredConversations' },
+                                { text: t('User initiated'), value: 'userInitiatedConversations' },
+                                { text: t('Triggered'), value: 'triggeredConversations' },
                             ]}
                             value={newFilters}
                         />
@@ -187,7 +188,7 @@ const ConversationFilters = ({
                     >
                         <Segment.Group horizontal>
                             <Segment className='x-than-filter'>
-                                <Label> Length</Label>
+                                <Label> {t('Length')}</Label>
                             </Segment>
                             <Dropdown
                                 className='filter-dropdown'
@@ -229,7 +230,7 @@ const ConversationFilters = ({
                                 content={t('time elapsed between the first and last message in seconds')}
                                 trigger={(
                                     <Segment className='x-than-filter'>
-                                        <Label> Duration</Label>
+                                        <Label> {t('Duration')}</Label>
                                     </Segment>
                                 )}
                             />
@@ -278,7 +279,7 @@ const ConversationFilters = ({
                             className='conversation-filter'
                         >
                             <Segment className='x-than-filter'>
-                                <Label> Confidence &le;</Label>
+                                <Label> {t('Confidence')} &le;</Label>
                             </Segment>
                             <Segment className='number-filter'>
                                 <Input
@@ -309,7 +310,7 @@ const ConversationFilters = ({
                             className='conversation-filter'
                         >
                             <Segment className='uid-label'>
-                                <Label>User ID</Label>
+                                <Label>{t('User ID')}</Label>
                             </Segment>
                             <Segment className='id-filter'>
                                 <Input
@@ -331,7 +332,7 @@ const ConversationFilters = ({
                             className='conversation-filter'
                         >
                             <Segment className='conversation-id-label'>
-                                <Label>Conversation ID</Label>
+                                <Label>{t('Conversation ID')}</Label>
                             </Segment>
                             <Segment className='conversation-id-filter'>
                                 <Input

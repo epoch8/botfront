@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Form } from 'semantic-ui-react';
 import TextArea from 'react-textarea-autosize';
-import { useTranslation } from 'react-i18next';
 import { sortBy, isNull } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
 import getColor from '../../../lib/getColors';
 
