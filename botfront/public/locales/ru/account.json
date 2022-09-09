@@ -1,14 +1,14 @@
 {
   "Email": "Email",
-  "Continue": "Continue",
-  "Back to Sign in": "Back to Sign in",
-  "Check your email inbox": "Check your email inbox",
-  "If you have an account with us, you will find the instructions to reset your password in your inbox": "If you have an account with us, you will find the instructions to reset your password in your inbox",
-  "Password": "Password",
-  "LOGIN": "LOGIN",
-  "Forgot your password?": "Forgot your password?",
-  "The passwords are not matching. Make sure you enter the same password in both fields": "The passwords are not matching. Make sure you enter the same password in both fields",
-  "Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters": "Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters",
-  "Repeat password": "Repeat password",
-  "RESET YOUR PASSWORD": "RESET YOUR PASSWORD"
+  "Continue": "Продолжить",
+  "Back to Sign in": "Вернуться к входу",
+  "Check your email inbox": "Проверьте почтовый ящик",
+  "If you have an account with us, you will find the instructions to reset your password in your inbox": "Если у вас есть учетная запись у нас, вы найдете инструкции по сбросу пароля в своем почтовом ящике",
+  "Password": "Пароль",
+  "LOGIN": "ЛОГИН",
+  "Forgot your password?": "Забыли пароль?",
+  "The passwords are not matching. Make sure you enter the same password in both fields": "Пароли не совпадают. Убедитесь, что вы вводите один и тот же пароль в оба поля",
+  "Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters": "Ваш пароль должен содержать не менее 9 символов и содержать прописные и строчные буквы, цифры и спецсимволы",
+  "Repeat password": "Повторите пароль",
+  "RESET YOUR PASSWORD": "СБРОСИТЬ ПАРОЛЬ"
 }

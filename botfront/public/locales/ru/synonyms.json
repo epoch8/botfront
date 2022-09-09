@@ -1,13 +1,13 @@
 {
-  "Add": "Add",
-  "Mode": "Mode",
-  "Min Score": "Min Score",
-  "Value": "Value",
+  "Add": "Доб.",
+  "Mode": "Режим",
+  "Min Score": "мин. знач",
+  "Value": "значение",
   "Gazette": "Gazette",
-  "entity name": "entity name",
+  "entity name": "имя сущности",
   "match1, match2, ...": "match1, match2, ...",
-  "Name": "Name",
+  "Name": "Имя",
   "Regex": "Regex",
-  "name": "name",
-  "Enter a regular expression": "Enter a regular expression"
+  "name": "имя",
+  "Enter a regular expression": "Введите регулярное выражение"
 }

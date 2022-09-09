@@ -1,13 +1,13 @@
 {
-  "Form not set to receive submissions": "Form not set to receive submissions",
-  "No submissions for this form": "No submissions for this form",
-  "Export": "Export",
-  "submissions to CSV format": "submissions to CSV format",
-  "submission to CSV format": "submission to CSV format",
-  "Slots": "Slots",
-  "No forms found": "No forms found",
-  "New Utterances": "New Utterances",
-  "Conversations": "Conversations",
-  "Form results": "Form results",
-  "Populate": "Populate"
+  "Form not set to receive submissions": "Форма не настроена для приема представлений",
+  "No submissions for this form": "Нет представлений для этой формы",
+  "Export": "Экспорт",
+  "submissions to CSV format": "представления в CSV",
+  "submission to CSV format": "представление в CSV",
+  "Slots": "Слоты",
+  "No forms found": "Формы не найдены",
+  "New Utterances": "Новые высказывания",
+  "Conversations": "Разговоры",
+  "Form results": "Результаты формы",
+  "Populate": "Заполнить"
 }

@@ -1,8 +1,8 @@
 {
-  "Conversation Length": "Conversation Length",
-  "Conversation Duration": "Conversation Duration",
-  "Top Intents": "Top Intents",
-  "Top Triggers": "Top Triggers",
+  "Conversation Length": "Длина разговора",
+  "Conversation Duration": "Продолжительность разговора",
+  "Top Intents": "Топ интентов",
+  "Top Triggers": "Топ триггеров",
   "Conversations over time": "Conversations over time",
   "Action occurrences over time": "Action occurrences over time",
   "Conversations Funnel": "Conversations Funnel",

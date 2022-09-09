@@ -1,14 +1,14 @@
 {
-  "Create your admin account": "Create your admin account",
-  "The passwords are not matching. Make sure you enter the same password in both fields": "The passwords are not matching. Make sure you enter the same password in both fields",
-  "Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters": "Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters",
-  "Your first name": "Your first name",
-  "Your last name": "Your last name",
-  "Your email": "Your email",
-  "Choose a password": "Choose a password",
-  "Confirm your password": "Confirm your password",
-  "Create": "Create",
+  "Create your admin account": "Создать admin аккаунт",
+  "The passwords are not matching. Make sure you enter the same password in both fields": "Пароли не совпадают. Убедитесь, что вы вводите один и тот же пароль в оба поля",
+  "Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters": "Ваш пароль должен содержать не менее 9 символов и содержать прописные и строчные буквы, цифры и спецсимволы",
+  "Your first name": "Ваше имя",
+  "Your last name": "Ваша фамилия",
+  "Your email": "Ваш email",
+  "Choose a password": "Выберите пароль",
+  "Confirm your password": "Подтвердите пароль",
+  "Create": "Создать",
   "Welcome to Botfront": "Welcome to Botfront",
-  "Let&apos;s create your admin account": "Let&apos;s create your admin account",
-  "Let&apos;s get started": "Let&apos;s get started"
+  "Let&apos;s create your admin account": "Давайте создадим ваш admin аккаунт",
+  "Let&apos;s get started": "Давайте начнем"
 }
