@@ -1,8 +1,7 @@
 {
   "User says...": "Пользователь говорит...",
   "Press [Enter] to add or edit example": "[Enter] для добавления или редактирования примера",
-  "No user id is associated with this utterance":
-  "С этим высказыванием не связан user id",
+  "No user id is associated with this utterance": "С этим высказыванием не связан user id",
   "Change Filters": "Поменять фильтры",
   "Show all conversations with this user": "Показать все разговоры с пользователем",
   "Apply filter": "Принять фильтры"
