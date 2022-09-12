@@ -104,7 +104,7 @@ i18n
             escapeValue: false, // not needed for react as it escapes by default
         },
 
-        lng: 'en',
+        lng: 'ru',
 
         // backend: {
         //     loadPath: 'http://localhost:8000/locales/{{lng}}/{{ns}}.json',
