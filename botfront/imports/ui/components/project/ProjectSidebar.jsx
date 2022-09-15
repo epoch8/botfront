@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DocumentTitle from 'react-document-title';
-import { Menu, Divider } from 'semantic-ui-react';
+import { Menu, Divider, Dropdown } from 'semantic-ui-react';
 import { Link } from 'react-router';
 import { withTracker } from 'meteor/react-meteor-data';
 import { withTranslation } from 'react-i18next';
@@ -16,7 +16,26 @@ import { GlobalSettings } from '../../../api/globalSettings/globalSettings.colle
 
 const packageJson = require('/package.json');
 
+const languageOptoins = [
+    { text: 'Russian', value: 'ru' },
+    { text: 'English', value: 'en' },
+];
+
+
 class ProjectSidebar extends React.Component {
+    constructor(props) {
+        super(props);
+        const { i18n } = this.props;
+        this.state = { language: localStorage.getItem('language') || i18n.language };
+    }
+
+    onlanguagechange = (lng) => {
+        const { i18n } = this.props;
+        this.setState({ language: lng });
+        localStorage.setItem('language', lng);
+        i18n.changeLanguage(lng);
+    };
+
     render() {
         const {
             projectName, projectId, handleChangeProject, settingsReady, settings, t,
@@ -91,6 +110,21 @@ class ProjectSidebar extends React.Component {
                     <Link to='/login'>
                         <Menu.Item data-cy='signout' name='Sign out' icon='sign-out' />
                     </Link>
+                    <Menu.Item>
+                        <Menu.Header style={{ marginBottom: '20px' }}>{t('Language')}</Menu.Header>
+                        <div>
+                            <Dropdown
+                                button
+                                // loading={loading}
+                                fluid
+                                selection
+                                value={this.state.language}
+                                name='language'
+                                options={languageOptoins}
+                                onChange={(_, data) => this.onlanguagechange(data.value)}
+                            />
+                        </div>
+                    </Menu.Item>
                     <span className='force-bottom'>{packageJson.version}</span>
                 </Menu>
             </DocumentTitle>
