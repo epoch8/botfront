@@ -1,5 +1,5 @@
 {
-  "Create your admin account": "Создать admin аккаунт",
+  "Create your admin account": "Создать аккаунт адинистратора",
   "The passwords are not matching. Make sure you enter the same password in both fields": "Пароли не совпадают. Убедитесь, что вы вводите один и тот же пароль в оба поля",
   "Your password should contain at least 9 characters and have uppercase, lowercase, digit and special characters": "Ваш пароль должен содержать не менее 9 символов и содержать прописные и строчные буквы, цифры и спецсимволы",
   "Your first name": "Ваше имя",
@@ -8,7 +8,7 @@
   "Choose a password": "Выберите пароль",
   "Confirm your password": "Подтвердите пароль",
   "Create": "Создать",
-  "Welcome to Botfront": "Welcome to Botfront",
-  "Let&apos;s create your admin account": "Давайте создадим ваш admin аккаунт",
+  "Welcome to Botfront": "Добро пожаловать в Botfront",
+  "Let&apos;s create your admin account": "Давайте создадим ваш аккаунт адинистратора",
   "Let&apos;s get started": "Давайте начнем"
 }
