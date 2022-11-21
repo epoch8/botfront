@@ -19,6 +19,12 @@ class Chat extends React.Component {
             path,
             initialPayLoad,
             innerRef,
+            voiceInputEnabled,
+            voiceInputConfig,
+            voiceInputStopOnSilence,
+            ttsEnabled,
+            ttsNewMessages,
+            ttsConfig,
         } = this.props;
         return (
             <Widget
@@ -44,6 +50,12 @@ class Chat extends React.Component {
                     );
                 }}
                 withRules
+                voiceInputEnabled={voiceInputEnabled}
+                voiceInputConfig={voiceInputConfig}
+                voiceInputStopOnSilence={voiceInputStopOnSilence}
+                ttsEnabled={ttsEnabled}
+                ttsNewMessages={ttsNewMessages}
+                ttsConfig={ttsConfig}
             />
         );
     }
@@ -55,11 +67,35 @@ Chat.propTypes = {
     language: PropTypes.string,
     initialPayLoad: PropTypes.string,
     innerRef: PropTypes.shape({ current: PropTypes.any }).isRequired,
+    voiceInputEnabled: PropTypes.bool,
+    voiceInputConfig: PropTypes.shape({
+        serverUrl: PropTypes.string,
+        audioChunkSize: PropTypes.number,
+        stopOnSilenceDuration: PropTypes.number,
+    }),
+    voiceInputStopOnSilence: PropTypes.bool,
+    ttsEnabled: PropTypes.bool,
+    ttsNewMessages: PropTypes.bool,
+    ttsConfig: PropTypes.shape({
+        serverUrl: PropTypes.string,
+    }),
 };
 
 Chat.defaultProps = {
     language: '',
     initialPayLoad: '',
+    voiceInputEnabled: false,
+    voiceInputConfig: {
+        serverUrl: 'ws://localhost:2700',
+        audioChunkSize: 2048,
+        stopOnSilenceDuration: 2000,
+    },
+    voiceInputStopOnSilence: false,
+    ttsEnabled: false,
+    ttsNewMessages: false,
+    ttsConfig: {
+        serverUrl: 'ws://localhost:2700',
+    },
 };
 
 export default React.forwardRef((props, ref) => <Chat innerRef={ref} {...props} />);

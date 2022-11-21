@@ -379,9 +379,11 @@ const ProjectContainer = withTracker((props) => {
     }
 
     // update store if new projectId
-    if (storeProjectId !== projectId) {
-        changeProjectId(projectId);
-    }
+    useEffect(() => {
+        if (storeProjectId !== projectId) {
+            changeProjectId(projectId);
+        }
+    }, [storeProjectId, projectId]);
 
     const projectLanguages = ready
         ? (project.languages || []).map(value => ({
@@ -391,13 +393,15 @@ const ProjectContainer = withTracker((props) => {
         : [];
 
     // update working language
-    if (
-        ready
-        && defaultLanguage
-        && !projectLanguages.some(({ value }) => value === workingLanguage)
-    ) {
-        changeWorkingLanguage(defaultLanguage);
-    }
+    useEffect(() => {
+        if (
+            ready
+            && defaultLanguage
+            && !projectLanguages.some(({ value }) => value === workingLanguage)
+        ) {
+            changeWorkingLanguage(defaultLanguage);
+        }
+    }, [ready, defaultLanguage, projectLanguages, workingLanguage]);
 
     return {
         loading: !ready,

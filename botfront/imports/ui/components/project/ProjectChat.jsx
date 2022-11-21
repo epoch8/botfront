@@ -44,6 +44,12 @@ class ProjectChat extends React.Component {
         return this.setState({
             socketUrl: channel.base_url,
             path: channel.socket_path,
+            voiceInputEnabled: channel.voiceInputEnabled,
+            voiceInputConfig: channel.voiceInputConfig,
+            voiceInputStopOnSilence: channel.voiceInputStopOnSilence,
+            ttsEnabled: channel.ttsEnabled,
+            ttsNewMessages: channel.ttsNewMessages,
+            ttsConfig: channel.ttsConfig,
         });
     };
 
@@ -119,6 +125,12 @@ class ProjectChat extends React.Component {
             noChannel,
             path,
             savedTest,
+            voiceInputEnabled,
+            voiceInputConfig,
+            voiceInputStopOnSilence,
+            ttsEnabled,
+            ttsNewMessages,
+            ttsConfig,
         } = this.state;
         const {
             triggerChatPane, project: { _id: projectId }, initPayload, t,
@@ -202,6 +214,12 @@ class ProjectChat extends React.Component {
                         language={selectedLanguage}
                         path={path}
                         initialPayLoad={initPayload || ''}
+                        voiceInputEnabled={voiceInputEnabled}
+                        voiceInputConfig={voiceInputConfig}
+                        voiceInputStopOnSilence={voiceInputStopOnSilence}
+                        ttsEnabled={ttsEnabled}
+                        ttsNewMessages={ttsNewMessages}
+                        ttsConfig={ttsConfig}
                     />
                 )}
                 {noChannel && (

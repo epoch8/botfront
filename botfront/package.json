@@ -78,7 +78,7 @@
     "prop-types": "^15.7.2",
     "query-string": "^5.1.0",
     "random-seed": "^0.3.0",
-    "rasa-webchat": "github:botfront/rasa-webchat#fix/socketio",
+    "rasa-webchat": "file:../../rasa-webchat/rasa-webchat-1.0.1-e8-1.tgz",
     "react": "^16.8.6",
     "react-ace": "^6.1.4",
     "react-apollo": "^2.5.8",
