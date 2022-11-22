@@ -4,6 +4,7 @@ FROM geoffreybooth/meteor-base:2.0
 # Copy app package.json and package-lock.json into container
 COPY ./botfront/package*.json $APP_SOURCE_FOLDER/
 COPY ./botfront/postinstall.sh $APP_SOURCE_FOLDER/
+COPY ./botfront/packages/ $APP_SOURCE_FOLDER/packages/
 ARG ARG_NODE_ENV=production
 ENV NODE_ENV $ARG_NODE_ENV
 ENV DISABLE_CLIENT_STATS 1
@@ -14,6 +15,9 @@ RUN bash $SCRIPTS_FOLDER/build-app-npm-dependencies.sh
 
 # Copy app source into container
 COPY ./botfront $APP_SOURCE_FOLDER/
+
+# Tmp
+RUN rm -rf $APP_SOURCE_FOLDER/node_modules/resolve/test/resolver/malformed_package_json
 
 RUN bash $SCRIPTS_FOLDER/build-meteor-bundle.sh
 
