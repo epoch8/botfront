@@ -140,4 +140,10 @@ if (Meteor.isServer) {
 
         return Projects.find({ projectId }, { fields: { 'training.instanceStatus': 1 } });
     });
+
+    Meteor.publish('hierTraining.instanceStatus', function (projectId) {
+        check(projectId, String);
+
+        return Projects.find({ projectId }, { fields: { 'hierTraining.instanceStatus': 1 } });
+    });
 }

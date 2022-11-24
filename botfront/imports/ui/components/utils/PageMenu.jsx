@@ -7,6 +7,7 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { isTraining } from '../../../api/nlu_model/nlu_model.utils';
 import TrainButton from './TrainButton';
+import TrainHierButton from './TrainHierButton';
 import { ProjectContext } from '../../layouts/context';
 
 export default function PageMenu(props) {
@@ -87,6 +88,7 @@ export default function PageMenu(props) {
                         )}
                     </Menu.Item>
                     <Menu.Item position='right'>
+                        <TrainHierButton projectId={projectId} />
                         <TrainButton
                             project={project}
                             instance={instance}

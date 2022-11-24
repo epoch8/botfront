@@ -82,7 +82,7 @@ class Instances extends React.Component {
         const {
             ready, projectId,
         } = this.props;
-     
+
         const {
             webhook, instance, copied, confirmOpen,
         } = this.state;
@@ -117,9 +117,8 @@ class Instances extends React.Component {
                                 onCancel={this.closeConfirm}
                                 onConfirm={() => { this.generateAuthToken(); this.closeConfirm(); }}
                             />
-
-                           
                         </div>
+                        <AutoField name='hierHost' label='HIER host' />
 
                         <br />
                         {hasWritePermission && (
