@@ -133,6 +133,11 @@ if (Meteor.isServer) {
 
     const trainingAppLogger = getAppLoggerForFile(__filename);
 
+    const getHierHost = async (projectId) => {
+        const instance = Instances.findOne({ projectId }, { fields: { hierHost: 1 } });
+        return instance?.hierHost || process.env.HIER_HOST;
+    };
+
     Meteor.methods({
         async 'rasa.parse'(instance, examples, options = {}) {
             checkIfCan('nlu-data:r', instance.projectId);
@@ -392,6 +397,22 @@ if (Meteor.isServer) {
             } catch (e) {
                 throw formatError(e);
             }
+        },
+        async 'hier.train'(projectId) {
+            checkIfCan('nlu-data:x', projectId);
+            check(projectId, String);
+            const hierHost = await getHierHost(projectId);
+            console.log('hierHost', hierHost);
+            if (!hierHost) return;
+            await axios.post(`${hierHost}/train/${projectId}`);
+        },
+        async 'hier.cancel'(projectId) {
+            checkIfCan('nlu-data:x', projectId);
+            check(projectId, String);
+            const hierHost = await getHierHost(projectId);
+            console.log('hierHost', hierHost);
+            if (!hierHost) return;
+            await axios.post(`${hierHost}/cancel/${projectId}`);
         },
     });
 }

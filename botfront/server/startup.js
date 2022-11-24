@@ -106,9 +106,8 @@ Meteor.startup(function () {
                                     hierStatus = 'notReachable';
                                     break;
                                 }
-                                console.log('HIER:', hierStatus);
                             } catch (error) {
-                                console.log(error);
+                                console.error(error);
                             }
                         }
 
