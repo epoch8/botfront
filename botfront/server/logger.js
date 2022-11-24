@@ -48,7 +48,12 @@ const allowdKeysAudit = [
 
 const spaceBeforeIfExist = prop => (prop ? ` ${prop}` : '');
 
-const formatUser = user => (`${user.profile.firstName} ${user.profile.lastName} ${user.emails[0].address}`);
+const formatUser = (user) => {
+    if (user.username === 'EXTERNAL_CONSUMER') {
+        return 'EXTERNAL_CONSUMER';
+    }
+    return `${user.profile?.firstName} ${user.profile?.lastName} ${user.emails?.[0].address}`;
+};
 
 const auditFormat = printf((arg) => {
     Object.keys(arg).forEach((key) => {
@@ -103,7 +108,7 @@ const appLogToString = (arg) => {
             loggedData ? `data: ${JSON.stringify(loggedData)}` : ''
         } ${error ? `error: ${error}` : ''}`;
     }
-    
+
     // if it's not from a method it's at the file level
     return `${timestamp} [${level}] : ${message} ${file}`;
 };
@@ -115,7 +120,7 @@ const appFormat = printf((arg) => {
         }
     });
 
-   
+
     if (arg.args && /info/.test(arg.level) && APPLICATION_LOG_LEVEL === 'info') {
         const argLite = cloneDeep(arg);
         Object.keys(argLite.args).forEach((key) => {

@@ -20,7 +20,7 @@ export const checkIfCan = (permission, projectId, userId = null, options = {}) =
     const message = `${permission} required ${trace}.`;
     if (Meteor.isServer) {
         import { getAppLoggerForFile, getAppLoggerForMethod } from '../../../server/logger';
-    
+
         const logger = getAppLoggerForFile(__filename);
         const appMethodLogger = getAppLoggerForMethod(
             logger, 'checkIfCan', userId || Meteor.userId(), { projectId },
@@ -73,7 +73,7 @@ if (Meteor.isServer) {
         Roles.addRolesToParent('nlu-data:r', 'nlu-data:w');
 
         createRole('nlu-data:x', 'Can train a model.');
-    
+
         createRole('responses:r', 'Can read bot responses.');
         createRole('responses:w', 'Can create, delete and edit bot responses. Extends responses:r.');
         Roles.addRolesToParent('responses:r', 'responses:w');
@@ -102,11 +102,11 @@ if (Meteor.isServer) {
         createRole('git-credentials:r', 'Can view git credentials in project settings. ');
         createRole('git-credentials:w', 'Can edit git credentials in project settings. extends `git-credentials:r`');
         Roles.addRolesToParent(['git-credentials:r'], 'git-credentials:w');
-        
+
         createRole('export:x', 'Can export project data');
         createRole('projects:r', 'Can read and export everything in a project and access a project settings.');
         Roles.addRolesToParent(['incoming:r', 'triggers:r', 'stories:r', 'responses:r', 'nlu-data:r', 'analytics:r', 'export:x', 'git-credentials:r'], 'projects:r');
-        
+
         createRole('import:x', 'Can import and overwrite project data.`');
         createRole('share:x', 'Can enable and disable the share chatbot link');
         createRole(
@@ -128,7 +128,7 @@ if (Meteor.isServer) {
         createRole('roles:r', 'Can view roles');
         createRole('roles:w', 'Can add, edit, and remove roles. Extends `roles:r`');
         Roles.addRolesToParent('roles:r', 'roles:w');
-    
+
         createRole('users:r', 'Can access user information. Extends `roles:r`');
         Roles.addRolesToParent(['roles:r'], 'users:r');
         createRole('users:w', 'Can add, edit, or remove user details and roles. Extends `users:r`');
