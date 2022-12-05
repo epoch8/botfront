@@ -500,7 +500,7 @@ export default withTranslation('utils')(withTracker((props) => {
     if (ready) {
         status = Projects.findOne(
             { _id: projectId },
-            { field: { 'training.instanceStatus': 1 } },
+            { fields: { 'training.instanceStatus': 1 } },
         );
         status = get(status, 'training.instanceStatus', 'notReachable'); // if it is undefined we consider it not reachable
         storyGroups = StoryGroups.find({ projectId }, { field: { _id: 1 } }).fetch();

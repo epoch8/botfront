@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 import { Meteor } from 'meteor/meteor';
@@ -12,6 +12,13 @@ const TrainHierButton = ({ status, projectId }) => {
     const { t } = useTranslation('utils');
     const training = status === 'training';
     const [clicked, setClicked] = useState(false);
+    const [timeout, setTimeout] = useState(null);
+
+    useEffect(() => {
+        setClicked(false);
+        if (timeout !== null) Meteor.clearTimeout(timeout);
+        setTimeout(null);
+    }, [status, projectId]);
 
     const onTrainClick = async () => {
         if (clicked || status === 'notReachable') {
@@ -26,8 +33,14 @@ const TrainHierButton = ({ status, projectId }) => {
             }
         } catch (error) {
             console.error(error);
+            setClicked(false);
+            return;
         }
-        Meteor.setTimeout(() => { setClicked(false); }, 1000);
+        setTimeout(
+            Meteor.setTimeout(() => {
+                setClicked(false);
+            }, 10000),
+        );
     };
 
     return (
@@ -65,10 +78,11 @@ export default withTracker((props) => {
     );
     let status;
     if (trainingStatusHandler.ready()) {
-        status = Projects.findOne(
+        const instance = Projects.findOne(
             { _id: projectId },
-            { field: { 'hierTraining.instanceStatus': 1 } },
+            { fields: { 'hierTraining.instanceStatus': 1 } },
         );
+        status = instance?.hierTraining?.instanceStatus;
     }
     return {
         status,
