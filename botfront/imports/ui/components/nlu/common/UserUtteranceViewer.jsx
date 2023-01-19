@@ -125,10 +125,10 @@ function UserUtteranceViewer(props) {
 
     function adjustBeginning(completeText, anchor) {
         if (anchor === 0 || anchor === completeText.length) return anchor;
-        if (/[\W.,?!;:]/.test(completeText.slice(anchor, anchor + 1))) {
+        if (/[\s.,?!;:]/.test(completeText.slice(anchor, anchor + 1))) {
             return adjustBeginning(completeText, anchor + 1);
         }
-        if (/[\W.,?!;:][a-zA-Z\u00C0-\u017F0-9-]/.test(
+        if (/[\s.,?!;:][^\s.,?!;:]/.test(
             completeText.slice(anchor - 1, anchor + 1),
         )
         ) {
@@ -140,10 +140,10 @@ function UserUtteranceViewer(props) {
 
     function adjustEnd(completeText, extent) {
         if (extent === 0 || extent === completeText.length) return extent;
-        if (/[\W.,?!;:]/.test(completeText.slice(extent - 1, extent))) {
+        if (/[\s.,?!;:]/.test(completeText.slice(extent - 1, extent))) {
             return adjustEnd(completeText, extent - 1);
         }
-        if (/[a-zA-Z\u00C0-\u017F0-9-][\W.,?!;:]/.test(
+        if (/[^\s.,?!;:][\s.,?!;:]/.test(
             completeText.slice(extent - 1, extent + 1),
         )
         ) {
@@ -158,21 +158,21 @@ function UserUtteranceViewer(props) {
         let extraBound = [];
         if (exited) extraBound = exited === 'left' ? [0] : [(element.text || '').length];
         let bad = false;
-        const anchor = Math.min(
+        let anchor = Math.min(
             element.start + selection.anchorOffset,
             element.start + selection.focusOffset,
             ...extraBound,
         );
-        const extent = Math.max(
+        let extent = Math.max(
             element.start + selection.anchorOffset,
             element.start + selection.focusOffset,
             ...extraBound,
         );
         if (anchor === extent) bad = true;
-        // else if (!hasNoWhitespace) {
-        //     anchor = adjustBeginning(text, anchor);
-        //     extent = adjustEnd(text, extent);
-        // }
+        else if (!hasNoWhitespace) {
+            anchor = adjustBeginning(text, anchor);
+            extent = adjustEnd(text, extent);
+        }
         if (entities.some(e => anchor <= e.end && extent >= e.start)) bad = true;
         if (
             bad
