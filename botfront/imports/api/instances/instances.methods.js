@@ -14,6 +14,7 @@ import {
     formatError,
     getProjectModelLocalFolder,
     getProjectModelFileName,
+    postTraining,
 } from '../../lib/utils';
 import { NLUModels } from '../nlu_model/nlu_model.collection';
 import { getExamples } from '../graphql/examples/mongo/examples';
@@ -292,13 +293,10 @@ if (Meteor.isServer) {
                     { skipInvalid: true },
                 );
                 payload.load_model_after = true;
-                // this client is used when telling rasa to load a model
-                const client = await createAxiosForRasa(projectId, { timeout: process.env.TRAINING_TIMEOUT || 0 });
-                addLoggingInterceptors(client, appMethodLogger);
                 const trainingClient = await createAxiosForRasa(projectId,
                     {
                         timeout: process.env.TRAINING_TIMEOUT || 0,
-                        responseType: 'arraybuffer',
+                        responseType: 'stream',
                         maxContentLength: process.env.TRAINING_MAX_CONTENT_LEN || Infinity,
                         maxBodyLength: process.env.TRAINING_MAX_BODY_LEN || Infinity,
                     });
@@ -313,7 +311,9 @@ if (Meteor.isServer) {
                     appMethodLogger.debug(
                         `Training project ${projectId} - ${(t1 - t0).toFixed(2)} ms`,
                     );
-                    Meteor.call('call.postTraining', projectId, trainingResponse.data);
+
+                    await postTraining(projectId, trainingResponse.data);
+
                     Activity.update(
                         { projectId, validated: true },
                         { $set: { validated: false } },
