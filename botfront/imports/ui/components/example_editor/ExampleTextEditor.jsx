@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import { Form } from 'semantic-ui-react';
 import TextArea from 'react-textarea-autosize';
 import { sortBy, isNull } from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 
 import getColor from '../../../lib/getColors';
 
 const emptyExample = () => ({ text: '', intent: '', entities: [] });
 
-export class ExampleTextEditor extends React.Component {
+class ExampleTextEditor extends React.Component {
     state = {}
 
     componentDidMount() {
@@ -160,9 +160,8 @@ export class ExampleTextEditor extends React.Component {
     render() {
         const { example: { text = '' } = {}, example } = this.state;
         const {
-            highlightEntities, onSave,
+            highlightEntities, onSave, t,
         } = this.props;
-        const { t } = useTranslation('example_editor');
         return (
             <Form className='example-editor-container' data-cy='example-editor-container'>
                 <TextArea
@@ -191,6 +190,7 @@ ExampleTextEditor.propTypes = {
     highlightEntities: PropTypes.bool,
     onCancel: PropTypes.func,
     autofocus: PropTypes.bool,
+    t: PropTypes.func,
 };
 
 ExampleTextEditor.defaultProps = {
@@ -200,4 +200,7 @@ ExampleTextEditor.defaultProps = {
     highlightEntities: true,
     onCancel: () => {},
     autofocus: true,
+    t: text => text,
 };
+
+export default withTranslation('example_editor')(ExampleTextEditor);

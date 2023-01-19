@@ -14,7 +14,7 @@ import { ProjectContext } from '../../../layouts/context';
 import NluCommandBar from './NluCommandBar';
 import IconButton from '../../common/IconButton';
 import UserUtteranceViewer from '../common/UserUtteranceViewer';
-import { ExampleTextEditor } from '../../example_editor/ExampleTextEditor';
+import ExampleTextEditor from '../../example_editor/ExampleTextEditor';
 import IntentLabel from '../common/IntentLabel';
 import { useEventListener } from '../../utils/hooks';
 import getColor from '../../../../lib/getColors';

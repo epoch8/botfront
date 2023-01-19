@@ -158,21 +158,21 @@ function UserUtteranceViewer(props) {
         let extraBound = [];
         if (exited) extraBound = exited === 'left' ? [0] : [(element.text || '').length];
         let bad = false;
-        let anchor = Math.min(
+        const anchor = Math.min(
             element.start + selection.anchorOffset,
             element.start + selection.focusOffset,
             ...extraBound,
         );
-        let extent = Math.max(
+        const extent = Math.max(
             element.start + selection.anchorOffset,
             element.start + selection.focusOffset,
             ...extraBound,
         );
         if (anchor === extent) bad = true;
-        else if (!hasNoWhitespace) {
-            anchor = adjustBeginning(text, anchor);
-            extent = adjustEnd(text, extent);
-        }
+        // else if (!hasNoWhitespace) {
+        //     anchor = adjustBeginning(text, anchor);
+        //     extent = adjustEnd(text, extent);
+        // }
         if (entities.some(e => anchor <= e.end && extent >= e.start)) bad = true;
         if (
             bad
