@@ -53,7 +53,6 @@ export default class StoryVisualEditor extends React.Component {
 
     handleReplaceLine = (index, content) => {
         const { story, onSave } = this.props;
-        console.log('handleReplaceLine:', content);
         onSave([...story.slice(0, index), content, ...story.slice(index + 1)]);
     };
 
@@ -162,7 +161,6 @@ export default class StoryVisualEditor extends React.Component {
                             params={l.action.params}
                             onChange={(name, params) => {
                                 const action = (params && params.length) ? { name, params } : name;
-                                console.log(action);
                                 this.handleReplaceLine(i, { action });
                             }}
                         />
