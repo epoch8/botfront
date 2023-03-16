@@ -1,6 +1,6 @@
 {
     "prettier.singleQuote": true,
-    "prettier.jsxBracketSameLine": true,
+    "prettier.bracketSameLine": true,
     "prettier.jsxSingleQuote": true,
     "eslint.enable": true,
     "eslint.autoFixOnSave": true,

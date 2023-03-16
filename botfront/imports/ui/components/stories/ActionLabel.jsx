@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ActionPopupContent from './common/ActionPopupContent';
 
-export default function ActionLabel({ value, onChange }) {
+export default function ActionLabel({ value, onChange, params }) {
     return (
         <ActionPopupContent
             trigger={(
@@ -16,7 +16,8 @@ export default function ActionLabel({ value, onChange }) {
                 </div>
             )}
             initialValue={value}
-            onSelect={action => onChange(action)}
+            initialParams={params}
+            onSelect={(action, parameters) => onChange(action, parameters)}
         />
     );
 }
@@ -24,5 +25,10 @@ export default function ActionLabel({ value, onChange }) {
 
 ActionLabel.propTypes = {
     value: PropTypes.string.isRequired,
+    params: PropTypes.array,
     onChange: PropTypes.func.isRequired,
+};
+
+ActionLabel.defaultProps = {
+    params: [],
 };
