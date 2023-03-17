@@ -160,8 +160,12 @@ export default class StoryVisualEditor extends React.Component {
                             value={actionName}
                             params={l.action.params}
                             onChange={(name, params) => {
-                                const action = (params && params.length) ? { name, params } : name;
-                                this.handleReplaceLine(i, { action });
+                                if (params && params.length) {
+                                    const sortedParams = [...params].sort((a, b) => ((a[0] < b[0]) ? -1 : 1));
+                                    this.handleReplaceLine(i, { action: { name, params: sortedParams } });
+                                } else {
+                                    this.handleReplaceLine(i, { action: name });
+                                }
                             }}
                         />
                         <IconButton onClick={() => this.handleDeleteLine(i)} icon='trash' />
