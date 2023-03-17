@@ -154,7 +154,9 @@ Meteor.methods({
         const removedEvents = (oldEvents || []).filter(
             event => event.match(/^utter_/) && !newEvents.includes(event),
         );
-        deleteResponsesRemovedFromStories(removedEvents, projectId, Meteor.user());
+        if (Meteor.isServer) {
+            deleteResponsesRemovedFromStories(removedEvents, projectId, Meteor.user());
+        }
         return result;
     },
 
@@ -167,7 +169,9 @@ Meteor.methods({
             { $pull: { children: story._id } },
         );
         Stories.remove(story);
-        await deleteResponsesRemovedFromStories(storyInDb.events, story.projectId, Meteor.user());
+        if (Meteor.isServer) {
+            await deleteResponsesRemovedFromStories(storyInDb.events, story.projectId, Meteor.user());
+        }
         auditLogIfOnServer('Story deleted', {
             resId: story._id,
             user: Meteor.user(),
@@ -381,15 +385,15 @@ if (Meteor.isServer) {
             ...(language ? { language } : {}),
         };
         const testCases = Stories.find({ ...query }, { fields: { _id: 1, steps: 1, language: 1 } })
-        .map(({
-            _id, steps, language: testLanguage,
-        }) => ({
-            _id,
-            steps,
-            language: testLanguage,
-        }));
+            .map(({
+                _id, steps, language: testLanguage,
+            }) => ({
+                _id,
+                steps,
+                language: testLanguage,
+            }));
         if (testCases?.length < 1) {
-            return { passing: 0, failing: 0 }
+            return { passing: 0, failing: 0 };
         }
         const client = await createAxiosForRasa(projectId, { timeout: 1000 * 1000 }, { language });
         auditLog('test model', {
@@ -426,7 +430,7 @@ if (Meteor.isServer) {
             Meteor.call('stories.update', testResults);
         }
         return report;
-    }
+    };
 
     Meteor.methods({
         async 'stories.runTests'(projectId, options = {}) {
@@ -436,7 +440,7 @@ if (Meteor.isServer) {
             try {
                 const { ids, language } = options;
 
-                const report = await runTestCases(projectId, options)
+                const report = await runTestCases(projectId, options);
 
                 if (report.passing < 1 && report.failing < 1) {
                     if (language) {

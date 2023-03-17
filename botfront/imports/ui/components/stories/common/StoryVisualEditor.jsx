@@ -150,20 +150,31 @@ export default class StoryVisualEditor extends React.Component {
         );
     };
 
-    renderActionLine = (i, l, exceptions) => (
-        <React.Fragment key={`action${i + l.action}`}>
-            <ExceptionWrapper exceptions={exceptions}>
-                <div className={`story-line ${this.getReadOnlyClass()}`}>
-                    <ActionLabel
-                        value={l.action}
-                        onChange={v => this.handleReplaceLine(i, { action: v })}
-                    />
-                    <IconButton onClick={() => this.handleDeleteLine(i)} icon='trash' />
-                </div>
-            </ExceptionWrapper>
-            {this.renderAddLine(i)}
-        </React.Fragment>
-    );
+    renderActionLine = (i, l, exceptions) => {
+        const actionName = l.action.name || l.action;
+        return (
+            <React.Fragment key={`action${i + actionName}`}>
+                <ExceptionWrapper exceptions={exceptions}>
+                    <div className={`story-line ${this.getReadOnlyClass()}`}>
+                        <ActionLabel
+                            value={actionName}
+                            params={l.action.params}
+                            onChange={(name, params) => {
+                                if (params && params.length) {
+                                    const sortedParams = [...params].sort((a, b) => ((a[0] < b[0]) ? -1 : 1));
+                                    this.handleReplaceLine(i, { action: { name, params: sortedParams } });
+                                } else {
+                                    this.handleReplaceLine(i, { action: name });
+                                }
+                            }}
+                        />
+                        <IconButton onClick={() => this.handleDeleteLine(i)} icon='trash' />
+                    </div>
+                </ExceptionWrapper>
+                {this.renderAddLine(i)}
+            </React.Fragment>
+        );
+    };
 
     renderSlotLine = (i, l, exceptions) => (
         <React.Fragment key={`slot${i + JSON.stringify(l.slot_was_set)}`}>
@@ -276,8 +287,8 @@ export default class StoryVisualEditor extends React.Component {
             return this.renderLoopLine(index, line, exceptions);
         }
         if ('action' in line) {
-            if (line.action.indexOf('utter_') === 0) {
-                const name = line.action;
+            const name = line.action.name || line.action;
+            if (name.indexOf('utter_') === 0) {
                 return (
                     <React.Fragment key={`bot-${index}-${name}-${language}`}>
                         <ExceptionWrapper exceptions={exceptions}>
@@ -335,7 +346,8 @@ export default class StoryVisualEditor extends React.Component {
                 onMouseEnter={() => {
                     this.setState({ loadingResponseLocations: true });
                     const storyResponses = story.reduce((value, { action = '' }) => {
-                        if (action.indexOf('utter_') === 0) value.push(action);
+                        const actionName = action.name || action;
+                        if (actionName.indexOf('utter_') === 0) value.push(actionName);
                         return value;
                     }, []);
                     getResponseLocations(storyResponses, (err, result) => {
