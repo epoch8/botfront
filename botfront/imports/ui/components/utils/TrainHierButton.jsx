@@ -45,18 +45,20 @@ const TrainHierButton = ({ status, projectId }) => {
 
     return (
         <Can I='nlu-data:x'>
-            <div className='side-by-side middle narrow train-hier-btn'>
-                <Button.Group color={training ? 'yellow' : 'blue'}>
-                    {training ? <Button primary loading /> : <></>}
-                    <Button
-                        content={training ? t('Cancel HIER training') : t('Train HIER')}
-                        primary
-                        disabled={status === 'notReachable'}
-                        loading={clicked}
-                        onClick={onTrainClick}
-                    />
-                </Button.Group>
-            </div>
+            {status === 'notConfigured' ? <></> : (
+                <div className='side-by-side middle narrow train-hier-btn'>
+                    <Button.Group color={training ? 'yellow' : 'blue'}>
+                        {training ? <Button primary loading /> : <></>}
+                        <Button
+                            content={training ? t('Cancel HIER training') : t('Train HIER')}
+                            primary
+                            disabled={status === 'notReachable'}
+                            loading={clicked}
+                            onClick={onTrainClick}
+                        />
+                    </Button.Group>
+                </div>
+            )}
         </Can>
     );
 };
@@ -67,7 +69,7 @@ TrainHierButton.propTypes = {
 };
 
 TrainHierButton.defaultProps = {
-    status: 'notReachable',
+    status: 'notConfigured',
 };
 
 export default withTracker((props) => {
@@ -76,7 +78,7 @@ export default withTracker((props) => {
         'hierTraining.instanceStatus',
         projectId,
     );
-    let status;
+    let { status } = props;
     if (trainingStatusHandler.ready()) {
         const instance = Projects.findOne(
             { _id: projectId },

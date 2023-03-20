@@ -74,9 +74,10 @@ Meteor.startup(function () {
                         if (instanceState === 0) status = 'notTraining';
                         if (instanceState === -1) status = 'notReachable';
 
-                        let hierStatus = 'notReachable';
+                        let hierStatus = 'notConfigured';
                         const hierHost = instance.hierHost || process.env.HIER_HOST;
                         if (hierHost) {
+                            hierStatus = 'notReachable';
                             try {
                                 const resp = await axios.post(
                                     `${hierHost}/status/${instance.projectId}`,
