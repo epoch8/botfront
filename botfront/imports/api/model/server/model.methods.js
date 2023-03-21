@@ -30,7 +30,7 @@ Meteor.methods({
         if (!modelsPath) {
             return returnError('Unable to deploy model. MODELS_PATH env var not set');
         }
-        const modelInfo = await Models.findOneAsync({ projectId, _id: modelId });
+        const modelInfo = Models.findOne({ projectId, _id: modelId });
         if (!modelInfo) {
             returnError(`Model ${modelId} not found for project ${projectId}`);
         }
@@ -49,6 +49,6 @@ Meteor.methods({
         }
         Models.update({ _id: modelId }, { $set: { deployed: true } });
 
-        return { success: true };
+        return { success: true, fullModelPath };
     },
 });

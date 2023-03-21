@@ -16,7 +16,7 @@ Models.deny({
 
 Meteor.startup(() => {
     if (Meteor.isServer) {
-        Models.createIndex({ projectId: 1 });
+        Models.rawCollection().createIndex({ projectId: 1 });
     }
 });
 
