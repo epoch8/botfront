@@ -42,11 +42,18 @@ Meteor.methods({
             returnError(error, 'Model file not found');
         }
         const symlinkPath = `${modelDir}/current.tar.gz`;
+        const tmpSymlinkPath = `${modelDir}/_current.tar.gz`;
         try {
-            await fs.promises.symlink(fullModelPath, symlinkPath);
+            await fs.promises.unlink(tmpSymlinkPath);
+        // eslint-disable-next-line no-empty
+        } catch { }
+        try {
+            await fs.promises.symlink(fullModelPath, tmpSymlinkPath);
+            await fs.promises.rename(tmpSymlinkPath, symlinkPath);
         } catch (error) {
             returnError(error, 'Error deploying model');
         }
+        Models.update({}, { $set: { deployed: false } });
         Models.update({ _id: modelId }, { $set: { deployed: true } });
 
         return { success: true, fullModelPath };

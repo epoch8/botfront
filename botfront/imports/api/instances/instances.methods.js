@@ -402,7 +402,6 @@ if (Meteor.isServer) {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
             const hierHost = await getHierHost(projectId);
-            console.log('hierHost', hierHost);
             if (!hierHost) return;
             await axios.post(`${hierHost}/train/${projectId}`);
         },
@@ -410,7 +409,6 @@ if (Meteor.isServer) {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
             const hierHost = await getHierHost(projectId);
-            console.log('hierHost', hierHost);
             if (!hierHost) return;
             await axios.post(`${hierHost}/cancel/${projectId}`);
         },
