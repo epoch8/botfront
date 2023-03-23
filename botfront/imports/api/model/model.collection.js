@@ -24,7 +24,7 @@ if (Meteor.isServer) {
     Meteor.publish('models', function (projectId) {
         check(projectId, String);
         checkIfCan('models:r', projectId);
-        return Models.find({ projectId });
+        return Models.find({ projectId }, { sort: { createdAt: -1 } });
     });
 }
 

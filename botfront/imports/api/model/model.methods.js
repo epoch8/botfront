@@ -1,4 +1,3 @@
-import fs from 'fs';
 import { Meteor } from 'meteor/meteor';
 import { check } from 'meteor/check';
 

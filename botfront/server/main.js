@@ -37,6 +37,9 @@ import '../imports/api/graphql/activity/activity.model';
 import '../imports/api/graphql/forms/forms.model';
 import '../imports/api/roles/roles.publication';
 import '../imports/api/roles/roles';
+import '../imports/api/model/model.methods';
+import '../imports/api/model/model.collection';
+import '../imports/api/model/server/model.methods';
 
 if (!Meteor.isTest) {
     import './migrations';
