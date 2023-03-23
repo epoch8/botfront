@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { useTracker } from 'meteor/react-meteor-data';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import Alert from 'react-s-alert';
 import {
@@ -8,6 +9,7 @@ import {
 } from 'semantic-ui-react';
 
 import { Models } from '../../../api/model/model.collection';
+import PageMenu from '../utils/PageMenu';
 import { Loading } from '../utils/Utils';
 import Can from '../roles/Can';
 
@@ -20,6 +22,8 @@ function ModelsContainer({ projectId }) {
             models: projectModels,
         };
     }, [projectId]);
+
+    const { t } = useTranslation('models');
 
     const [editorOpen, setEditorOpen] = useState(false);
     const [editorModel, setEditorModel] = useState({});
@@ -59,9 +63,9 @@ function ModelsContainer({ projectId }) {
 
     const updateComment = () => {
         const comment = commentRef.current?.inputRef?.current?.value || '';
-        Meteor.call('model.updateComment', projectId, editorModel._id, comment, (err, res) => {
+        Meteor.call('model.updateComment', projectId, editorModel._id, comment, (err) => {
             if (err) {
-                Alert.error(`Error updating comment for model ${editorModel.name}`);
+                Alert.error(`${t('Error updating comment for model')} ${editorModel.name}`);
             }
         });
     };
@@ -69,27 +73,28 @@ function ModelsContainer({ projectId }) {
     const deploy = () => {
         Meteor.call('model.deploy', projectId, editorModel._id, (err, res) => {
             if (err) {
-                Alert.error(`Error deploying model ${editorModel.name}`);
+                Alert.error(`${t('Error deploying model')} ${editorModel.name}`);
                 return;
             }
             if (res.error) {
                 Alert.error(res.error);
                 return;
             }
-            Alert.success(`Sucessfulyl deployed model ${editorModel.name}`);
+            Alert.success(`${t('Sucessfulyl deployed model')} ${editorModel.name}`);
         });
     };
 
     return (
         <div data-cy='models-screen'>
+            <PageMenu title={t('Models')} icon='list' withTraining />
             <Loading loading={!ready}>
                 <Container>
                     <Table striped>
                         <Table.Header>
                             <Table.Row>
                                 <Table.HeaderCell />
-                                <Table.HeaderCell>Name</Table.HeaderCell>
-                                <Table.HeaderCell>Comment</Table.HeaderCell>
+                                <Table.HeaderCell>{t('Name')}</Table.HeaderCell>
+                                <Table.HeaderCell>{t('Comment')}</Table.HeaderCell>
                                 <Can I='models:c' projectId={projectId}>
                                     <Table.HeaderCell />
                                 </Can>
@@ -106,7 +111,7 @@ function ModelsContainer({ projectId }) {
                         <Modal.Header>{editorModel.name}</Modal.Header>
                         <Modal.Content>
                             <Input
-                                label='Comment'
+                                label={t('Comment')}
                                 ref={commentRef}
                                 defaultValue={editorModel.comment}
                                 fluid
@@ -119,11 +124,11 @@ function ModelsContainer({ projectId }) {
                                     color='red'
                                     disabled={editorModel.deployed}
                                 >
-                                    <Icon name='external' /> Deploy
+                                    <Icon name='external' /> {t('Deploy')}
                                 </Button>
                             </Can>
                             <Button onClick={updateComment} primary>
-                                <Icon name='save' /> Save
+                                <Icon name='save' /> {t('Save')}
                             </Button>
                         </Modal.Actions>
                     </Modal>
@@ -132,9 +137,9 @@ function ModelsContainer({ projectId }) {
                             open={confirmDeployOpen}
                             onClose={() => setConfirmDeployOpen(false)}
                         >
-                            <Modal.Header>Deploy model</Modal.Header>
+                            <Modal.Header>{t('Deploy model')}</Modal.Header>
                             <Modal.Content>
-                                <b>Are your shure you want to deploy model {editorModel.name}?</b>
+                                <b>{t('Are your shure you want to deploy model')} {editorModel.name}?</b>
                                 {editorModel.comment ? <Segment>{editorModel.comment}</Segment> : <></>}
                             </Modal.Content>
                             <Modal.Actions>
@@ -142,7 +147,7 @@ function ModelsContainer({ projectId }) {
                                     onClick={() => setConfirmDeployOpen(false)}
                                     color='green'
                                 >
-                                    No
+                                    {t('No')}
                                 </Button>
                                 <Button
                                     onClick={() => {
@@ -151,7 +156,7 @@ function ModelsContainer({ projectId }) {
                                     }}
                                     color='red'
                                 >
-                                    Yes
+                                    {t('Yes')}
                                 </Button>
                             </Modal.Actions>
                         </Modal>

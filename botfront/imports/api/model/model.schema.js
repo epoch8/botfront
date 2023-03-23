@@ -8,4 +8,6 @@ export const ModelSchema = new SimpleSchema({
     path: { type: String },
     deployed: { type: Boolean },
     createdAt: { type: Date },
+    deployedAt: { type: Date, required: false },
+    deployedBy: { type: String, required: false },
 });

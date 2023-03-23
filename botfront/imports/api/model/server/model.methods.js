@@ -54,7 +54,9 @@ Meteor.methods({
             returnError(error, 'Error deploying model');
         }
         Models.update({}, { $set: { deployed: false } }, { multi: true });
-        Models.update({ _id: modelId }, { $set: { deployed: true } });
+        Models.update({ _id: modelId }, {
+            $set: { deployed: true, deployedAt: new Date(), deployedBy: Meteor.user()?._id },
+        });
 
         return { success: true, fullModelPath };
     },
