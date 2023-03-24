@@ -2,15 +2,33 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 import { Meteor } from 'meteor/meteor';
-import { withTracker } from 'meteor/react-meteor-data';
+import { useTracker } from 'meteor/react-meteor-data';
 import { useTranslation } from 'react-i18next';
 
 import { Projects } from '../../../api/project/project.collection';
 import { Can } from '../../../lib/scopes';
 
-const TrainHierButton = ({ status, projectId }) => {
+const TrainHierButton = ({ projectId }) => {
+    const { trainingStatus } = useTracker(() => {
+        const trainingStatusHandler = Meteor.subscribe(
+            'hierTraining.instanceStatus',
+            projectId,
+        );
+        let { status } = 'notConfigured';
+        if (trainingStatusHandler.ready()) {
+            const instance = Projects.findOne(
+                { _id: projectId },
+                { fields: { 'hierTraining.instanceStatus': 1 } },
+            );
+            status = instance?.hierTraining?.instanceStatus;
+        }
+        return {
+            trainingStatus: status,
+        };
+    });
+
     const { t } = useTranslation('utils');
-    const training = status === 'training';
+    const training = trainingStatus === 'training';
     const [clicked, setClicked] = useState(false);
     const [timeout, setTimeout] = useState(null);
 
@@ -18,10 +36,10 @@ const TrainHierButton = ({ status, projectId }) => {
         setClicked(false);
         if (timeout !== null) Meteor.clearTimeout(timeout);
         setTimeout(null);
-    }, [status, projectId]);
+    }, [trainingStatus, projectId]);
 
     const onTrainClick = async () => {
-        if (clicked || status === 'notReachable') {
+        if (clicked || trainingStatus === 'notReachable') {
             return;
         }
         setClicked(true);
@@ -45,14 +63,14 @@ const TrainHierButton = ({ status, projectId }) => {
 
     return (
         <Can I='nlu-data:x'>
-            {status === 'notConfigured' ? <></> : (
+            {trainingStatus === 'notConfigured' ? <></> : (
                 <div className='side-by-side middle narrow train-hier-btn'>
                     <Button.Group color={training ? 'yellow' : 'blue'}>
                         {training ? <Button primary loading /> : <></>}
                         <Button
                             content={training ? t('Cancel HIER training') : t('Train HIER')}
                             primary
-                            disabled={status === 'notReachable'}
+                            disabled={trainingStatus === 'notReachable'}
                             loading={clicked}
                             onClick={onTrainClick}
                         />
@@ -64,30 +82,7 @@ const TrainHierButton = ({ status, projectId }) => {
 };
 
 TrainHierButton.propTypes = {
-    status: PropTypes.string,
     projectId: PropTypes.string.isRequired,
 };
 
-TrainHierButton.defaultProps = {
-    status: 'notConfigured',
-};
-
-export default withTracker((props) => {
-    const { projectId } = props;
-    const trainingStatusHandler = Meteor.subscribe(
-        'hierTraining.instanceStatus',
-        projectId,
-    );
-    let { status } = props;
-    if (trainingStatusHandler.ready()) {
-        const instance = Projects.findOne(
-            { _id: projectId },
-            { fields: { 'hierTraining.instanceStatus': 1 } },
-        );
-        status = instance?.hierTraining?.instanceStatus;
-    }
-    return {
-        status,
-        projectId,
-    };
-})(TrainHierButton);
+export default TrainHierButton;

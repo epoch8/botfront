@@ -475,14 +475,13 @@ TrainButton.propTypes = {
     status: PropTypes.string,
     partialTrainning: PropTypes.bool,
     ready: PropTypes.bool.isRequired,
-    t: PropTypes.func,
+    t: PropTypes.func.isRequired,
 };
 
 TrainButton.defaultProps = {
     popupContent: '',
     status: '',
     partialTrainning: false,
-    t: text => text,
 };
 
 export default withTranslation('utils')(withTracker((props) => {

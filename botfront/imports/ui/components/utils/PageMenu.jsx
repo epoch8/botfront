@@ -21,6 +21,16 @@ export default function PageMenu(props) {
     } = useContext(ProjectContext);
     const { t } = useTranslation('utils');
 
+    const renderExternalTraining = () => instance.externalTraining?.map(
+        (traininConfig, index) => (
+            <TrainHierButton
+                projectId={projectId}
+                traininConfig={traininConfig}
+                key={index}
+            />
+        ),
+    );
+
     return (
         <Menu borderless className={`top-menu ${className}`}>
             <Menu.Item>
@@ -88,7 +98,7 @@ export default function PageMenu(props) {
                         )}
                     </Menu.Item>
                     <Menu.Item position='right'>
-                        <TrainHierButton projectId={projectId} />
+                        {renderExternalTraining()}
                         <TrainButton
                             project={project}
                             instance={instance}

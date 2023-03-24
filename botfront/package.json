@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "meteor run",
-    "start:rtk-dev": "MODE=development BF_PROJECT_ID=bf MONGO_URL=mongodb://botfront:SheeF2faidaen2@localhost:27117/bf MODELS_PATH=/home/nanoeti/projects/epoch8/botfront/models meteor run",
+    "start:dev": "MODE=development BF_PROJECT_ID=bf MONGO_URL=mongodb://botfront:SheeF2faidaen2@localhost:27117/bf MODELS_PATH=/home/nanoeti/projects/epoch8/botfront/models meteor run",
     "start:docker-compose": "BF_PROJECT_ID=bf meteor run",
     "start:docker-compose.dev": "MODE=development BF_PROJECT_ID=bf MONGO_URL=mongodb://localhost:27017/bf-os meteor run",
     "start:docker-compose.ci": "MODE=test BF_PROJECT_ID=bf MONGO_URL=mongodb://localhost:27017/bf meteor run",

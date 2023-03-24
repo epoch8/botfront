@@ -2,6 +2,7 @@ import React from 'react';
 import { get } from 'lodash';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { withTranslation } from 'react-i18next';
 import { withTracker } from 'meteor/react-meteor-data';
 import {
     AutoField, AutoForm, HiddenField, SubmitField,
@@ -50,9 +51,10 @@ class Instances extends React.Component {
     }
 
     onSave = (updatedInstance) => {
+        const { t } = this.props;
         Meteor.call('instance.update', updatedInstance, wrapMeteorCallback((err) => {
-            if (err) Alert.error(`Error: ${err.reason}`, { position: 'top-right', timeout: 'none' });
-        }, 'Changes Saved'));
+            if (err) Alert.error(`${t(Error)}: ${err.reason}`, { position: 'top-right', timeout: 'none' });
+        }, t('Changes Saved')));
     }
 
 
@@ -80,7 +82,7 @@ class Instances extends React.Component {
 
     render() {
         const {
-            ready, projectId,
+            ready, projectId, t,
         } = this.props;
 
         const {
@@ -100,8 +102,8 @@ class Instances extends React.Component {
                         <HiddenField name='projectId' value={projectId} />
                         <AutoField name='host' />
                         <div className='token-generate'>
-                            <AutoField action='Search' id='token' data-cy='token-field' name='token' label='Token' />
-                            <Button content='Generate' onClick={(e) => { e.preventDefault(); this.openConfirm(); }} />
+                            <AutoField action='Search' id='token' data-cy='token-field' name='token' label={t('Token')} />
+                            <Button content={t('Generate')} onClick={(e) => { e.preventDefault(); this.openConfirm(); }} />
                             <Button
                                 positive={copied}
                                 onClick={(e) => {
@@ -110,7 +112,7 @@ class Instances extends React.Component {
                                 }}
                                 className='copy-button'
                                 icon='copy'
-                                content={copied ? 'Copied' : 'Copy'}
+                                content={copied ? t('Copied') : t('Copy')}
                             />
                             <Confirm
                                 open={confirmOpen}
@@ -118,20 +120,20 @@ class Instances extends React.Component {
                                 onConfirm={() => { this.generateAuthToken(); this.closeConfirm(); }}
                             />
                         </div>
-                        <AutoField name='hierHost' label='HIER host' />
+                        <AutoField name='externalTraining' label={t('External training')} />
 
                         <br />
                         {hasWritePermission && (
                             <SubmitField
                                 className='primary save-instance-info-button'
-                                value='Save Changes'
+                                value={t('Save Changes')}
                                 data-cy='save-instance'
                             />
                         )}
                         {hasWritePermission
                             && webhook
                             && webhook.url
-                            && <Button content='Restart rasa' onClick={(e) => { e.preventDefault(); restartRasa(projectId, webhook, 'development'); }} />}
+                            && <Button content={t('Restart rasa')} onClick={(e) => { e.preventDefault(); restartRasa(projectId, webhook, 'development'); }} />}
                     </AutoForm>
                 )}
             </>
@@ -143,6 +145,7 @@ Instances.propTypes = {
     instance: PropTypes.object,
     projectId: PropTypes.string.isRequired,
     ready: PropTypes.bool.isRequired,
+    t: PropTypes.func.isRequired,
 };
 
 Instances.defaultProps = {
@@ -166,4 +169,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(mapStateToProps)(InstancesContainer);
+export default connect(mapStateToProps)(withTranslation('settings')(InstancesContainer));

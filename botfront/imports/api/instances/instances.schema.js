@@ -7,6 +7,10 @@ export const InstanceSchema = new SimpleSchema(
         token: { type: String, optional: true },
         hierHost: { type: String, regEx: /^(http|https):\/\//, optional: true },
         projectId: { type: String },
+        externalTraining: { type: Array, optional: true },
+        'externalTraining.$': { type: Object },
+        'externalTraining.$.name': { type: String },
+        'externalTraining.$.host': { type: String, regEx: /^(http|https):\/\// },
     },
     {
         clean: {
