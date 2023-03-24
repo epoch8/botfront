@@ -16,7 +16,7 @@ import Can from '../roles/Can';
 function ModelsContainer({ projectId }) {
     const { ready, models } = useTracker(() => {
         const modelsHandler = Meteor.subscribe('models', projectId);
-        const projectModels = Models.find({ projectId }).fetch();
+        const projectModels = Models.find({ projectId }, { sort: { createdAt: -1 } }).fetch();
         return {
             ready: modelsHandler.ready(),
             models: projectModels,

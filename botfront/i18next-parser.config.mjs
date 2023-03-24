@@ -8,7 +8,7 @@ export default {
     defaultNamespace: 'translation',
     // Default namespace used in your i18next config
 
-    defaultValue: '',
+    defaultValue: (locale, namespace, key) => key,
     // Default value to give to empty keys
     // You may also specify a function accepting the locale, namespace, and key as arguments
 
@@ -24,19 +24,19 @@ export default {
 
     // see below for more details
     lexers: {
-      hbs: ['HandlebarsLexer'],
-      handlebars: ['HandlebarsLexer'],
+        hbs: ['HandlebarsLexer'],
+        handlebars: ['HandlebarsLexer'],
 
-      htm: ['HTMLLexer'],
-      html: ['HTMLLexer'],
+        htm: ['HTMLLexer'],
+        html: ['HTMLLexer'],
 
-      mjs: ['JavascriptLexer'],
-      js: ['JavascriptLexer'], // if you're writing jsx inside .js files, change this to JsxLexer
-      ts: ['JavascriptLexer'],
-      jsx: ['JsxLexer'],
-      tsx: ['JsxLexer'],
+        mjs: ['JavascriptLexer'],
+        js: ['JavascriptLexer'], // if you're writing jsx inside .js files, change this to JsxLexer
+        ts: ['JavascriptLexer'],
+        jsx: ['JsxLexer'],
+        tsx: ['JsxLexer'],
 
-      default: ['JavascriptLexer'],
+        default: ['JavascriptLexer'],
     },
 
     lineEnding: 'auto',
@@ -49,7 +49,7 @@ export default {
     // Namespace separator used in your translation keys
     // If you want to use plain english keys, separators such as `.` and `:` will conflict. You might want to set `keySeparator: false` and `namespaceSeparator: false`. That way, `t('Status: Loading...')` will not think that there are a namespace and three separator dots for instance.
 
-    output: 'botfront/public/locales/$LOCALE/$NAMESPACE.json',
+    output: 'public/locales/$LOCALE/$NAMESPACE.json',
     // Supports $LOCALE and $NAMESPACE injection
     // Supports JSON (.json) and YAML (.yml) file formats
     // Where to write the locale files relative to process.cwd()
@@ -104,4 +104,4 @@ export default {
     // If you wish to customize options in internally used i18next instance, you can define an object with any
     // configuration property supported by i18next (https://www.i18next.com/overview/configuration-options).
     // { compatibilityJSON: 'v3' } can be used to generate v3 compatible plurals.
-  }
+};

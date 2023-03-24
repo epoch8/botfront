@@ -1,5 +1,5 @@
 {
-   "the button will disappear when a new message is added to the conversation": "кнопка исчезнет, когда в беседу будет добавлено новое сообщение",
+  "the button will disappear when a new message is added to the conversation": "кнопка исчезнет, когда в беседу будет добавлено новое сообщение",
   "the button will remain visible and clickable": "кнопка останется видимой и доступной",
   "Disable persistence": "Отключить персистентность",
   "Enable persistence": "Включить персистентность",
@@ -69,7 +69,7 @@
   "custom": "ключ",
   " key must be an ": " должен быть ",
   "object": "объектом",
-   " and will be dispatched by rasa as is.": "и будет отправлен расой как есть.",
+  " and will be dispatched by rasa as is.": "и будет отправлен расой как есть.",
   "Content under other top-level keys may be formatted according to rules specific to the output channel.": "Контент под другими ключами верхнего уровня может быть отформатирован по правилами специфичными для вывода",
   "Add bot response": "Добавить ответ бота",
   "Buttons and quick replies": "Кнопки и быстрые ответы",
