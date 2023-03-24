@@ -1,0 +1,14 @@
+{
+  "Error updating comment for model": "Error updating comment for model",
+  "Error deploying model": "Error deploying model",
+  "Sucessfulyl deployed model": "Sucessfulyl deployed model",
+  "Models": "Models",
+  "Name": "Name",
+  "Comment": "Comment",
+  "Deploy": "Deploy",
+  "Save": "Save",
+  "Deploy model": "Deploy model",
+  "Are your shure you want to deploy model": "Are your shure you want to deploy model",
+  "No": "No",
+  "Yes": "Yes"
+}

@@ -14,7 +14,6 @@ import {
     formatError,
     getProjectModelLocalFolder,
     getProjectModelFileName,
-    postTraining,
 } from '../../lib/utils';
 import { NLUModels } from '../nlu_model/nlu_model.collection';
 import { getExamples } from '../graphql/examples/mongo/examples';
@@ -129,6 +128,7 @@ if (Meteor.isServer) {
         addLoggingInterceptors,
         auditLog,
     } from '../../../server/logger';
+    import { postTraining } from '../model/server/model.utils';
     // eslint-disable-next-line import/order
     import { performance } from 'perf_hooks';
 
@@ -402,7 +402,6 @@ if (Meteor.isServer) {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
             const hierHost = await getHierHost(projectId);
-            console.log('hierHost', hierHost);
             if (!hierHost) return;
             await axios.post(`${hierHost}/train/${projectId}`);
         },
@@ -410,7 +409,6 @@ if (Meteor.isServer) {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
             const hierHost = await getHierHost(projectId);
-            console.log('hierHost', hierHost);
             if (!hierHost) return;
             await axios.post(`${hierHost}/cancel/${projectId}`);
         },

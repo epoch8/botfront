@@ -12,8 +12,10 @@
   "NLU": "Обучение",
   "Incoming": "Обращения",
   "Responses": "Ответы",
+  "Models": "Модели",
   "Analytics": "Аналитика",
   "Chatbot Admin": "Панель Администратора",
   "documentation": "документация",
-  "Admin": "Admin"
+  "Admin": "Admin",
+  "Language": "Язык"
 }

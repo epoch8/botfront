@@ -13,6 +13,7 @@ import transENConversations from '../../public/locales/en/conversations.json';
 import transENExampleEditor from '../../public/locales/en/example_editor.json';
 import transENForms from '../../public/locales/en/forms.json';
 import transENIncoming from '../../public/locales/en/incoming.json';
+import transENModels from '../../public/locales/en/models.json';
 import transENNlu from '../../public/locales/en/nlu.json';
 import transENProject from '../../public/locales/en/project.json';
 import transENSettings from '../../public/locales/en/settings.json';
@@ -30,6 +31,7 @@ import transRUConversations from '../../public/locales/ru/conversations.json';
 import transRUExampleEditor from '../../public/locales/ru/example_editor.json';
 import transRUForms from '../../public/locales/ru/forms.json';
 import transRUIncoming from '../../public/locales/ru/incoming.json';
+import transRUModels from '../../public/locales/ru/models.json';
 import transRUNlu from '../../public/locales/ru/nlu.json';
 import transRUProject from '../../public/locales/ru/project.json';
 import transRUSettings from '../../public/locales/ru/settings.json';
@@ -51,6 +53,7 @@ const resources = {
         example_editor: transENExampleEditor,
         forms: transENForms,
         incoming: transENIncoming,
+        models: transENModels,
         nlu: transENNlu,
         project: transENProject,
         settings: transENSettings,
@@ -69,6 +72,7 @@ const resources = {
         example_editor: transRUExampleEditor,
         forms: transRUForms,
         incoming: transRUIncoming,
+        models: transRUModels,
         nlu: transRUNlu,
         project: transRUProject,
         settings: transRUSettings,
@@ -98,7 +102,7 @@ i18n
     .init({
         resources,
         fallbackLng: 'en',
-        debug: true,
+        debug: false,
 
         interpolation: {
             escapeValue: false, // not needed for react as it escapes by default
@@ -110,6 +114,7 @@ i18n
         //     loadPath: 'http://localhost:8000/locales/{{lng}}/{{ns}}.json',
         //     crossDomain: true,
         // },
+
     });
 
 

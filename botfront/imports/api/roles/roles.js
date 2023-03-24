@@ -120,6 +120,11 @@ if (Meteor.isServer) {
         createRole('resources:w', 'Can access and edit project deployment environment, instance, and endpoint settings. extends `projects:w`, `resources:r`');
         Roles.addRolesToParent(['projects:w', 'resources:r'], 'resources:w');
 
+        createRole('models:r', 'Can read models.');
+        createRole('models:c', 'Can comment models.');
+        Roles.addRolesToParent('models:r', 'models:c');
+        createRole('models:x', 'Can deploy models. Extends models:r');
+        Roles.addRolesToParent('models:c', 'models:x');
 
         createRole('global-settings:r', 'Can access global settings.');
         createRole('global-settings:w', 'Can edit global settings. Extends `global-settings:r.`');
@@ -134,8 +139,8 @@ if (Meteor.isServer) {
         createRole('users:w', 'Can add, edit, or remove user details and roles. Extends `users:r`');
         Roles.addRolesToParent(['users:r'], 'users:w');
 
-        createRole('project-admin', 'Can access and edit all resources of a project. Extends `projects:w`, `users:w`  ');
-        Roles.addRolesToParent(['projects:w', 'users:w'], 'project-admin');
+        createRole('project-admin', 'Can access and edit all resources of a project. Extends `projects:w`, `users:w`, `models:x`  ');
+        Roles.addRolesToParent(['projects:w', 'users:w', 'models:x'], 'project-admin');
         createRole('global-admin', 'Can access and edit all resources of all projects and edit global settigs. Extends All permissions ');
         Roles.addRolesToParent(['project-admin', 'roles:w', 'global-settings:w', 'resources:w'], 'global-admin');
     };

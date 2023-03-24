@@ -25,6 +25,8 @@
   "Train NLU and stories from": "Обучение и сценарии из",
   "focused story groups": "целевые группы сценариев",
   "Train NLU and stories from 1 focused story group.": "Обучайте NLU и сценарии из 1 целевой стори группы ",
+  "Cancel HIER training": "",
+  "Train HIER": "",
   "Sorry, could not read you file": "Не удалось прочитать ваш файл",
   "is not of type:": "не относится к типу:",
   "Please upload only one file": "Загрузите только один файл",

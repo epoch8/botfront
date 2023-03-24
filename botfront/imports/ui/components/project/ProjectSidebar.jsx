@@ -25,11 +25,11 @@ const languageOptoins = [
 class ProjectSidebar extends React.Component {
     constructor(props) {
         super(props);
-        const { i18n } = this.props;
+        const { i18n } = props;
         this.state = { language: localStorage.getItem('language') || i18n.language };
     }
 
-    onlanguagechange = (lng) => {
+    onLanguageChange = (lng) => {
         const { i18n } = this.props;
         this.setState({ language: lng });
         localStorage.setItem('language', lng);
@@ -40,6 +40,7 @@ class ProjectSidebar extends React.Component {
         const {
             projectName, projectId, handleChangeProject, settingsReady, settings, t,
         } = this.props;
+        const { language } = this.state;
 
         const canViewProjectsTab = can('projects:r', projectId)
             || can('export:x', projectId)
@@ -71,6 +72,11 @@ class ProjectSidebar extends React.Component {
                     <Can I='responses:r' projectId={projectId}>
                         <Link to={`/project/${projectId}/responses`}>
                             <Menu.Item name={t('Responses')} icon='comment' />
+                        </Link>
+                    </Can>
+                    <Can I='models:r' projectId={projectId}>
+                        <Link to={`/project/${projectId}/models`}>
+                            <Menu.Item name={t('Models')} icon='list' />
                         </Link>
                     </Can>
                     {(settingsReady && settings.settings.public.metabaseUrl) ? (
@@ -118,10 +124,10 @@ class ProjectSidebar extends React.Component {
                                 // loading={loading}
                                 fluid
                                 selection
-                                value={this.state.language}
+                                value={language}
                                 name='language'
                                 options={languageOptoins}
-                                onChange={(_, data) => this.onlanguagechange(data.value)}
+                                onChange={(_, data) => this.onLanguageChange(data.value)}
                             />
                         </div>
                     </Menu.Item>
@@ -138,6 +144,7 @@ ProjectSidebar.propTypes = {
     handleChangeProject: PropTypes.func.isRequired,
     settingsReady: PropTypes.bool.isRequired,
     settings: PropTypes.object,
+    i18n: PropTypes.any.isRequired,
 };
 
 ProjectSidebar.defaultProps = {

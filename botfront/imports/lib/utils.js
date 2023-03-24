@@ -4,7 +4,6 @@ import { sample, get } from 'lodash';
 import yaml from 'js-yaml';
 import React from 'react';
 import axios from 'axios';
-import request from 'request';
 
 import BotResponses from '../api/graphql/botResponses/botResponses.model';
 
@@ -127,51 +126,9 @@ export function secondsToDaysHours(sec) {
     return dDisplay + hDisplay;
 }
 
-const getPostTrainingWebhook = async () => {
+export const getPostTrainingWebhook = async () => {
     const globalSettings = await GlobalSettings.findOne({ _id: 'SETTINGS' }, { fields: { 'settings.private.webhooks.postTraining': 1 } });
     return globalSettings?.settings?.private?.webhooks?.postTraining;
-};
-
-const sendModel = async (url, method, projectId, namespace, modelData) => {
-    try {
-        const data = {
-            projectId,
-            namespace,
-            model: modelData,
-        };
-        // eslint-disable-next-line no-console
-        console.log(`Sending model for project ${projectId} to ${url}`);
-        const response = await new Promise((resolve, reject) => {
-            request(url, { method, formData: data }, (error, resp) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    resolve(resp);
-                }
-            });
-        });
-        const { statusCode: status, body: responseData } = response;
-        // eslint-disable-next-line no-console
-        console.log(`Model for project ${projectId} was sent with status ${status}`);
-        return { status, data: responseData };
-    } catch (e) {
-        // if we console log the error here, it will write the image/model as a string, and the error message will be too bike and unusable.
-        // eslint-disable-next-line no-console
-        console.log('ERROR: Botfront encountered an error while calling a webhook');
-        // eslint-disable-next-line no-console
-        console.log(`Status code: ${e?.response?.statusCode}`);
-        return { status: 500, data: e?.response?.data || e };
-    }
-};
-
-export const postTraining = async (projectId, modelData) => {
-    console.log('postTraining');
-    const trainingWebhook = await getPostTrainingWebhook();
-    if (!trainingWebhook.url || !trainingWebhook.method) {
-        return;
-    }
-    const { namespace } = await Projects.findOne({ _id: projectId }, { fields: { namespace: 1 } });
-    await sendModel(trainingWebhook.url, trainingWebhook.method, projectId, namespace, modelData);
 };
 
 if (Meteor.isServer) {
@@ -181,6 +138,7 @@ if (Meteor.isServer) {
         addLoggingInterceptors,
         // eslint-disable-next-line import/no-duplicates
     } from '../../server/logger';
+    import { postTraining } from '../api/model/server/model.utils';
 
 
     const fileLogger = getAppLoggerForFile(__filename);

@@ -1,0 +1,14 @@
+{
+  "Error updating comment for model": "Ошибка обновления комментария к модели",
+  "Error deploying model": "Ошибка публикации модели",
+  "Sucessfulyl deployed model": "Успешно опубликована модель",
+  "Models": "Модели",
+  "Name": "Имя",
+  "Comment": "Комментарий",
+  "Deploy": "Релиз",
+  "Save": "Сохранить",
+  "Deploy model": "Релиз модели",
+  "Are your shure you want to deploy model": "Вы уверены что хотите опубликовать модель",
+  "No": "Нет",
+  "Yes": "Да"
+}

@@ -60,8 +60,7 @@
   "Uploading": "Загрузка",
   "deleted": "удален",
   "Deleted Example": "Удаленный пример",
-  "You just deleted this user utterance and it will be removed from the training set when you save":
-  "Вы удалили высказывание пользователя, оно будет удалено из тренировочного набора при сохранении",
+  "You just deleted this user utterance and it will be removed from the training set when you save": "Вы удалили высказывание пользователя, оно будет удалено из тренировочного набора при сохранении",
   "invalid": "неверно",
   "Invalid Example": "Неверный пример",
   "The intent and entities associated with this utterance do not correspond to the currently selected payload. Either adjust intent and entities or delete this utterance": "Интент и сущности, связанные с этим высказыванием, не соответствуют текущему payload'у. Либо скорректируйте интенты и сущности, либо удалите это высказывание.",

@@ -5,7 +5,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "start": "meteor run",
-    "start:rtk-dev": "MODE=development BF_PROJECT_ID=bf MONGO_URL=mongodb://botfront:SheeF2faidaen2@localhost:27117/bf meteor run",
+    "start:rtk-dev": "MODE=development BF_PROJECT_ID=bf MONGO_URL=mongodb://botfront:SheeF2faidaen2@localhost:27117/bf MODELS_PATH=/home/nanoeti/projects/epoch8/botfront/models meteor run",
     "start:docker-compose": "BF_PROJECT_ID=bf meteor run",
     "start:docker-compose.dev": "MODE=development BF_PROJECT_ID=bf MONGO_URL=mongodb://localhost:27017/bf-os meteor run",
     "start:docker-compose.ci": "MODE=test BF_PROJECT_ID=bf MONGO_URL=mongodb://localhost:27017/bf meteor run",
@@ -21,7 +21,8 @@
     "licenses:csv": "license-checker --csv --out botfront-licenses.csv",
     "release": "standard-version",
     "storybook": "start-storybook",
-    "postinstall": "./postinstall.sh"
+    "postinstall": "./postinstall.sh",
+    "update-translations": "npx i18next 'imports/ui/**/*.{js,jsx}' -c i18next-parser.config.js"
   },
   "dependencies": {
     "@apollo/react-components": "^3.1.3",
@@ -157,6 +158,7 @@
     "eslint-plugin-react": "^7.11.1",
     "faker": "^4.1.0",
     "husky": "2.7.0",
+    "i18next-parser": "^4.7.0",
     "less": "^3.11.1",
     "less-loader": "^5.0.0",
     "license-checker": "^25.0.1",

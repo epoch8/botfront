@@ -12,8 +12,10 @@
   "NLU": "NLU",
   "Incoming": "Incoming",
   "Responses": "Responses",
+  "Models": "Models",
   "Analytics": "Analytics",
   "Chatbot Admin": "Chatbot Admin",
   "documentation": "documentation",
-  "Admin": "Admin"
+  "Admin": "Admin",
+  "Language": "Language"
 }
