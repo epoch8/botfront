@@ -137,13 +137,13 @@ if (Meteor.isServer) {
 
     Meteor.publish('training.status', function (projectId) {
         check(projectId, String);
-
+        if (!can('nlu-data:x', projectId)) return this.ready();
         return Projects.find({ projectId }, { fields: { 'training.instanceStatus': 1 } });
     });
 
-    Meteor.publish('hierTraining.instanceStatus', function (projectId) {
+    Meteor.publish('externalTraining.instanceStatuses', function (projectId) {
         check(projectId, String);
-
-        return Projects.find({ projectId }, { fields: { 'hierTraining.instanceStatus': 1 } });
+        if (!can('nlu-data:x', projectId)) return this.ready();
+        return Projects.find({ projectId }, { fields: { 'externalTraining.instanceStatuses': 1 } });
     });
 }

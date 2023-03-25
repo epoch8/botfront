@@ -14,7 +14,7 @@ const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
             'externalTraining.instanceStatuses',
             projectId,
         );
-        let { status } = 'notConfigured';
+        let { status } = 'notReachable';
         if (trainingStatusHandler.ready()) {
             const instance = Projects.findOne(
                 { _id: projectId },
@@ -22,7 +22,7 @@ const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
             );
             const { externalTraining: { instanceStatuses } } = instance;
             if (instanceStatuses) {
-                const statusIdx = [].findIndex(({ host }) => host === trainingConfig.host);
+                const statusIdx = instanceStatuses.findIndex(({ host }) => host === trainingConfig.host);
                 if (statusIdx !== -1) {
                     ({ status } = instanceStatuses[statusIdx]);
                 }
@@ -70,7 +70,6 @@ const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
 
     return (
         <Can I='nlu-data:x'>
-            {/* {trainingStatus === 'notConfigured' ? <></> : ( */}
             <div className='side-by-side middle narrow train-hier-btn'>
                 <Button.Group color={training ? 'yellow' : 'blue'}>
                     {training ? <Button primary loading /> : <></>}
@@ -84,7 +83,6 @@ const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
                     />
                 </Button.Group>
             </div>
-            {/* )} */}
         </Can>
     );
 };

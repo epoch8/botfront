@@ -97,7 +97,7 @@ export const ProjectsSchema = new SimpleSchema({
     'externalTraining.instanceStatuses.$.host': { type: String },
     'externalTraining.instanceStatuses.$.status': {
         type: String,
-        allowedValues: ['training', 'notTraining', 'notReachable', 'notConfigured'],
+        allowedValues: ['training', 'notTraining', 'notReachable'],
     },
     deploymentEnvironments: {
         type: Array,
