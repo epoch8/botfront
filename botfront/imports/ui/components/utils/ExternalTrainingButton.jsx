@@ -8,19 +8,25 @@ import { useTranslation } from 'react-i18next';
 import { Projects } from '../../../api/project/project.collection';
 import { Can } from '../../../lib/scopes';
 
-const TrainHierButton = ({ projectId }) => {
+const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
     const { trainingStatus } = useTracker(() => {
         const trainingStatusHandler = Meteor.subscribe(
-            'hierTraining.instanceStatus',
+            'externalTraining.instanceStatuses',
             projectId,
         );
         let { status } = 'notConfigured';
         if (trainingStatusHandler.ready()) {
             const instance = Projects.findOne(
                 { _id: projectId },
-                { fields: { 'hierTraining.instanceStatus': 1 } },
+                { fields: { 'externalTraining.instanceStatuses': 1 } },
             );
-            status = instance?.hierTraining?.instanceStatus;
+            const { externalTraining: { instanceStatuses } } = instance;
+            if (instanceStatuses) {
+                const statusIdx = [].findIndex(({ host }) => host === trainingConfig.host);
+                if (statusIdx !== -1) {
+                    ({ status } = instanceStatuses[statusIdx]);
+                }
+            }
         }
         return {
             trainingStatus: status,
@@ -28,6 +34,7 @@ const TrainHierButton = ({ projectId }) => {
     });
 
     const { t } = useTranslation('utils');
+
     const training = trainingStatus === 'training';
     const [clicked, setClicked] = useState(false);
     const [timeout, setTimeout] = useState(null);
@@ -45,9 +52,9 @@ const TrainHierButton = ({ projectId }) => {
         setClicked(true);
         try {
             if (training) {
-                await Meteor.callWithPromise('hier.cancel', projectId);
+                await Meteor.callWithPromise('externalTraining.cancel', projectId, trainingConfig.host);
             } else {
-                await Meteor.callWithPromise('hier.train', projectId);
+                await Meteor.callWithPromise('externalTraining.train', projectId, trainingConfig.host);
             }
         } catch (error) {
             console.error(error);
@@ -63,26 +70,31 @@ const TrainHierButton = ({ projectId }) => {
 
     return (
         <Can I='nlu-data:x'>
-            {trainingStatus === 'notConfigured' ? <></> : (
-                <div className='side-by-side middle narrow train-hier-btn'>
-                    <Button.Group color={training ? 'yellow' : 'blue'}>
-                        {training ? <Button primary loading /> : <></>}
-                        <Button
-                            content={training ? t('Cancel HIER training') : t('Train HIER')}
-                            primary
-                            disabled={trainingStatus === 'notReachable'}
-                            loading={clicked}
-                            onClick={onTrainClick}
-                        />
-                    </Button.Group>
-                </div>
-            )}
+            {/* {trainingStatus === 'notConfigured' ? <></> : ( */}
+            <div className='side-by-side middle narrow train-hier-btn'>
+                <Button.Group color={training ? 'yellow' : 'blue'}>
+                    {training ? <Button primary loading /> : <></>}
+                    <Button
+                        content={training ? t('Cancel {name} training').replace('{name}', trainingConfig.name)
+                            : `${t('Train')} ${trainingConfig.name}`}
+                        primary
+                        disabled={trainingStatus === 'notReachable'}
+                        loading={clicked}
+                        onClick={onTrainClick}
+                    />
+                </Button.Group>
+            </div>
+            {/* )} */}
         </Can>
     );
 };
 
-TrainHierButton.propTypes = {
+ExternalTrainingButton.propTypes = {
     projectId: PropTypes.string.isRequired,
+    trainingConfig: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        host: PropTypes.string.isRequired,
+    }).isRequired,
 };
 
-export default TrainHierButton;
+export default ExternalTrainingButton;

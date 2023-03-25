@@ -130,6 +130,7 @@ Settings.propTypes = {
     projectId: PropTypes.string.isRequired,
     router: PropTypes.object.isRequired,
     params: PropTypes.object.isRequired,
+    t: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({

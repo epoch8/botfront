@@ -2,12 +2,12 @@ import SimpleSchema from 'simpl-schema';
 
 export const ModelSchema = new SimpleSchema({
     _id: { type: String },
-    projectId: { type: String },
+    projectId: { type: String, index: 1 },
     name: { type: String },
     comment: { type: String, required: false },
     path: { type: String },
     deployed: { type: Boolean },
-    createdAt: { type: Date },
+    createdAt: { type: Date, index: -1 },
     deployedAt: { type: Date, required: false },
     deployedBy: { type: String, required: false },
 });

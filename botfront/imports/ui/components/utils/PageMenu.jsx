@@ -7,7 +7,7 @@ import moment from 'moment';
 import { useTranslation } from 'react-i18next';
 import { isTraining } from '../../../api/nlu_model/nlu_model.utils';
 import TrainButton from './TrainButton';
-import TrainHierButton from './TrainHierButton';
+import ExternalTrainingButton from './ExternalTrainingButton';
 import { ProjectContext } from '../../layouts/context';
 
 export default function PageMenu(props) {
@@ -22,10 +22,10 @@ export default function PageMenu(props) {
     const { t } = useTranslation('utils');
 
     const renderExternalTraining = () => instance.externalTraining?.map(
-        (traininConfig, index) => (
-            <TrainHierButton
+        (trainingConfig, index) => (
+            <ExternalTrainingButton
                 projectId={projectId}
-                traininConfig={traininConfig}
+                trainingConfig={trainingConfig}
                 key={index}
             />
         ),
