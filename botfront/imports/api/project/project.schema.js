@@ -94,6 +94,7 @@ export const ProjectsSchema = new SimpleSchema({
     'training.message': { type: String, optional: true },
     externalTraining: { type: Object, optional: true },
     'externalTraining.instanceStatuses': { type: Array },
+    'externalTraining.instanceStatuses.$': { type: Object },
     'externalTraining.instanceStatuses.$.host': { type: String },
     'externalTraining.instanceStatuses.$.status': {
         type: String,

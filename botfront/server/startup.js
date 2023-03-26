@@ -82,8 +82,8 @@ Meteor.startup(function () {
                                     const resp = await axios.post(
                                         `${host}/status/${instance.projectId}`,
                                     );
-                                    const respHierStatus = resp.data[0].status;
-                                    switch (respHierStatus) {
+                                    const respTrainingStatus = resp.data[0].status;
+                                    switch (respTrainingStatus) {
                                     case 'scheduled':
                                     case 'queued':
                                     case 'running':
