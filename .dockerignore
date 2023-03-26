@@ -1,2 +1,5 @@
 **/node_modules
 **/.meteor/local
+/mongodb/
+/mongo_playground/
+/models/

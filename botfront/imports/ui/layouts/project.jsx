@@ -25,7 +25,6 @@ import { useTranslation } from 'react-i18next';
 import { useIntentAndEntityList } from '../components/nlu/models/hooks';
 import { wrapMeteorCallback } from '../components/utils/Errors';
 import ProjectSidebarComponent from '../components/project/ProjectSidebar';
-import ModelsList from '../components/models/Models';
 import { Projects } from '../../api/project/project.collection';
 import { languages as languageOptions } from '../../lib/languages';
 import { setProjectId, setWorkingLanguage, setShowChat } from '../store/actions/actions';

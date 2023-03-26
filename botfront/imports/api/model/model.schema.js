@@ -7,7 +7,7 @@ export const ModelSchema = new SimpleSchema({
     comment: { type: String, required: false },
     path: { type: String },
     deployed: { type: Boolean },
-    createdAt: { type: Date },
+    createdAt: { type: Date, index: -1 },
     deployedAt: { type: Date, required: false },
     deployedBy: { type: String, required: false },
 });

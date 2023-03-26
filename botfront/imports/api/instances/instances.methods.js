@@ -12,7 +12,6 @@ import path from 'path';
 import {
     createAxiosForRasa,
     formatError,
-    getProjectModelLocalFolder,
     getProjectModelFileName,
 } from '../../lib/utils';
 import { NLUModels } from '../nlu_model/nlu_model.collection';
@@ -134,10 +133,10 @@ if (Meteor.isServer) {
 
     const trainingAppLogger = getAppLoggerForFile(__filename);
 
-    const getHierHost = async (projectId) => {
-        const instance = Instances.findOne({ projectId }, { fields: { hierHost: 1 } });
-        return instance?.hierHost || process.env.HIER_HOST;
-    };
+    const trainingHostExists = (projectId, trainingHost) => !!Instances.findOne({
+        projectId,
+        externalTraining: { $elemMatch: { host: trainingHost } },
+    }, { fields: {} });
 
     Meteor.methods({
         async 'rasa.parse'(instance, examples, options = {}) {
@@ -398,19 +397,35 @@ if (Meteor.isServer) {
                 throw formatError(e);
             }
         },
-        async 'hier.train'(projectId) {
+        async 'externalTraining.train'(projectId, trainingHost) {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
-            const hierHost = await getHierHost(projectId);
-            if (!hierHost) return;
-            await axios.post(`${hierHost}/train/${projectId}`);
+            check(trainingHost, String);
+            if (!trainingHostExists(projectId, trainingHost)) {
+                getAppLoggerForMethod(
+                    trainingAppLogger,
+                    'externalTraining.train',
+                    Meteor.userId(),
+                    { projectId, trainingHost },
+                ).error('Host not found');
+                return;
+            }
+            await axios.post(`${trainingHost}/train/${projectId}`);
         },
-        async 'hier.cancel'(projectId) {
+        async 'externalTraining.cancel'(projectId, trainingHost) {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
-            const hierHost = await getHierHost(projectId);
-            if (!hierHost) return;
-            await axios.post(`${hierHost}/cancel/${projectId}`);
+            check(trainingHost, String);
+            if (!trainingHostExists(projectId, trainingHost)) {
+                getAppLoggerForMethod(
+                    trainingAppLogger,
+                    'externalTraining.cancel',
+                    Meteor.userId(),
+                    { projectId, trainingHost },
+                ).error('Host not found');
+                return;
+            }
+            await axios.post(`${trainingHost}/cancel/${projectId}`);
         },
     });
 }

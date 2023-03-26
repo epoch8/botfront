@@ -90,6 +90,7 @@ class NLUPipeline extends React.Component {
 NLUPipeline.propTypes = {
     model: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
+    t: PropTypes.func.isRequired,
 };
 
 export default withTranslation('nlu')(NLUPipeline);

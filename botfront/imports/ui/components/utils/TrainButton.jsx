@@ -314,8 +314,17 @@ class TrainButton extends React.Component {
     renderButton = () => {
         const { instance } = this.context;
         const {
-            popupContent, status, partialTrainning, t,
+            nSelectedStoryGroups, status, t,
         } = this.props;
+        const partialTrainning = nSelectedStoryGroups > 0;
+        let popupContent = '';
+        if (partialTrainning && nSelectedStoryGroups > 1) {
+            popupContent = `${t('Train NLU and stories from')} ${nSelectedStoryGroups} ${t('focused story groups')}.`;
+        } else if (nSelectedStoryGroups && nSelectedStoryGroups === 1) {
+            popupContent = t('Train NLU and stories from 1 focused story group.');
+        } else if (status === 'notReachable') {
+            popupContent = t('Rasa instance not reachable');
+        }
         return (
             <Popup
                 content={popupContent}
@@ -471,32 +480,26 @@ class TrainButton extends React.Component {
 }
 
 TrainButton.propTypes = {
-    popupContent: PropTypes.string,
+    nSelectedStoryGroups: PropTypes.number.isRequired,
     status: PropTypes.string,
-    partialTrainning: PropTypes.bool,
     ready: PropTypes.bool.isRequired,
-    t: PropTypes.func,
+    t: PropTypes.func.isRequired,
 };
 
 TrainButton.defaultProps = {
-    popupContent: '',
     status: '',
-    partialTrainning: false,
-    t: text => text,
 };
 
-export default withTranslation('utils')(withTracker((props) => {
+export default withTracker((props) => {
     // Gets the required number of selected storygroups and sets the content and popup for the train button
-    const { projectId, t } = props;
+    const { projectId } = props;
     const trainingStatusHandler = Meteor.subscribe('training.status', projectId);
     const storyGroupHandler = Meteor.subscribe('storiesGroup', projectId);
     const ready = storyGroupHandler.ready() && trainingStatusHandler.ready();
 
     let storyGroups;
     let selectedStoryGroups;
-    let popupContent = '';
     let status;
-    let partialTrainning = false;
     if (ready) {
         status = Projects.findOne(
             { _id: projectId },
@@ -505,21 +508,11 @@ export default withTranslation('utils')(withTracker((props) => {
         status = get(status, 'training.instanceStatus', 'notReachable'); // if it is undefined we consider it not reachable
         storyGroups = StoryGroups.find({ projectId }, { field: { _id: 1 } }).fetch();
         selectedStoryGroups = storyGroups.filter(storyGroup => storyGroup.selected);
-        partialTrainning = selectedStoryGroups.length > 0;
-        if (partialTrainning && selectedStoryGroups.length > 1) {
-            popupContent = `${t('Train NLU and stories from')} ${selectedStoryGroups.length} ${t('focused story groups')}.`;
-        } else if (selectedStoryGroups && selectedStoryGroups.length === 1) {
-            popupContent = t('Train NLU and stories from 1 focused story group.');
-        } else if (status === 'notReachable') {
-            popupContent = t('Rasa instance not reachable');
-        }
     }
 
     return {
         ready,
-        popupContent,
+        nSelectedStoryGroups: selectedStoryGroups?.length || 0,
         status,
-        partialTrainning,
-        t,
     };
-})(TrainButton));
+})(withTranslation('utils')(TrainButton));

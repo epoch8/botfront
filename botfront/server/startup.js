@@ -54,7 +54,7 @@ Meteor.startup(function () {
         fileAppLogger.info(`Botfront ${packageInfo.version} started`);
         Meteor.setInterval(async () => {
             try {
-                const instancesInfo = await Instances.find();
+                const instancesInfo = Instances.find();
                 const newStatuses = await Promise.all(
                     instancesInfo.map(async (instance) => {
                         let instanceState;
@@ -74,45 +74,47 @@ Meteor.startup(function () {
                         if (instanceState === 0) status = 'notTraining';
                         if (instanceState === -1) status = 'notReachable';
 
-                        let hierStatus = 'notConfigured';
-                        const hierHost = instance.hierHost || process.env.HIER_HOST;
-                        if (hierHost) {
-                            hierStatus = 'notReachable';
-                            try {
-                                const resp = await axios.post(
-                                    `${hierHost}/status/${instance.projectId}`,
-                                );
-                                const respHierStatus = resp.data[0].status;
-                                switch (respHierStatus) {
-                                case 'scheduled':
-                                case 'queued':
-                                case 'running':
-                                case 'restarting':
-                                case 'shutdown':
-                                case 'up_for_retry':
-                                case 'up_for_reschedule':
-                                case 'deferred':
-                                    hierStatus = 'training';
-                                    break;
-                                case 'unknown':
-                                case 'none':
-                                case 'success':
-                                case 'failed':
-                                case 'skipped':
-                                case 'upstream_failed':
-                                case 'removed':
-                                    hierStatus = 'notTraining';
-                                    break;
-                                default:
-                                    hierStatus = 'notReachable';
-                                    break;
+                        const externalTrainingStatuses = await Promise.all(
+                            (instance.externalTraining || []).map(async (trainingConfig) => {
+                                let externalTrainingStatus = 'notReachable';
+                                const { host } = trainingConfig;
+                                try {
+                                    const resp = await axios.post(
+                                        `${host}/status/${instance.projectId}`,
+                                    );
+                                    const respTrainingStatus = resp.data[0].status;
+                                    switch (respTrainingStatus) {
+                                    case 'scheduled':
+                                    case 'queued':
+                                    case 'running':
+                                    case 'restarting':
+                                    case 'shutdown':
+                                    case 'up_for_retry':
+                                    case 'up_for_reschedule':
+                                    case 'deferred':
+                                        externalTrainingStatus = 'training';
+                                        break;
+                                    case 'unknown':
+                                    case 'none':
+                                    case 'success':
+                                    case 'failed':
+                                    case 'skipped':
+                                    case 'upstream_failed':
+                                    case 'removed':
+                                        externalTrainingStatus = 'notTraining';
+                                        break;
+                                    default:
+                                        externalTrainingStatus = 'notReachable';
+                                        break;
+                                    }
+                                } catch (error) {
+                                    console.error(error);
                                 }
-                            } catch (error) {
-                                console.error(error);
-                            }
-                        }
+                                return { host, status: externalTrainingStatus };
+                            }),
+                        );
 
-                        return { status, hierStatus, projectId: instance.projectId };
+                        return { status, externalTrainingStatuses, projectId: instance.projectId };
                     }),
                 );
                 newStatuses.forEach((status) => {
@@ -121,7 +123,7 @@ Meteor.startup(function () {
                         {
                             $set: {
                                 'training.instanceStatus': status.status,
-                                'hierTraining.instanceStatus': status.hierStatus,
+                                'externalTraining.instanceStatuses': status.externalTrainingStatuses,
                             },
                         },
                     );
