@@ -61,8 +61,9 @@ export const createInstance = async (project) => {
 };
 
 export const getNluDataAndConfig = async (projectId, language, intents) => {
+    const nluFilter = language ? { projectId, language } : { projectId };
     const model = await NLUModels.findOne(
-        { projectId, language },
+        nluFilter,
         { training_data: 1, config: 1 },
     );
     if (!model) {
@@ -213,8 +214,6 @@ if (Meteor.isServer) {
                 { projectId },
                 { policies: 1, augmentationFactor: 1 },
             );
-            const nlu = {};
-            const config = {};
 
             const {
                 stories = [], rules = [], domain, wasPartial,
@@ -228,19 +227,12 @@ if (Meteor.isServer) {
             const selectedIntents = wasPartial
                 ? yaml.safeLoad(domain).intents
                 : undefined;
-            let languages = [language];
-            if (!language) {
-                const project = Projects.findOne({ _id: projectId }, { languages: 1 });
-                languages = project ? project.languages : [];
-            }
-            for (const lang of languages) {
-                const {
-                    rasa_nlu_data,
-                    config: configForLang,
-                } = await getNluDataAndConfig(projectId, lang, selectedIntents);
-                nlu[lang] = { rasa_nlu_data };
-                config[lang] = `${configForLang}\n\n${corePolicies}`;
-            }
+            // NOTE removed multi language support
+            const {
+                rasa_nlu_data: nlu,
+                config: configForLang,
+            } = await getNluDataAndConfig(projectId, language, selectedIntents);
+            const config = `${configForLang}\n\n${corePolicies}`;
             const payload = {
                 domain: yaml.safeDump(domain, { skipInvalid: true, sortKeys: true }),
                 stories,

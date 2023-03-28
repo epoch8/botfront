@@ -36,7 +36,9 @@ const createFilterObject = (
 ) => {
     const filters = { projectId };
     const { matchEntityName } = options;
-    filters['metadata.language'] = language;
+    if (language) {
+        filters['metadata.language'] = language;
+    }
 
     if (intents && intents.length > 0) {
         filters.intent = {
