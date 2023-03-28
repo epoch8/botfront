@@ -5,9 +5,7 @@ import { check, Match } from 'meteor/check';
 import axiosRetry from 'axios-retry';
 import yaml from 'js-yaml';
 import axios from 'axios';
-import fs from 'fs';
-import { promisify } from 'util';
-import path from 'path';
+import _ from 'lodash';
 
 import {
     createAxiosForRasa,
@@ -22,8 +20,6 @@ import { Evaluations } from '../nlu_evaluation';
 import { checkIfCan } from '../../lib/scopes';
 import Activity from '../graphql/activity/activity.model';
 import { getFragmentsAndDomain } from '../../lib/story.utils';
-import { dropNullValuesFromObject } from '../../lib/client.safe.utils';
-import { Projects } from '../project/project.collection';
 
 
 const replaceMongoReservedChars = (input) => {
@@ -60,6 +56,35 @@ export const createInstance = async (project) => {
     });
 };
 
+const convertExampleJsonToRasa = ({ text, entities = [] }) => {
+    if (!entities.length) return text;
+    const parts = [];
+    const sortedEentities = [...entities].sort((a, b) => a.start - b.start);
+    let cursor = 0;
+    for (const entity of sortedEentities) {
+        if (entity.start > cursor) {
+            parts.push(text.slice(cursor, entity.start));
+        }
+        const entityParams = {
+            entity: entity.entity,
+            value: entity.value,
+        };
+        if (entity.group) {
+            entityParams.group = entity.group;
+        }
+        if (entity.role) {
+            entityParams.role = entity.rolel;
+        }
+        parts.push(`[${text.slice(entity.start, entity.end)}]${JSON.stringify(entityParams)}`);
+        cursor = entity.end;
+    }
+    if (cursor < text.length) {
+        parts.push(text.slice(cursor));
+    }
+    return parts.join('');
+};
+
+// TODO modify tests
 export const getNluDataAndConfig = async (projectId, language, intents) => {
     const nluFilter = language ? { projectId, language } : { projectId };
     const model = await NLUModels.findOne(
@@ -69,11 +94,8 @@ export const getNluDataAndConfig = async (projectId, language, intents) => {
     if (!model) {
         throw new Error(`Could not find ${language} model for project ${projectId}.`);
     }
-    const copyAndFilter = ({
-        _id, mode, min_score, ...obj
-    }) => obj;
     const {
-        training_data: { entity_synonyms, fuzzy_gazette, regex_features },
+        training_data: { entity_synonyms, regex_features },
         config,
     } = model;
     const { examples = [] } = await getExamples({
@@ -95,29 +117,28 @@ export const getNluDataAndConfig = async (projectId, language, intents) => {
         });
     }
 
+    const rasaIntents = Object.entries(
+        _.groupBy(common_examples, ({ intent }) => intent),
+    ).map(([intent, examplesGroup]) => ({
+        intent,
+        examples: `- ${examplesGroup.map(convertExampleJsonToRasa).join('\n- ')}`,
+    }));
+    const rasaSynonyms = Object.entries(
+        _.groupBy(entity_synonyms, ({ value }) => value),
+    ).map(([synonym, synonymsGroup]) => ({
+        synonym,
+        examples: `- ${synonymsGroup.map(({ synonyms }) => synonyms.join('\n- ')).join('\n- ')}`,
+    }));
+    const rasaRegex = Object.entries(
+        _.groupBy(regex_features, ({ name }) => name),
+    ).map(([regex, regexGroup]) => ({
+        regex,
+        examples: `- ${regexGroup.map(({ pattern }) => pattern).join('\n- ')}`,
+    }));
+
     return {
-        rasa_nlu_data: {
-            common_examples: common_examples.map(
-                ({
-                    text, intent, entities = [], metadata: { canonical, ...metadata } = {},
-                }) => ({
-                    text,
-                    intent,
-                    entities: entities.map(({ _id: _, ...rest }) => dropNullValuesFromObject(rest)),
-                    metadata: {
-                        ...metadata,
-                        ...(canonical ? { canonical } : {}),
-                    },
-                }),
-            ),
-            entity_synonyms: entity_synonyms.map(copyAndFilter),
-            gazette: fuzzy_gazette.map(copyAndFilter),
-            regex_features: regex_features.map(copyAndFilter),
-        },
-        config: yaml.dump({
-            ...yaml.safeLoad(config),
-            language,
-        }),
+        nlu: [...rasaIntents, ...rasaSynonyms, ...rasaRegex],
+        config: yaml.safeLoad(config),
     };
 };
 
@@ -229,16 +250,17 @@ if (Meteor.isServer) {
                 : undefined;
             // NOTE removed multi language support
             const {
-                rasa_nlu_data: nlu,
-                config: configForLang,
+                nlu,
+                config,
             } = await getNluDataAndConfig(projectId, language, selectedIntents);
-            const config = `${configForLang}\n\n${corePolicies}`;
+            domain.responses = { ...Object.entries(domain.responses).map(({ text }) => text) };
             const payload = {
-                domain: yaml.safeDump(domain, { skipInvalid: true, sortKeys: true }),
+                domain,
                 stories,
                 rules,
                 nlu,
-                config,
+                ...config,
+                ...yaml.safeLoad(corePolicies),
                 fixed_model_name: getProjectModelFileName(projectId),
                 augmentation_factor: augmentationFactor,
             };
@@ -274,16 +296,14 @@ if (Meteor.isServer) {
             appMethodLogger.debug(`Training project ${projectId}...`);
             const t0 = performance.now();
             try {
-                const {
-                    stories = [],
-                    rules = [],
-                    ...payload
-                } = await Meteor.call('rasa.getTrainingPayload', projectId, { env });
-                payload.fragments = yaml.safeDump(
-                    { stories, rules },
-                    { skipInvalid: true },
-                );
-                payload.load_model_after = true;
+                const { domain, ...payload } = await Meteor.call('rasa.getTrainingPayload', projectId, { env });
+                console.log(domain);
+                console.log(payload);
+                // payload.fragments = yaml.safeDump(
+                //     { stories, rules },
+                //     { skipInvalid: true },
+                // );
+                // payload.load_model_after = true;
                 const trainingClient = await createAxiosForRasa(projectId,
                     {
                         timeout: process.env.TRAINING_TIMEOUT || 0,
@@ -295,7 +315,7 @@ if (Meteor.isServer) {
                 addLoggingInterceptors(trainingClient, appMethodLogger);
                 const trainingResponse = await trainingClient.post(
                     '/model/train',
-                    payload,
+                    yaml.safeDump({ ...domain, ...payload }, { sortKeys: true, skipInvalid: true }),
                 );
                 if (trainingResponse.status === 200) {
                     const t1 = performance.now();
