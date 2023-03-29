@@ -112,16 +112,40 @@ const convertDomainBotfrontToRasa = (domain) => {
         ]),
     );
 
-    // const entities = new Set();
-    // const formSlots = {};
-    // const rasaForms = Object.fromEntries(
-    //     Object.entries(domain.forms).map(([name, formParams]) => [
-    //         name,
-    //         respArray.map(({ text }) => ({ text })),
-    //     ]),
-    // );
+    const entities = new Set();
+    const rasaForms = Object.fromEntries(
+        Object.entries(domain.forms).map(([formName, formParams]) => {
+            formParams.slots.forEach(({ name: slotName, filling }) => {
+                const slotParams = rasaSlots[slotName] || {
+                    type: 'any',
+                    influence_conversation: false,
+                };
+                rasaSlots[slotName] = {
+                    ...slotParams,
+                    mappings: filling,
+                };
+            });
+            const rasaFormParams = Object.fromEntries(
+                formParams.graph_elements.edges.map(({ source, target }) => (
+                    [
+                        target,
+                        {
+                            required_slots: (source in rasaSlots) ? [source] : [],
+                            ignored_intents: [],
+                        },
+                    ]
+                )),
+            );
+            return [formName, rasaFormParams];
+        }),
+    );
 
-    return { ...domain, slots: rasaSlots, responses: rasaResponses };
+    return {
+        ...domain,
+        slots: rasaSlots,
+        responses: rasaResponses,
+        forms: rasaForms,
+    };
 };
 
 const convertNluBotfrontToRasa = (intents = [], entity_synonyms = [], regex_features = []) => {
@@ -535,11 +559,6 @@ if (Meteor.isServer) {
             const t0 = performance.now();
             try {
                 const { domain, ...payload } = await Meteor.call('rasa.getRasaTrainingPayload', projectId, { env });
-                // payload.fragments = yaml.safeDump(
-                //     { stories, rules },
-                //     { skipInvalid: true },
-                // );
-                // payload.load_model_after = true;
                 const trainingClient = await createAxiosForRasa(projectId,
                     {
                         timeout: process.env.TRAINING_TIMEOUT || 0,
