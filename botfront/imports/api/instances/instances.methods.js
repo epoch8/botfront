@@ -20,6 +20,8 @@ import { Evaluations } from '../nlu_evaluation';
 import { checkIfCan } from '../../lib/scopes';
 import Activity from '../graphql/activity/activity.model';
 import { getFragmentsAndDomain } from '../../lib/story.utils';
+import { dropNullValuesFromObject } from '../../lib/client.safe.utils';
+import { Projects } from '../project/project.collection';
 
 
 const replaceMongoReservedChars = (input) => {
@@ -109,6 +111,16 @@ const convertDomainBotfrontToRasa = (domain) => {
             respArray.map(({ text }) => ({ text })),
         ]),
     );
+
+    // const entities = new Set();
+    // const formSlots = {};
+    // const rasaForms = Object.fromEntries(
+    //     Object.entries(domain.forms).map(([name, formParams]) => [
+    //         name,
+    //         respArray.map(({ text }) => ({ text })),
+    //     ]),
+    // );
+
     return { ...domain, slots: rasaSlots, responses: rasaResponses };
 };
 
@@ -136,7 +148,7 @@ const convertNluBotfrontToRasa = (intents = [], entity_synonyms = [], regex_feat
 
 
 // TODO modify tests
-export const getNluDataAndConfig = async (projectId, language, intents) => {
+export const getRasaNluDataAndConfig = async (projectId, language, intents) => {
     const nluFilter = language ? { projectId, language } : { projectId };
     const model = await NLUModels.findOne(
         nluFilter,
@@ -171,6 +183,66 @@ export const getNluDataAndConfig = async (projectId, language, intents) => {
     return {
         nlu: convertNluBotfrontToRasa(common_examples, entity_synonyms, regex_features),
         config: yaml.safeLoad(config),
+    };
+};
+
+export const getNluDataAndConfig = async (projectId, language, intents) => {
+    const model = await NLUModels.findOne(
+        { projectId, language },
+        { training_data: 1, config: 1 },
+    );
+    if (!model) {
+        throw new Error(`Could not find ${language} model for project ${projectId}.`);
+    }
+    const copyAndFilter = ({
+        _id, mode, min_score, ...obj
+    }) => obj;
+    const {
+        training_data: { entity_synonyms, fuzzy_gazette, regex_features },
+        config,
+    } = model;
+    const { examples = [] } = await getExamples({
+        projectId,
+        language,
+        intents,
+        pageSize: -1,
+        sortKey: 'intent',
+        order: 'ASC',
+    });
+    const common_examples = examples.filter(e => !e?.metadata?.draft);
+    const missingExamples = Math.abs(Math.min(0, common_examples.length - 2));
+    for (let i = 0; (intents || []).length && i < missingExamples; i += 1) {
+        common_examples.push({
+            text: `${i}dummy${i}azerty${i}`,
+            entities: [],
+            metadata: { canonical: true, language },
+            intent: `dumdum${i}`,
+        });
+    }
+
+    return {
+        rasa_nlu_data: {
+            common_examples: common_examples.map(
+                ({
+                    text, intent, entities = [], metadata: { canonical, ...metadata } = {},
+                }) => ({
+                    text,
+                    intent,
+                    entities: entities.map(({ _id: _, ...rest }) => dropNullValuesFromObject(rest)),
+                    metadata: {
+                        ...metadata,
+                        ...(canonical ? { canonical } : {}),
+                    },
+                }),
+            ),
+            entity_synonyms: entity_synonyms.map(copyAndFilter),
+            gazette: fuzzy_gazette.map(copyAndFilter),
+            regex_features: regex_features.map(copyAndFilter),
+        },
+        config: yaml.dump({
+            ...yaml.safeLoad(config),
+            language,
+        }),
     };
 };
 
@@ -267,6 +339,8 @@ if (Meteor.isServer) {
                 { projectId },
                 { policies: 1, augmentationFactor: 1 },
             );
+            const nlu = {};
+            const config = {};
 
             const {
                 stories = [], rules = [], domain, wasPartial,
@@ -280,18 +354,25 @@ if (Meteor.isServer) {
             const selectedIntents = wasPartial
                 ? yaml.safeLoad(domain).intents
                 : undefined;
-            // NOTE removed multi language support
-            const {
-                nlu,
-                config,
-            } = await getNluDataAndConfig(projectId, language, selectedIntents);
+            let languages = [language];
+            if (!language) {
+                const project = Projects.findOne({ _id: projectId }, { languages: 1 });
+                languages = project ? project.languages : [];
+            }
+            for (const lang of languages) {
+                const {
+                    rasa_nlu_data,
+                    config: configForLang,
+                } = await getNluDataAndConfig(projectId, lang, selectedIntents);
+                nlu[lang] = { rasa_nlu_data };
+                config[lang] = `${configForLang}\n\n${corePolicies}`;
+            }
             const payload = {
-                domain: convertDomainBotfrontToRasa(domain),
+                domain: yaml.safeDump(domain, { skipInvalid: true, sortKeys: true }),
                 stories,
                 rules,
                 nlu,
-                ...config,
-                ...yaml.safeLoad(corePolicies),
+                config,
                 fixed_model_name: getProjectModelFileName(projectId),
                 augmentation_factor: augmentationFactor,
             };
@@ -327,7 +408,133 @@ if (Meteor.isServer) {
             appMethodLogger.debug(`Training project ${projectId}...`);
             const t0 = performance.now();
             try {
-                const { domain, ...payload } = await Meteor.call('rasa.getTrainingPayload', projectId, { env });
+                const {
+                    stories = [],
+                    rules = [],
+                    ...payload
+                } = await Meteor.call('rasa.getTrainingPayload', projectId, { env });
+                payload.fragments = yaml.safeDump(
+                    { stories, rules },
+                    { skipInvalid: true },
+                );
+                payload.load_model_after = true;
+                const trainingClient = await createAxiosForRasa(projectId,
+                    {
+                        timeout: process.env.TRAINING_TIMEOUT || 0,
+                        responseType: 'stream',
+                        maxContentLength: process.env.TRAINING_MAX_CONTENT_LEN || Infinity,
+                        maxBodyLength: process.env.TRAINING_MAX_BODY_LEN || Infinity,
+                    });
+
+                addLoggingInterceptors(trainingClient, appMethodLogger);
+                const trainingResponse = await trainingClient.post(
+                    '/model/train',
+                    payload,
+                );
+                if (trainingResponse.status === 200) {
+                    const t1 = performance.now();
+                    appMethodLogger.debug(
+                        `Training project ${projectId} - ${(t1 - t0).toFixed(2)} ms`,
+                    );
+
+                    await postTraining(projectId, trainingResponse.data);
+
+                    Activity.update(
+                        { projectId, validated: true },
+                        { $set: { validated: false } },
+                        { multi: true },
+                    ).exec();
+                }
+
+                Meteor.call('project.markTrainingStopped', projectId, 'success');
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
+                const error = `${e.message || e.reason} ${(
+                    e.stack.split('\n')[2] || ''
+                ).trim()}`;
+                const t1 = performance.now();
+                appMethodLogger.error(
+                    `Training project ${projectId} - ${(t1 - t0).toFixed(2)} ms`,
+                    { error },
+                );
+                Meteor.call('project.markTrainingStopped', projectId, 'failure', error);
+                throw formatError(e);
+            }
+        },
+
+        async 'rasa.getRasaTrainingPayload'(
+            projectId,
+            { language = '', env = 'development' } = {},
+        ) {
+            checkIfCan(['nlu-data:x', 'projects:r', 'export:x'], projectId);
+            check(projectId, String);
+            check(language, String);
+
+            const { policies: corePolicies, augmentationFactor } = CorePolicies.findOne(
+                { projectId },
+                { policies: 1, augmentationFactor: 1 },
+            );
+
+            const {
+                stories = [], rules = [], domain, wasPartial,
+            } = await getFragmentsAndDomain(
+                projectId,
+                language,
+                env,
+            );
+            stories.sort((a, b) => a.story.localeCompare(b.story));
+            rules.sort((a, b) => a.rule.localeCompare(b.rule));
+            const selectedIntents = wasPartial
+                ? yaml.safeLoad(domain).intents
+                : undefined;
+            // NOTE removed multi language support
+            const {
+                nlu,
+                config,
+            } = await getRasaNluDataAndConfig(projectId, language, selectedIntents);
+            const payload = {
+                domain: convertDomainBotfrontToRasa(domain),
+                stories,
+                rules,
+                nlu,
+                ...config,
+                ...yaml.safeLoad(corePolicies),
+                fixed_model_name: getProjectModelFileName(projectId),
+                augmentation_factor: augmentationFactor,
+            };
+            auditLog('Retreived training payload for project', {
+                user: Meteor.user(),
+                type: 'execute',
+                projectId,
+                operation: 'nlu-model-execute',
+                resId: projectId,
+                resType: 'nlu-model',
+            });
+            return payload;
+        },
+
+        async 'rasa.train3'(projectId, env = 'development') {
+            checkIfCan('nlu-data:x', projectId);
+            check(projectId, String);
+            auditLog('Trained project', {
+                user: Meteor.user(),
+                projectId,
+                type: 'execute',
+                operation: 'nlu-model-trained',
+                resId: projectId,
+                resType: 'nlu-model',
+            });
+            const appMethodLogger = getAppLoggerForMethod(
+                trainingAppLogger,
+                'rasa.train',
+                Meteor.userId(),
+                { projectId },
+            );
+
+            appMethodLogger.debug(`Training project ${projectId}...`);
+            const t0 = performance.now();
+            try {
+                const { domain, ...payload } = await Meteor.call('rasa.getRasaTrainingPayload', projectId, { env });
                 // payload.fragments = yaml.safeDump(
                 //     { stories, rules },
                 //     { skipInvalid: true },
