@@ -84,6 +84,57 @@ const convertExampleJsonToRasa = ({ text, entities = [] }) => {
     return parts.join('');
 };
 
+const convertDomainBotfrontToRasa = (domain) => {
+    console.log(domain);
+    const rasaSlots = Object.fromEntries(
+        Object.entries(domain.slots).map(([key, slotInfo]) => {
+            if (slotInfo.type === 'unfeaturized') {
+                return [
+                    key,
+                    {
+                        mappings: [],
+                        ...slotInfo,
+                        type: 'any',
+                        influence_conversation: false,
+                    },
+                ];
+            }
+            return [key, { mappings: [], ...slotInfo }];
+        }),
+    );
+
+    const rasaResponses = Object.fromEntries(
+        Object.entries(domain.responses).map(([name, respArray]) => [
+            name,
+            respArray.map(({ text }) => ({ text })),
+        ]),
+    );
+    return { ...domain, slots: rasaSlots, responses: rasaResponses };
+};
+
+const convertNluBotfrontToRasa = (intents = [], entity_synonyms = [], regex_features = []) => {
+    const rasaIntents = Object.entries(
+        _.groupBy(intents, ({ intent }) => intent),
+    ).map(([intent, examplesGroup]) => ({
+        intent,
+        examples: `- ${examplesGroup.map(convertExampleJsonToRasa).join('\n- ')}`,
+    }));
+    const rasaSynonyms = Object.entries(
+        _.groupBy(entity_synonyms, ({ value }) => value),
+    ).map(([synonym, synonymsGroup]) => ({
+        synonym,
+        examples: `- ${synonymsGroup.map(({ synonyms }) => synonyms.join('\n- ')).join('\n- ')}`,
+    }));
+    const rasaRegex = Object.entries(
+        _.groupBy(regex_features, ({ name }) => name),
+    ).map(([regex, regexGroup]) => ({
+        regex,
+        examples: `- ${regexGroup.map(({ pattern }) => pattern).join('\n- ')}`,
+    }));
+    return [...rasaIntents, ...rasaSynonyms, ...rasaRegex];
+};
+
+
 // TODO modify tests
 export const getNluDataAndConfig = async (projectId, language, intents) => {
     const nluFilter = language ? { projectId, language } : { projectId };
@@ -117,27 +168,8 @@ export const getNluDataAndConfig = async (projectId, language, intents) => {
         });
     }
 
-    const rasaIntents = Object.entries(
-        _.groupBy(common_examples, ({ intent }) => intent),
-    ).map(([intent, examplesGroup]) => ({
-        intent,
-        examples: `- ${examplesGroup.map(convertExampleJsonToRasa).join('\n- ')}`,
-    }));
-    const rasaSynonyms = Object.entries(
-        _.groupBy(entity_synonyms, ({ value }) => value),
-    ).map(([synonym, synonymsGroup]) => ({
-        synonym,
-        examples: `- ${synonymsGroup.map(({ synonyms }) => synonyms.join('\n- ')).join('\n- ')}`,
-    }));
-    const rasaRegex = Object.entries(
-        _.groupBy(regex_features, ({ name }) => name),
-    ).map(([regex, regexGroup]) => ({
-        regex,
-        examples: `- ${regexGroup.map(({ pattern }) => pattern).join('\n- ')}`,
-    }));
-
     return {
-        nlu: [...rasaIntents, ...rasaSynonyms, ...rasaRegex],
+        nlu: convertNluBotfrontToRasa(common_examples, entity_synonyms, regex_features),
         config: yaml.safeLoad(config),
     };
 };
@@ -253,9 +285,8 @@ if (Meteor.isServer) {
                 nlu,
                 config,
             } = await getNluDataAndConfig(projectId, language, selectedIntents);
-            domain.responses = { ...Object.entries(domain.responses).map(({ text }) => text) };
             const payload = {
-                domain,
+                domain: convertDomainBotfrontToRasa(domain),
                 stories,
                 rules,
                 nlu,
@@ -297,8 +328,6 @@ if (Meteor.isServer) {
             const t0 = performance.now();
             try {
                 const { domain, ...payload } = await Meteor.call('rasa.getTrainingPayload', projectId, { env });
-                console.log(domain);
-                console.log(payload);
                 // payload.fragments = yaml.safeDump(
                 //     { stories, rules },
                 //     { skipInvalid: true },
@@ -311,11 +340,15 @@ if (Meteor.isServer) {
                         maxContentLength: process.env.TRAINING_MAX_CONTENT_LEN || Infinity,
                         maxBodyLength: process.env.TRAINING_MAX_BODY_LEN || Infinity,
                     });
-
+                const yamlPayload = yaml.safeDump(
+                    { ...domain, ...payload },
+                    { sortKeys: true, skipInvalid: true },
+                );
+                console.log(yamlPayload);
                 addLoggingInterceptors(trainingClient, appMethodLogger);
                 const trainingResponse = await trainingClient.post(
                     '/model/train',
-                    yaml.safeDump({ ...domain, ...payload }, { sortKeys: true, skipInvalid: true }),
+                    yamlPayload,
                 );
                 if (trainingResponse.status === 200) {
                     const t1 = performance.now();
