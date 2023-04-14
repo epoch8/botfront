@@ -1,6 +1,5 @@
 /* eslint-disable global-require */
 import { Meteor } from 'meteor/meteor';
-import axios from 'axios';
 import _ from 'lodash';
 
 import { check, Match } from 'meteor/check';

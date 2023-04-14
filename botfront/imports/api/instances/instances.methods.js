@@ -112,7 +112,6 @@ const convertDomainBotfrontToRasa = (domain) => {
         ]),
     );
 
-    const entities = new Set();
     const rasaForms = Object.fromEntries(
         Object.entries(domain.forms).map(([formName, formParams]) => {
             for (const { name: slotName, filling } of formParams.slots) {
@@ -120,9 +119,15 @@ const convertDomainBotfrontToRasa = (domain) => {
                     type: 'any',
                     influence_conversation: false,
                 };
+                const mappings = filling.map(({ entity, ...rest }) => {
+                    if (entity) {
+                        return { entity: entity[0], ...rest };
+                    }
+                    return rest;
+                });
                 rasaSlots[slotName] = {
                     ...slotParams,
-                    mappings: filling,
+                    mappings,
                 };
             }
             const requiredSlots = [];
@@ -132,13 +137,15 @@ const convertDomainBotfrontToRasa = (domain) => {
                 found = false;
                 for (const { source, target } of formParams.graph_elements.edges) {
                     if (source === currentSlot) {
+                        if (found) {
+                            throw new Error(`Form "${formName}". Branching in forms not allowed!`);
+                        }
                         if (requiredSlots.includes(target)) {
                             throw new Error(`Circular dependency in "${formName}" form graph!`);
                         }
                         requiredSlots.push(target);
                         currentSlot = target;
                         found = true;
-                        break;
                     }
                 }
             }

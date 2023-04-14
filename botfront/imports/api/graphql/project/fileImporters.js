@@ -137,6 +137,18 @@ export const handleImportResponse = async (responses, projectId) => {
     await Promise.all(insertResponses);
 };
 
+export const handleImportActionsParams = async (actionsParams, projectId) => {
+    const { defaultDomain } = Projects.findOne({ _id: projectId });
+    const parsedDomain = safeLoad(defaultDomain.content);
+    const newActionsParams = { ...actionsParams, ...(parsedDomain.actionsParams || {}) };
+    parsedDomain.actionsParams = newActionsParams;
+    const newDomain = safeDump(parsedDomain);
+    await Meteor.callWithPromise('project.update', {
+        defaultDomain: { content: newDomain },
+        _id: projectId,
+    });
+};
+
 const wipeDomain = async (projectId) => {
     try {
         await botResponses.deleteMany({ projectId });
@@ -217,7 +229,7 @@ export const handleImportDomain = async (
 ) => {
     if (!files.length) return [];
     const {
-        slots, responses, forms, bfForms, actions,
+        slots, responses, forms, bfForms, actions, actionsParams,
     } = mergeDomains(files);
 
     if (wipeInvolvedCollections) {
@@ -252,6 +264,13 @@ export const handleImportDomain = async (
             }
         } catch (e) {
             errors.push(`error when importing actions: ${e.message}`);
+        }
+        try {
+            if (Object.keys(actionsParams || {}).length > 0) {
+                await handleImportActionsParams(actionsParams, projectId);
+            }
+        } catch (e) {
+            errors.push(`error when importing actions params: ${e.message}`);
         }
     };
 
@@ -429,7 +448,7 @@ export const handleImportFromResults = async (files, { supportedEnvs, projectId,
         return [`error when importing form results: ${e.message}`];
     }
 };
-   
+
 
 export const handleImportRasaConfig = async (files, { projectId, projectLanguages }) => {
     const languagesNotImported = new Set(projectLanguages);
@@ -515,7 +534,7 @@ export const handleImportConversations = async (
                         // we are looking conversation by the sender id because that is what define the user
                         // the id might have changed from a previous import
                         const exist = await Conversations.findOne({ 'tracker.sender_id': sender_id, projectId });
-                       
+
                         if (exist) {
                             return Conversations.updateOne(
                                 { 'tracker.sender_id': sender_id, projectId },

@@ -68,6 +68,7 @@ export const mergeDomains = (files) => {
             forms: {},
             bfForms: [],
             actions: [],
+            actionsParams: {},
         };
     }
     const allResponses = filesToProcess.reduce(
@@ -93,6 +94,10 @@ export const mergeDomains = (files) => {
         (all, { actions = [] }) => [...all, ...actions],
         [],
     );
+    const allActionsParams = filesToProcess.reduce(
+        (all, { actionsParams = {} }) => ({ ...all, ...actionsParams }),
+        [],
+    );
     const mergedResponses = deduplicateAndMergeResponses(allResponses);
     const mergedSlots = deduplicateArray(allSlots, 'name');
     const mergedBfForms = deduplicateArray(allBfForms, 'name');
@@ -103,6 +108,7 @@ export const mergeDomains = (files) => {
         forms: allForms,
         bfForms: mergedBfForms,
         actions: mergedActions,
+        actionsParams: allActionsParams,
     };
 };
 
@@ -189,6 +195,7 @@ const validateADomain = (
         responses: modernResponsesFromFile = {},
         forms: mixedFormsFromFile = {},
         actions: actionsFromFile = [],
+        actions_params: actionsParamsFromFile = {},
     } = domain;
     const { slots: defaultSlots = {}, responses: defaultResponses = {} } = defaultDomain;
     const responsesFromFile = {
@@ -307,6 +314,7 @@ const validateADomain = (
         responses: isDefaultDomain ? responsesRasaFormat : responses,
         actions: isDefaultDomain ? actionsWithoutResponses : actionNotInFragments,
         forms: formsFromFile,
+        actionsParams: actionsParamsFromFile,
     };
 
     return {
