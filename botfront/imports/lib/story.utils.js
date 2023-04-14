@@ -176,7 +176,7 @@ export const extractDomain = ({
             Object.keys(initialDomain.forms),
         );
         newEls.forEach(({ action, intent, entity }) => {
-            if (action) acc.actions.add(action);
+            if (action && typeof action === 'string') acc.actions.add(action);
             if (intent) acc.intents.add(intent);
             if (entity) acc.entities.add(entity);
         });

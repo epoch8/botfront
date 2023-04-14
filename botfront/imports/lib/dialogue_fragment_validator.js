@@ -74,6 +74,7 @@ export class DialogueFragmentValidator {
                 .findIndex(l => l.match(new RegExp(`^${k}: `)));
             if (
                 !dontCheckValue.includes(k)
+                && k !== 'action'
                 && typeof step[k] !== 'string'
                 && (!allowNull || step[k] !== null)
             ) {
