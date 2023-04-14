@@ -140,8 +140,8 @@ export const handleImportResponse = async (responses, projectId) => {
 export const handleImportActionsParams = async (actionsParams, projectId) => {
     const { defaultDomain } = Projects.findOne({ _id: projectId });
     const parsedDomain = safeLoad(defaultDomain.content);
-    const newActionsParams = { ...actionsParams, ...(parsedDomain.actionsParams || {}) };
-    parsedDomain.actionsParams = newActionsParams;
+    const newActionsParams = { ...actionsParams, ...(parsedDomain.actions_params || {}) };
+    parsedDomain.actions_params = newActionsParams;
     const newDomain = safeDump(parsedDomain);
     await Meteor.callWithPromise('project.update', {
         defaultDomain: { content: newDomain },
@@ -229,7 +229,7 @@ export const handleImportDomain = async (
 ) => {
     if (!files.length) return [];
     const {
-        slots, responses, forms, bfForms, actions, actionsParams,
+        slots, responses, forms, bfForms, actions, actions_params: actionsParams,
     } = mergeDomains(files);
 
     if (wipeInvolvedCollections) {

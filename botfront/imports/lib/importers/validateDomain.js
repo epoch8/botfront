@@ -68,7 +68,7 @@ export const mergeDomains = (files) => {
             forms: {},
             bfForms: [],
             actions: [],
-            actionsParams: {},
+            actions_params: {},
         };
     }
     const allResponses = filesToProcess.reduce(
@@ -95,7 +95,7 @@ export const mergeDomains = (files) => {
         [],
     );
     const allActionsParams = filesToProcess.reduce(
-        (all, { actionsParams = {} }) => ({ ...all, ...actionsParams }),
+        (all, { actions_params: actionsParams = {} }) => ({ ...all, ...actionsParams }),
         [],
     );
     const mergedResponses = deduplicateAndMergeResponses(allResponses);
@@ -108,7 +108,7 @@ export const mergeDomains = (files) => {
         forms: allForms,
         bfForms: mergedBfForms,
         actions: mergedActions,
-        actionsParams: allActionsParams,
+        actions_params: allActionsParams,
     };
 };
 
@@ -120,6 +120,7 @@ const mergeDefaultDomains = (files) => {
             responses: {},
             forms: {},
             actions: [],
+            actions_params: {},
         };
     }
     // the order of merging is important
@@ -157,12 +158,17 @@ const mergeDefaultDomains = (files) => {
         (all, { actions = [] }) => [...all, ...actions],
         [],
     );
+    const allActionsParams = filesToProcess.reduce(
+        (all, { actions_params: actionsParams = {} }) => ({ ...all, ...actionsParams }),
+        [],
+    );
     const mergedActions = deduplicateArray(allAction); // we are not using a set to deduplicate to keep the order of the actions
     return {
         ...(Object.keys(allSlots).length ? { slots: allSlots } : {}),
         ...(Object.keys(allResponses).length ? { responses: allResponses } : {}),
         ...(Object.keys(allForms).length ? { forms: allForms } : {}),
         ...(mergedActions.length ? { actions: mergedActions } : {}),
+        actions_params: allActionsParams,
     };
 };
 
@@ -197,7 +203,11 @@ const validateADomain = (
         actions: actionsFromFile = [],
         actions_params: actionsParamsFromFile = {},
     } = domain;
-    const { slots: defaultSlots = {}, responses: defaultResponses = {} } = defaultDomain;
+    const {
+        slots: defaultSlots = {},
+        responses: defaultResponses = {},
+        actions_params: defaultActionsParams = {},
+    } = defaultDomain;
     const responsesFromFile = {
         ...(legacyResponsesFromFile || {}),
         ...(modernResponsesFromFile || {}),
@@ -314,7 +324,7 @@ const validateADomain = (
         responses: isDefaultDomain ? responsesRasaFormat : responses,
         actions: isDefaultDomain ? actionsWithoutResponses : actionNotInFragments,
         forms: formsFromFile,
-        actionsParams: actionsParamsFromFile,
+        actions_params: { ...defaultActionsParams, ...actionsParamsFromFile },
     };
 
     return {
