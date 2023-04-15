@@ -89,7 +89,7 @@ const convertExampleJsonToRasa = ({ text, entities = [] }) => {
 };
 
 const convertDomainBotfrontToRasa = (domain) => {
-    console.log(domain.forms);
+    console.log(JSON.stringify(domain.forms));
     const rasaSlots = Object.fromEntries(
         Object.entries(domain.slots).map(([key, slotInfo]) => {
             if (slotInfo.type === 'unfeaturized') {
@@ -117,19 +117,24 @@ const convertDomainBotfrontToRasa = (domain) => {
     const rasaForms = Object.fromEntries(
         Object.entries(domain.forms).map(([formName, formParams]) => {
             for (const { name: slotName, filling } of formParams.slots) {
-                const slotParams = rasaSlots[slotName] || {
+                const { mappings = [], ...slotParams } = rasaSlots[slotName] || {
                     type: 'any',
                     influence_conversation: false,
                 };
-                const mappings = filling.map(({ entity, ...rest }) => {
+                const condition = {
+                    active_loop: formName,
+                    requested_slot: slotName,
+                };
+                const newMappings = filling.map(({ entity, ...rest }) => {
+                    const mapping = { ...rest, conditions: [condition] };
                     if (entity) {
-                        return { entity: entity[0], ...rest };
+                        [mapping.entity] = entity;
                     }
-                    return rest;
+                    return mapping;
                 });
                 rasaSlots[slotName] = {
                     ...slotParams,
-                    mappings,
+                    mappings: [...mappings, ...newMappings],
                 };
             }
             const requiredSlots = [];
