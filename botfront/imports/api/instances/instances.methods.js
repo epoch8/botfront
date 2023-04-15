@@ -89,7 +89,7 @@ const convertExampleJsonToRasa = ({ text, entities = [] }) => {
 };
 
 const convertDomainBotfrontToRasa = (domain) => {
-    console.log(domain);
+    console.log(domain.forms);
     const rasaSlots = Object.fromEntries(
         Object.entries(domain.slots).map(([key, slotInfo]) => {
             if (slotInfo.type === 'unfeaturized') {

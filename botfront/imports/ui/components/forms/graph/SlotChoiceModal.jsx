@@ -139,8 +139,13 @@ const SlotChoiceModal = (props) => {
             id='add-slot'
             data-cy={`add-node-${node.id}`}
             disabled={!letUserAddEdge}
-        >
-            <Dropdown.Menu>
+            onClick={() => {
+                setDdStep('add-question');
+                handleOpen();
+            }}
+        />
+        // E8 disable "Set slot"
+        /* <Dropdown.Menu>
                 <Dropdown.Item
                     data-cy='add-question'
                     onClick={() => {
@@ -159,8 +164,8 @@ const SlotChoiceModal = (props) => {
                 >
                     Set a slot
                 </Dropdown.Item>
-            </Dropdown.Menu>
-        </Dropdown>
+            </Dropdown.Menu> */
+        // </Dropdown>
     );
 
     const renderSetSlot = () => (
