@@ -38,7 +38,7 @@ export const saveModel = async (projectId, dataStream) => {
         await fs.promises.unlink(tmpSymlinkPath);
     // eslint-disable-next-line no-empty
     } catch { }
-    await fs.promises.symlink(modelFullPath, tmpSymlinkPath);
+    await fs.promises.symlink(modelPath, tmpSymlinkPath);
     await fs.promises.rename(tmpSymlinkPath, symlinkPath);
     Models.insert({
         projectId,

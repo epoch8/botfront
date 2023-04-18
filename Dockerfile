@@ -48,6 +48,9 @@ RUN npm install --prefix $APP_BUNDLE_FOLDER/bundle/programs/server nodegit
 RUN npm install -C $SCRIPTS_FOLDER p-wait-for mongodb
 RUN chgrp -R 0 $SCRIPTS_FOLDER && chmod -R g=u $SCRIPTS_FOLDER
 
+# TODO: move up
+RUN apt-get install -y curl
+
 VOLUME [ "/app/models"]
 ENTRYPOINT ["/docker/entrypoint.sh"]
 

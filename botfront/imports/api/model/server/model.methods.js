@@ -34,8 +34,9 @@ Meteor.methods({
         if (!modelInfo) {
             returnError(`Model ${modelId} not found for project ${projectId}`);
         }
+        const modelPath = modelInfo.path;
         const modelDir = `${modelsPath}/${projectId}`;
-        const fullModelPath = `${modelDir}/${modelInfo.path}`;
+        const fullModelPath = `${modelDir}/${modelPath}`;
         try {
             await fs.promises.stat(fullModelPath);
         } catch (error) {
@@ -48,7 +49,7 @@ Meteor.methods({
         // eslint-disable-next-line no-empty
         } catch { }
         try {
-            await fs.promises.symlink(fullModelPath, tmpSymlinkPath);
+            await fs.promises.symlink(modelPath, tmpSymlinkPath);
             await fs.promises.rename(tmpSymlinkPath, symlinkPath);
         } catch (error) {
             returnError(error, 'Error deploying model');
