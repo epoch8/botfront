@@ -492,10 +492,23 @@ if (Meteor.isServer) {
                 const {
                     stories = [],
                     rules = [],
+                    domain,
                     ...payload
                 } = await Meteor.call('rasa.getTrainingPayload', projectId, { env });
+                // Backport to rasa-for-botfront
+                const domainObj = yaml.safeLoad(domain);
+                const [processedStories, actionsParams] = processParametrizedActions(stories, {});
+                const [processedRules, allActionsParams] = processParametrizedActions(rules, actionsParams);
+                domainObj.actions = deduplicateArray(
+                    [...domainObj.actions, ...Object.keys(allActionsParams)],
+                );
+                domainObj.actions_params = allActionsParams;
+                payload.domain = yaml.safeDump(
+                    domainObj, { skipInvalid: true, sortKeys: true },
+                );
+                //
                 payload.fragments = yaml.safeDump(
-                    { stories, rules },
+                    { stories: processedStories, rules: processedRules },
                     { skipInvalid: true },
                 );
                 payload.load_model_after = true;
