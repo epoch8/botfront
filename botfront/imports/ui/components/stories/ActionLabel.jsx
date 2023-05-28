@@ -17,7 +17,7 @@ export default function ActionLabel({ value, onChange, params }) {
             )}
             initialValue={value}
             initialParams={params}
-            onSelect={(action, parameters) => onChange(action, parameters)}
+            onSelect={action => onChange(action)}
         />
     );
 }

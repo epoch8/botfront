@@ -79,9 +79,15 @@ const ActionPopupContent = (props) => {
             <Form
                 onSubmit={(e) => {
                     e.preventDefault();
-                    setActionName('');
+                    // setActionName('');
                     setIsOpen(false);
-                    if (actionName.trim()) onSelect(actionName, actionParams);
+                    if (!actionName.trim()) return;
+                    if (actionParams && actionParams.length) {
+                        const sortedParams = [...actionParams].sort((a, b) => ((a[0] < b[0]) ? -1 : 1));
+                        onSelect({ name: actionName, params: sortedParams });
+                    } else {
+                        onSelect(actionName);
+                    }
                 }}
             >
                 <Input

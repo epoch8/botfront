@@ -194,10 +194,18 @@ const StoryGroupTreeNode = (props) => {
                                             className='add-form-item'
                                             {...(!somethingIsMutating
                                                 ? {
-                                                    onClick: () => handleAddForm(
-                                                        item.id,
-                                                        `${item.title.replace(/[^a-zA-Z0-9-_]/g, '')}_form`,
-                                                    ),
+                                                    onClick: () => {
+                                                        let formName = item.title.replace(
+                                                            /[^a-zA-Z0-9-_]/g, '',
+                                                        );
+                                                        if (!formName.length) {
+                                                            formName = 'untitled';
+                                                        }
+                                                        handleAddForm(
+                                                            item.id,
+                                                            `${formName}_form`,
+                                                        );
+                                                    },
                                                     onMouseDown: (e) => {
                                                         e.preventDefault();
                                                         e.stopPropagation();
