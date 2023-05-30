@@ -121,6 +121,7 @@ const scrapeActionsIntentsAndEntities = (el, exclude = []) => {
     }
     if (el && typeof el === 'object') {
         return Object.keys(el).flatMap((k) => {
+            if (k === 'or') return scrapeActionsIntentsAndEntities(el[k], exclude);
             if (k === 'action' && !exclude.includes(el[k])) {
                 return [{ action: el[k] }];
             }
