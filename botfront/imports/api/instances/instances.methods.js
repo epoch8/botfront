@@ -457,6 +457,7 @@ if (Meteor.isServer) {
                 rules,
                 nlu,
                 config,
+                fixed_model_name: getProjectModelFileName(projectId),
                 augmentation_factor: augmentationFactor,
             };
             auditLog('Retreived training payload for project', {
@@ -512,7 +513,7 @@ if (Meteor.isServer) {
                 addLoggingInterceptors(trainingClient, appMethodLogger);
                 const fixedModelName = getProjectModelFileName(projectId);
                 const trainingResponse = await trainingClient.post(
-                    `/model/train?fixed_model_name=${fixedModelName}`,
+                    '/model/train',
                     payload,
                 );
                 if (trainingResponse.status === 200) {
