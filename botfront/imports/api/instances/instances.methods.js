@@ -511,6 +511,7 @@ if (Meteor.isServer) {
                     });
 
                 addLoggingInterceptors(trainingClient, appMethodLogger);
+                const fixedModelName = getProjectModelFileName(projectId);
                 const trainingResponse = await trainingClient.post(
                     '/model/train',
                     payload,
@@ -587,7 +588,6 @@ if (Meteor.isServer) {
                 nlu,
                 ...config,
                 ...yaml.safeLoad(corePolicies),
-                fixed_model_name: getProjectModelFileName(projectId),
                 augmentation_factor: augmentationFactor,
             };
             auditLog('Retreived training payload for project', {
@@ -638,8 +638,9 @@ if (Meteor.isServer) {
                 );
                 console.log(yamlPayload);
                 addLoggingInterceptors(trainingClient, appMethodLogger);
+                const fixedModelName = getProjectModelFileName(projectId);
                 const trainingResponse = await trainingClient.post(
-                    '/model/train',
+                    `/model/train?fixed_model_name=${fixedModelName}`,
                     yamlPayload,
                 );
                 if (trainingResponse.status === 200) {
