@@ -3,13 +3,22 @@ import { ApolloServer, AuthenticationError } from 'apollo-server-express';
 import { WebApp } from 'meteor/webapp';
 import { getUser } from 'meteor/apollo';
 import { Accounts } from 'meteor/accounts-base';
+
 import axios from 'axios';
+import bcrypt from 'bcrypt';
+import url from 'url';
+
+import { IncomingMessage, OutgoingMessage } from 'http';
 import { typeDefs, resolvers } from '../../api/graphql/index';
 import { addMeteorUserToCall } from '../../api/graphql/utils';
+import { saveModel } from '../../api/model/server/model.utils';
 import { can } from '../../lib/scopes';
 
 const MONGO_URL = process.env.MONGO_URL
     || `mongodb://localhost:${(process.env.METEOR_PORT || 3000) + 1}/meteor`;
+
+const API_TOKEN = process.env.API_TOKEN
+    || '$2b$12$bSA14.KDRrUYjJKIfELsH.fMqjRZf1U3XDLZby6oh7J/sZH3z1w/K';
 
 export const connectToDb = () => {
     mongoose.connect(MONGO_URL, {
@@ -68,6 +77,24 @@ const getUserFromRequest = async (req) => {
     return user;
 };
 
+const checkApiToken = async token => bcrypt.compare(token, API_TOKEN);
+
+const apiWrapper = (methods, handler) => async (req, res, next) => {
+    if (methods && !methods.includes(req.method)) {
+        res.statusCode = 405;
+        res.end();
+        return;
+    }
+    const { query } = url.parse(req.url, true);
+    if (!query.token || !(await checkApiToken(query.token))) {
+        res.statusCode = 403;
+        res.end();
+        return;
+    }
+    req.query = query;
+    await handler(req, res, next);
+};
+
 export const runAppolloServer = () => {
     const server = new ApolloServer({
         typeDefs,
@@ -93,6 +120,7 @@ export const runAppolloServer = () => {
         }
     });
 
+    // Legacy?
     WebApp.connectHandlers.use('/export-project/', async (req, res) => {
         try {
             if (req.method !== 'POST') {
@@ -163,6 +191,51 @@ export const runAppolloServer = () => {
                 res.end();
             });
     });
+
+    WebApp.connectHandlers.use('/api/export-project', apiWrapper(['POST'],
+        async (req, res) => {
+            try {
+                const { projectId } = req.query;
+                if (!projectId) {
+                    res.statusCode = 404;
+                    res.end();
+                    return;
+                }
+                const zip = await Meteor.callWithPromise('exportRasa', projectId, 'all', {});
+                res.setHeader('Content-Type', 'application/zip');
+                res.setHeader(
+                    'Content-Disposition',
+                    `attachment; filename="${projectId}.zip`,
+                );
+                res.setHeader('Content-Length', zip.length);
+                res.statusCode = 200;
+                res.write(zip);
+            } catch (error) {
+                if (error.error === '403') {
+                    res.statusCode = 403;
+                } else {
+                    console.error(error);
+                    res.statusCode = 500;
+                }
+            }
+            res.end();
+        }));
+
+    WebApp.connectHandlers.use('/api/save-model', apiWrapper(['POST'],
+        async (req: IncomingMessage, res: OutgoingMessage) => {
+            const { projectId } = req.query;
+            if (!projectId) {
+                res.statusCode = 404;
+                res.end();
+                return;
+            }
+            if (await saveModel(projectId, req)) {
+                res.status = 201;
+            } else {
+                res.status = 500;
+            }
+            res.end();
+        }));
 };
 
 Meteor.startup(() => {

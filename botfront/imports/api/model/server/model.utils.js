@@ -61,6 +61,7 @@ const sendModel = async (url, method, projectId, namespace, modelData) => {
             model: modelData,
         };
         logger.info(`Sending model for project ${projectId} to ${url}`);
+        // TODO: request deprecated!
         const response = await new Promise((resolve, reject) => {
             request(url, { method, formData: data }, (error, resp) => {
                 if (error) {
