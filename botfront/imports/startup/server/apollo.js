@@ -8,7 +8,7 @@ import axios from 'axios';
 import bcrypt from 'bcrypt';
 import url from 'url';
 
-import { IncomingMessage, OutgoingMessage } from 'http';
+import { IncomingMessage, ServerResponse } from 'http';
 import { typeDefs, resolvers } from '../../api/graphql/index';
 import { addMeteorUserToCall } from '../../api/graphql/utils';
 import { saveModel } from '../../api/model/server/model.utils';
@@ -222,7 +222,12 @@ export const runAppolloServer = () => {
         }));
 
     WebApp.connectHandlers.use('/api/save-model', apiWrapper(['POST'],
-        async (req: IncomingMessage, res: OutgoingMessage) => {
+        /**
+         * @param {IncomingMessage} req
+         * @param {ServerResponse} res
+         * @returns {void}
+         */
+        async (req, res) => {
             const { projectId } = req.query;
             if (!projectId) {
                 res.statusCode = 404;
@@ -230,9 +235,9 @@ export const runAppolloServer = () => {
                 return;
             }
             if (await saveModel(projectId, req)) {
-                res.status = 201;
+                res.statusCode = 201;
             } else {
-                res.status = 500;
+                res.statusCode = 500;
             }
             res.end();
         }));
