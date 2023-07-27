@@ -411,6 +411,7 @@ if (Meteor.isServer) {
             }
         },
 
+        // ! Legacy
         async 'rasa.getTrainingPayload'(
             projectId,
             { language = '', env = 'development' } = {},
@@ -471,6 +472,7 @@ if (Meteor.isServer) {
             return payload;
         },
 
+        // ! Legacy
         async 'rasa.train'(projectId, env = 'development') {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
@@ -511,7 +513,6 @@ if (Meteor.isServer) {
                     });
 
                 addLoggingInterceptors(trainingClient, appMethodLogger);
-                const fixedModelName = getProjectModelFileName(projectId);
                 const trainingResponse = await trainingClient.post(
                     '/model/train',
                     payload,
@@ -735,6 +736,8 @@ if (Meteor.isServer) {
                 throw formatError(e);
             }
         },
+
+        // ! Legacy
         async 'externalTraining.train'(projectId, trainingHost) {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
@@ -750,6 +753,8 @@ if (Meteor.isServer) {
             }
             await axios.post(`${trainingHost}/train/${projectId}`);
         },
+
+        // ! Legacy
         async 'externalTraining.cancel'(projectId, trainingHost) {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
@@ -764,6 +769,45 @@ if (Meteor.isServer) {
                 return;
             }
             await axios.post(`${trainingHost}/cancel/${projectId}`);
+        },
+
+        /**
+         * @param {string} projectId
+         * @param {string} trainingHost
+         * @param {string} image
+         * @param {{botfrntUrl?: string, token?: string}} opts
+         * @returns {Promise<void>}
+         */
+        async 'externalTraining2.train'(projectId, trainingHost, image, opts = {}) {
+            checkIfCan('nlu-data:x', projectId);
+            check(projectId, String);
+            check(trainingHost, String);
+            check(image, String);
+            check(opts, Object);
+            const logger = getAppLoggerForMethod(
+                trainingAppLogger,
+                'externalTraining.train',
+                Meteor.userId(),
+                { projectId, trainingHost },
+            );
+            if (!trainingHostExists(projectId, trainingHost)) {
+                logger.error('Host not found');
+                throw new Error('Host not found');
+            }
+            const rootUrl = opts.botfrntUrl || process.env.ROOT_URL;
+            if (!rootUrl) {
+                throw new Error('botfrntUrl not provided and ROOT_URL env is not set');
+            }
+            let queryParams = `project_id=${projectId}&image=${image}&callback_url=${rootUrl}`;
+            if (opts.token) {
+                queryParams = `${queryParams}&token=${opts.token}`;
+            }
+
+            const resp = await axios.post(`${trainingHost}/train?${queryParams}`);
+            if (resp.status.toString()[0] !== '2') {
+                logger.error(`Resp: ${resp.statusText}`);
+                throw new Error(resp.statusText);
+            }
         },
     });
 }
