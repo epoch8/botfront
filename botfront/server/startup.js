@@ -1,6 +1,6 @@
+/* eslint-disable no-console */
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Accounts } from 'meteor/accounts-base';
-import axios from 'axios';
 import dotenv from 'dotenv';
 import { createGraphQLPublication } from 'meteor/swydo:ddp-apollo';
 import { makeExecutableSchema } from '@graphql-tools/schema';
@@ -10,12 +10,13 @@ import { getAppLoggerForFile } from './logger';
 import { Projects } from '../imports/api/project/project.collection';
 import { Instances } from '../imports/api/instances/instances.collection';
 import { createAxiosForRasa } from '../imports/lib/utils';
+import { status as etStatus } from '../imports/lib/server/externalTraining';
+import packageInfo from '../package.json';
 
 const fileAppLogger = getAppLoggerForFile(__filename);
 
 Meteor.startup(function () {
     if (Meteor.isServer) {
-        const packageInfo = require('./../package.json');
         const schema = makeExecutableSchema({
             typeDefs: typeDefsWithUpload, // makeExecutableSchema need to define upload when working with files
             resolvers,
@@ -74,38 +75,60 @@ Meteor.startup(function () {
                         if (instanceState === 0) status = 'notTraining';
                         if (instanceState === -1) status = 'notReachable';
 
+                        // ! Legacy
+                        // const externalTrainingStatuses = await Promise.all(
+                        //     (instance.externalTraining || []).map(async (trainingConfig) => {
+                        //         let externalTrainingStatus = 'notReachable';
+                        //         const { host } = trainingConfig;
+                        //         try {
+                        //             const resp = await axios.post(
+                        //                 `${host}/status/${instance.projectId}`,
+                        //             );
+                        //             const respTrainingStatus = resp.data[0].status;
+                        //             switch (respTrainingStatus) {
+                        //             case 'scheduled':
+                        //             case 'queued':
+                        //             case 'running':
+                        //             case 'restarting':
+                        //             case 'shutdown':
+                        //             case 'up_for_retry':
+                        //             case 'up_for_reschedule':
+                        //             case 'deferred':
+                        //                 externalTrainingStatus = 'training';
+                        //                 break;
+                        //             case 'unknown':
+                        //             case 'none':
+                        //             case 'success':
+                        //             case 'failed':
+                        //             case 'skipped':
+                        //             case 'upstream_failed':
+                        //             case 'removed':
+                        //                 externalTrainingStatus = 'notTraining';
+                        //                 break;
+                        //             default:
+                        //                 externalTrainingStatus = 'notReachable';
+                        //                 break;
+                        //             }
+                        //         } catch (error) {
+                        //             console.error(error);
+                        //         }
+                        //         return { host, status: externalTrainingStatus };
+                        //     }),
+                        // );
+                        // { status: none/training/success/failed }
+
                         const externalTrainingStatuses = await Promise.all(
                             (instance.externalTraining || []).map(async (trainingConfig) => {
+                                const { host, token } = trainingConfig;
                                 let externalTrainingStatus = 'notReachable';
-                                const { host } = trainingConfig;
                                 try {
-                                    const resp = await axios.post(
-                                        `${host}/status/${instance.projectId}`,
+                                    const respTrainingStatus = await etStatus(
+                                        instance.projectId, host, { token },
                                     );
-                                    const respTrainingStatus = resp.data[0].status;
-                                    switch (respTrainingStatus) {
-                                    case 'scheduled':
-                                    case 'queued':
-                                    case 'running':
-                                    case 'restarting':
-                                    case 'shutdown':
-                                    case 'up_for_retry':
-                                    case 'up_for_reschedule':
-                                    case 'deferred':
+                                    if (respTrainingStatus === 'training') {
                                         externalTrainingStatus = 'training';
-                                        break;
-                                    case 'unknown':
-                                    case 'none':
-                                    case 'success':
-                                    case 'failed':
-                                    case 'skipped':
-                                    case 'upstream_failed':
-                                    case 'removed':
+                                    } else {
                                         externalTrainingStatus = 'notTraining';
-                                        break;
-                                    default:
-                                        externalTrainingStatus = 'notReachable';
-                                        break;
                                     }
                                 } catch (error) {
                                     console.error(error);

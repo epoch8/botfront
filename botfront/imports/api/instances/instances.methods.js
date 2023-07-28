@@ -279,7 +279,7 @@ export const getNluDataAndConfig = async (projectId, language, intents) => {
                 }) => ({
                     text,
                     intent,
-                    entities: entities.map(({ _id: _, ...rest }) => dropNullValuesFromObject(rest)),
+                    entities: entities.map(({ _id, ...rest }) => dropNullValuesFromObject(rest)),
                     metadata: {
                         ...metadata,
                         ...(canonical ? { canonical } : {}),
@@ -338,6 +338,7 @@ if (Meteor.isServer) {
         auditLog,
     } from '../../../server/logger';
     import { postTraining } from '../model/server/model.utils';
+    import { train as etTrain, cancel as etCancel } from '../../lib/server/externalTraining';
     // eslint-disable-next-line import/order
     import { performance } from 'perf_hooks';
 
@@ -774,40 +775,45 @@ if (Meteor.isServer) {
         /**
          * @param {string} projectId
          * @param {string} trainingHost
-         * @param {string} image
-         * @param {{botfrntUrl?: string, token?: string}} opts
+         * @param {{image?: string, botfrntUrl?: string, token?: string}} opts
          * @returns {Promise<void>}
          */
-        async 'externalTraining2.train'(projectId, trainingHost, image, opts = {}) {
+        async 'externalTraining2.train'(projectId, trainingHost, opts = {}) {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
             check(trainingHost, String);
-            check(image, String);
             check(opts, Object);
+            check(opts.image, Match.Maybe(String));
+            check(opts.botfrntUrl, Match.Maybe(String));
+            check(opts.token, Match.Maybe(String));
             const logger = getAppLoggerForMethod(
                 trainingAppLogger,
-                'externalTraining.train',
+                'externalTraining2.train',
                 Meteor.userId(),
-                { projectId, trainingHost },
+                { projectId, trainingHost, opts },
             );
             if (!trainingHostExists(projectId, trainingHost)) {
                 logger.error('Host not found');
                 throw new Error('Host not found');
             }
-            const rootUrl = opts.botfrntUrl || process.env.ROOT_URL;
-            if (!rootUrl) {
-                throw new Error('botfrntUrl not provided and ROOT_URL env is not set');
-            }
-            let queryParams = `project_id=${projectId}&image=${image}&callback_url=${rootUrl}`;
-            if (opts.token) {
-                queryParams = `${queryParams}&token=${opts.token}`;
-            }
 
-            const resp = await axios.post(`${trainingHost}/train?${queryParams}`);
-            if (resp.status.toString()[0] !== '2') {
-                logger.error(`Resp: ${resp.statusText}`);
-                throw new Error(resp.statusText);
-            }
+            const yml = await Meteor.callWithPromise('rasa.getRasaTrainingPayload', projectId);
+            await etTrain(projectId, trainingHost, yml, opts);
+        },
+
+        /**
+         * @param {string} projectId
+         * @param {string} trainingHost
+         * @param {{token?: string}} opts
+         * @returns {Promise<boolean>}
+         */
+        async 'externalTraining2.cancel'(projectId, trainingHost, opts = {}) {
+            checkIfCan('nlu-data:x', projectId);
+            check(projectId, String);
+            check(trainingHost, String);
+            check(opts, Object);
+            check(opts.token, Match.Maybe(String));
+            return etCancel(projectId, trainingHost, opts);
         },
     });
 }

@@ -52,9 +52,11 @@ const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
         setClicked(true);
         try {
             if (training) {
-                await Meteor.callWithPromise('externalTraining.cancel', projectId, trainingConfig.host);
+                await Meteor.callWithPromise('externalTraining.cancel',
+                    projectId, trainingConfig.host);
             } else {
-                await Meteor.callWithPromise('externalTraining.train', projectId, trainingConfig.host);
+                await Meteor.callWithPromise('externalTraining.train',
+                    projectId, trainingConfig.host, trainingConfig);
             }
         } catch (error) {
             console.error(error);

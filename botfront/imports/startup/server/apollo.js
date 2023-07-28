@@ -9,6 +9,7 @@ import axios from 'axios';
 import bcrypt from 'bcrypt';
 import url from 'url';
 
+// eslint-disable-next-line no-unused-vars
 import { IncomingMessage, ServerResponse } from 'http';
 import { typeDefs, resolvers } from '../../api/graphql/index';
 import { addMeteorUserToCall } from '../../api/graphql/utils';
@@ -33,7 +34,6 @@ export const connectToDb = () => {
         throw new Error(`unable to connect to database: ${MONGO_URL}`);
     });
 };
-
 
 /**
  * @returns {Meteor.User}
@@ -232,7 +232,7 @@ export const runAppolloServer = () => {
                     return;
                 }
 
-                const zip = await addMeteorUserToCall(
+                const yml = await addMeteorUserToCall(
                     getExternalConsumer(),
                     () => Meteor.callWithPromise('rasa.getRasaTrainingPayload', projectId),
                 );
@@ -241,9 +241,9 @@ export const runAppolloServer = () => {
                     'Content-Disposition',
                     `attachment; filename="${projectId}.yml`,
                 );
-                res.setHeader('Content-Length', zip.length);
+                res.setHeader('Content-Length', yml.length);
                 res.statusCode = 200;
-                res.write(zip);
+                res.write(yml);
             } catch (error) {
                 if (error.error === '403') {
                     res.statusCode = 403;
