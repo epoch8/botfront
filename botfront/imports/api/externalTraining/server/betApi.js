@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line no-unused-vars
 import axios, { AxiosResponse } from 'axios';
+// eslint-disable-next-line no-unused-vars
 import { Stream } from 'stream';
 
 const { EXTERNAL_TRAINING_TOKEN, EXTERNAL_TRAINING_IMAGE, ROOT_URL } = process.env;
