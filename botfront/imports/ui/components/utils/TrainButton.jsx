@@ -75,7 +75,7 @@ class TrainButton extends React.Component {
             language,
         } = this.context;
         Meteor.call('project.markTrainingStarted', projectId);
-        Meteor.apply('rasa.train3', [projectId, target, language], { noRetry: true }, wrapMeteorCallback());
+        Meteor.apply('rasa3.train', [projectId, target, language], { noRetry: true }, wrapMeteorCallback());
     };
 
     showModal = (env, visible) => {

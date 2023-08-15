@@ -4,10 +4,13 @@ export const ExternalTrainingSchema = new SimpleSchema({
     jobId: String,
     projectId: String,
     betUrl: String,
-    backupPath: String,
     status: {
         type: String,
         allowedValues: ['training', 'failed', 'success', 'cancelled'],
+    },
+    backupId: {
+        type: String,
+        optional: true,
     },
     logs: {
         type: String,

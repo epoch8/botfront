@@ -5,6 +5,7 @@ import { Models } from '../model.collection';
 import { Projects } from '../../project/project.collection';
 
 import { getPostTrainingWebhook } from '../../../lib/utils';
+import { MODELS_PATH } from '../../../../server/config';
 import {
     getAppLoggerForFile,
 } from '../../../../server/logger';
@@ -12,12 +13,11 @@ import {
 const logger = getAppLoggerForFile(__filename);
 
 export const saveModel = async (projectId, dataStream) => {
-    const modelsPath = process.env.MODELS_PATH;
-    if (!modelsPath) {
+    if (!MODELS_PATH) {
         logger.error('Unable to save model. MODELS_PATH env var not set');
         return null;
     }
-    const modelDir = `${modelsPath}/${projectId}`;
+    const modelDir = `${MODELS_PATH}/${projectId}`;
     await fs.promises.mkdir(modelDir, { recursive: true });
 
     const ts = new Date();
@@ -84,7 +84,7 @@ const sendModel = async (url, method, projectId, namespace, modelData) => {
 
 export const postTraining = async (projectId, modelData) => {
     let modelFullPath;
-    if (process.env.MODELS_PATH) {
+    if (MODELS_PATH) {
         modelFullPath = await saveModel(projectId, modelData);
     }
     const trainingWebhook = await getPostTrainingWebhook();

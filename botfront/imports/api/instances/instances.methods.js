@@ -338,16 +338,10 @@ if (Meteor.isServer) {
         auditLog,
     } from '../../../server/logger';
     import { postTraining } from '../model/server/model.utils';
-    import { train as etTrain, cancel as etCancel } from '../../lib/server/externalTraining';
     // eslint-disable-next-line import/order
     import { performance } from 'perf_hooks';
 
     const trainingAppLogger = getAppLoggerForFile(__filename);
-
-    const trainingHostExists = (projectId, trainingHost) => !!Instances.findOne({
-        projectId,
-        externalTraining: { $elemMatch: { host: trainingHost } },
-    }, { fields: {} });
 
     Meteor.methods({
         async 'rasa.parse'(instance, examples, options = {}) {
@@ -549,7 +543,7 @@ if (Meteor.isServer) {
             }
         },
 
-        async 'rasa.getRasaTrainingPayload'(
+        async 'rasa3.getTrainingPayload'(
             projectId,
             { language = '', env = 'development' } = {},
         ) {
@@ -577,8 +571,6 @@ if (Meteor.isServer) {
             const selectedIntents = wasPartial
                 ? yaml.safeLoad(domain).intents
                 : undefined;
-            // NOTE removed multi language support
-            console.log(`language: ${language}`);
             const {
                 nlu,
                 config,
@@ -590,7 +582,7 @@ if (Meteor.isServer) {
                 nlu,
                 ...config,
                 ...yaml.safeLoad(corePolicies),
-                augmentation_factor: augmentationFactor,
+                augmentationFactor,
             };
             auditLog('Retreived training payload for project', {
                 user: Meteor.user(),
@@ -603,7 +595,7 @@ if (Meteor.isServer) {
             return payload;
         },
 
-        async 'rasa.train3'(projectId, env = 'development', language = '') {
+        async 'rasa3.train'(projectId, env = 'development', language = '') {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
             auditLog('Trained project', {
@@ -624,8 +616,8 @@ if (Meteor.isServer) {
             appMethodLogger.debug(`Training project ${projectId}...`);
             const t0 = performance.now();
             try {
-                const payload = await Meteor.call(
-                    'rasa.getRasaTrainingPayload', projectId, { env, language },
+                const { augmentationFactor, ...payload } = await Meteor.call(
+                    'rasa3.getTrainingPayload', projectId, { env, language },
                 );
                 const trainingClient = await createAxiosForRasa(projectId,
                     {
@@ -638,13 +630,14 @@ if (Meteor.isServer) {
                     payload,
                     { sortKeys: true, skipInvalid: true },
                 );
-                console.log(yamlPayload);
+                appMethodLogger.debug(yamlPayload);
                 addLoggingInterceptors(trainingClient, appMethodLogger);
                 const fixedModelName = getProjectModelFileName(projectId);
-                const trainingResponse = await trainingClient.post(
-                    `/model/train?fixed_model_name=${fixedModelName}`,
-                    yamlPayload,
-                );
+                let url = `/model/train?fixed_model_name=${fixedModelName}`;
+                if (typeof augmentationFactor === 'number') {
+                    url = `${url}&augmentation=${augmentationFactor}`;
+                }
+                const trainingResponse = await trainingClient.post(url, yamlPayload);
                 if (trainingResponse.status === 200) {
                     const t1 = performance.now();
                     appMethodLogger.debug(
@@ -739,81 +732,37 @@ if (Meteor.isServer) {
         },
 
         // ! Legacy
-        async 'externalTraining.train'(projectId, trainingHost) {
-            checkIfCan('nlu-data:x', projectId);
-            check(projectId, String);
-            check(trainingHost, String);
-            if (!trainingHostExists(projectId, trainingHost)) {
-                getAppLoggerForMethod(
-                    trainingAppLogger,
-                    'externalTraining.train',
-                    Meteor.userId(),
-                    { projectId, trainingHost },
-                ).error('Host not found');
-                return;
-            }
-            await axios.post(`${trainingHost}/train/${projectId}`);
-        },
+        // async 'externalTraining.train'(projectId, trainingHost) {
+        //     checkIfCan('nlu-data:x', projectId);
+        //     check(projectId, String);
+        //     check(trainingHost, String);
+        //     if (!trainingHostExists(projectId, trainingHost)) {
+        //         getAppLoggerForMethod(
+        //             trainingAppLogger,
+        //             'externalTraining.train',
+        //             Meteor.userId(),
+        //             { projectId, trainingHost },
+        //         ).error('Host not found');
+        //         return;
+        //     }
+        //     await axios.post(`${trainingHost}/train/${projectId}`);
+        // },
 
         // ! Legacy
-        async 'externalTraining.cancel'(projectId, trainingHost) {
-            checkIfCan('nlu-data:x', projectId);
-            check(projectId, String);
-            check(trainingHost, String);
-            if (!trainingHostExists(projectId, trainingHost)) {
-                getAppLoggerForMethod(
-                    trainingAppLogger,
-                    'externalTraining.cancel',
-                    Meteor.userId(),
-                    { projectId, trainingHost },
-                ).error('Host not found');
-                return;
-            }
-            await axios.post(`${trainingHost}/cancel/${projectId}`);
-        },
-
-        /**
-         * @param {string} projectId
-         * @param {string} trainingHost
-         * @param {{image?: string, botfrntUrl?: string, token?: string}} opts
-         * @returns {Promise<void>}
-         */
-        async 'externalTraining2.train'(projectId, trainingHost, opts = {}) {
-            checkIfCan('nlu-data:x', projectId);
-            check(projectId, String);
-            check(trainingHost, String);
-            check(opts, Object);
-            check(opts.image, Match.Maybe(String));
-            check(opts.botfrntUrl, Match.Maybe(String));
-            check(opts.token, Match.Maybe(String));
-            const logger = getAppLoggerForMethod(
-                trainingAppLogger,
-                'externalTraining2.train',
-                Meteor.userId(),
-                { projectId, trainingHost, opts },
-            );
-            if (!trainingHostExists(projectId, trainingHost)) {
-                logger.error('Host not found');
-                throw new Error('Host not found');
-            }
-
-            const yml = await Meteor.callWithPromise('rasa.getRasaTrainingPayload', projectId);
-            await etTrain(projectId, trainingHost, yml, opts);
-        },
-
-        /**
-         * @param {string} projectId
-         * @param {string} trainingHost
-         * @param {{token?: string}} opts
-         * @returns {Promise<boolean>}
-         */
-        async 'externalTraining2.cancel'(projectId, trainingHost, opts = {}) {
-            checkIfCan('nlu-data:x', projectId);
-            check(projectId, String);
-            check(trainingHost, String);
-            check(opts, Object);
-            check(opts.token, Match.Maybe(String));
-            return etCancel(projectId, trainingHost, opts);
-        },
+        // async 'externalTraining.cancel'(projectId, trainingHost) {
+        //     checkIfCan('nlu-data:x', projectId);
+        //     check(projectId, String);
+        //     check(trainingHost, String);
+        //     if (!trainingHostExists(projectId, trainingHost)) {
+        //         getAppLoggerForMethod(
+        //             trainingAppLogger,
+        //             'externalTraining.cancel',
+        //             Meteor.userId(),
+        //             { projectId, trainingHost },
+        //         ).error('Host not found');
+        //         return;
+        //     }
+        //     await axios.post(`${trainingHost}/cancel/${projectId}`);
+        // },
     });
 }

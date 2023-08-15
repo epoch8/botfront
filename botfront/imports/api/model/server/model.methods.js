@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { checkIfCan } from '../../../lib/scopes';
 import { Models } from '../model.collection';
 
+import { MODELS_PATH } from '../../../../server/config';
 import {
     getAppLoggerForFile,
     getAppLoggerForMethod,
@@ -26,8 +27,7 @@ Meteor.methods({
             return { success: false, error: errorMsg || String(error) };
         };
 
-        const modelsPath = process.env.MODELS_PATH;
-        if (!modelsPath) {
+        if (!MODELS_PATH) {
             return returnError('Unable to deploy model. MODELS_PATH env var not set');
         }
         const modelInfo = Models.findOne({ projectId, _id: modelId });
@@ -35,7 +35,7 @@ Meteor.methods({
             returnError(`Model ${modelId} not found for project ${projectId}`);
         }
         const modelPath = modelInfo.path;
-        const modelDir = `${modelsPath}/${projectId}`;
+        const modelDir = `${MODELS_PATH}/${projectId}`;
         const fullModelPath = `${modelDir}/${modelPath}`;
         try {
             await fs.promises.stat(fullModelPath);

@@ -27,86 +27,90 @@ const authHeaders = () => ({
 
 const axiosClient = axios.create({ headers: authHeaders() });
 
-/**
- * @param {string} projectId
- * @param {string} trainingHost
- * @param {string} trainingData
- * @param {{image?: string, rasaExtraArgs?: string, node?: string}} opts
- * @returns {Promise<string>}
- */
-export const train = async (projectId, trainingHost, trainingData, opts = {}) => {
-    const rootUrl = opts.botfrntUrl || ROOT_URL;
-    if (!rootUrl) {
-        throw new Error('botfrntUrl not provided and ROOT_URL env is not set');
-    }
-    const image = opts.image || EXTERNAL_TRAINING_IMAGE;
-    if (!image) {
-        throw new Error('image not provided and EXTERNAL_TRAINING_IMAGE env is not set');
-    }
-    const formData = new FormData();
-    formData.append('project_id', projectId);
-    formData.append('image', image);
-    formData.append('training_data', new Blob([trainingData], { type: 'text/yaml' }));
-    if (opts.rasaExtraArgs) {
-        formData.append('rasa_extra_args', opts.rasaExtraArgs);
-    }
-    if (opts.node) {
-        formData.append('node', opts.node);
-    }
-    const url = `${trainingHost}/train`;
-    const resp = await axiosClient.post(url, formData, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
-    });
-    checkStatus(resp);
-    return resp.data.job_id;
-};
+export class BetApi {
+    /**
+     * @param {string} projectId
+     * @param {string} trainingHost
+     * @param {string} trainingData
+     * @param {{image?: string, rasaExtraArgs?: string, node?: string}} opts
+     * @returns {Promise<string>}
+     */
+    train = async (projectId, trainingHost, trainingData, opts = {}) => {
+        const rootUrl = opts.botfrntUrl || ROOT_URL;
+        if (!rootUrl) {
+            throw new Error('botfrntUrl not provided and ROOT_URL env is not set');
+        }
+        const image = opts.image || EXTERNAL_TRAINING_IMAGE;
+        if (!image) {
+            throw new Error(
+                'image not provided and EXTERNAL_TRAINING_IMAGE env is not set',
+            );
+        }
+        const formData = new FormData();
+        formData.append('project_id', projectId);
+        formData.append('image', image);
+        formData.append('training_data', new Blob([trainingData], { type: 'text/yaml' }));
+        if (opts.rasaExtraArgs) {
+            formData.append('rasa_extra_args', opts.rasaExtraArgs);
+        }
+        if (opts.node) {
+            formData.append('node', opts.node);
+        }
+        const url = `${trainingHost}/train`;
+        const resp = await axiosClient.post(url, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+        checkStatus(resp);
+        return resp.data.job_id;
+    };
 
-/**
- * @param {string} jobId
- * @param {string} trainingHost
- * @returns {Promise<boolean>}
- */
-export const cancel = async (jobId, trainingHost) => {
-    const url = `${trainingHost}/cancel?job_id=${jobId}`;
-    const resp = await axiosClient.post(url);
-    checkStatus(resp);
-    return resp.data.cancelled;
-};
+    /**
+     * @param {string} jobId
+     * @param {string} trainingHost
+     * @returns {Promise<boolean>}
+     */
+    cancel = async (jobId, trainingHost) => {
+        const url = `${trainingHost}/cancel?job_id=${jobId}`;
+        const resp = await axiosClient.post(url);
+        checkStatus(resp);
+        return resp.data.cancelled;
+    };
 
-/**
- * @param {string} jobId
- * @param {string} trainingHost
- * @returns {Promise<string>}
- */
-export const status = async (jobId, trainingHost) => {
-    const url = `${trainingHost}/status?job_id=${jobId}`;
-    const resp = await axiosClient.get(url);
-    checkStatus(resp);
-    return resp.data.status;
-};
+    /**
+     * @param {string} jobId
+     * @param {string} trainingHost
+     * @returns {Promise<string>}
+     */
+    status = async (jobId, trainingHost) => {
+        const url = `${trainingHost}/status?job_id=${jobId}`;
+        const resp = await axiosClient.get(url);
+        checkStatus(resp);
+        return resp.data.status;
+    }
 
-/**
- * @param {string} jobId
- * @param {string} trainingHost
- * @returns {Promise<string>}
- */
-export const logs = async (jobId, trainingHost) => {
-    const url = `${trainingHost}/logs?job_id=${jobId}`;
-    const resp = await axiosClient.get(url);
-    checkStatus(resp);
-    return resp.data;
-};
+    /**
+     * @param {string} jobId
+     * @param {string} trainingHost
+     * @returns {Promise<string>}
+     */
+    logs = async (jobId, trainingHost) => {
+        const url = `${trainingHost}/logs?job_id=${jobId}`;
+        const resp = await axiosClient.get(url);
+        checkStatus(resp);
+        return resp.data;
+    };
 
-/**
- * @param {string} jobId
- * @param {string} trainingHost
- * @returns {Promise<Stream>}
- */
-export const result = async (jobId, trainingHost) => {
-    const url = `${trainingHost}/result?job_id=${jobId}`;
-    const resp = await axiosClient.get(url, { responseType: 'stream' });
-    checkStatus(resp);
-    return resp.data;
-};
+    /**
+     * @param {string} jobId
+     * @param {string} trainingHost
+     * @returns {Promise<Stream>}
+     */
+    result = async (jobId, trainingHost) => {
+        const url = `${trainingHost}/result?job_id=${jobId}`;
+        const resp = await axiosClient.get(url, { responseType: 'stream' });
+        checkStatus(resp);
+        return resp.data;
+    };
+}

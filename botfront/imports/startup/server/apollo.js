@@ -234,7 +234,7 @@ export const runAppolloServer = () => {
 
                 const yml = await addMeteorUserToCall(
                     getExternalConsumer(),
-                    () => Meteor.callWithPromise('rasa.getRasaTrainingPayload', projectId),
+                    () => Meteor.callWithPromise('rasa3.getTrainingPayload', projectId),
                 );
                 res.setHeader('Content-Type', 'text/x-yaml; charset=utf-8');
                 res.setHeader(
