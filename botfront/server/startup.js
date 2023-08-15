@@ -10,7 +10,6 @@ import { getAppLoggerForFile } from './logger';
 import { Projects } from '../imports/api/project/project.collection';
 import { Instances } from '../imports/api/instances/instances.collection';
 import { createAxiosForRasa } from '../imports/lib/utils';
-import { status as etStatus } from '../imports/lib/server/externalTraining';
 import packageInfo from '../package.json';
 
 const fileAppLogger = getAppLoggerForFile(__filename);
@@ -119,20 +118,21 @@ Meteor.startup(function () {
 
                         const externalTrainingStatuses = await Promise.all(
                             (instance.externalTraining || []).map(async (trainingConfig) => {
-                                const { host, token } = trainingConfig;
-                                let externalTrainingStatus = 'notReachable';
-                                try {
-                                    const respTrainingStatus = await etStatus(
-                                        instance.projectId, host, { token },
-                                    );
-                                    if (respTrainingStatus === 'training') {
-                                        externalTrainingStatus = 'training';
-                                    } else {
-                                        externalTrainingStatus = 'notTraining';
-                                    }
-                                } catch (error) {
-                                    console.error(error);
-                                }
+                                const { host } = trainingConfig;
+                                const externalTrainingStatus = 'notReachable';
+                                // TODO tmp commented
+                                // try {
+                                //     const respTrainingStatus = await etStatus(
+                                //         instance.projectId, host, { token },
+                                //     );
+                                //     if (respTrainingStatus === 'training') {
+                                //         externalTrainingStatus = 'training';
+                                //     } else {
+                                //         externalTrainingStatus = 'notTraining';
+                                //     }
+                                // } catch (error) {
+                                //     console.error(error);
+                                // }
                                 return { host, status: externalTrainingStatus };
                             }),
                         );
