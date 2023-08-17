@@ -19,29 +19,29 @@ services:
     ports:
       - 27117:27017
 
-  rasa:
+  # rasa:
   #   # image: ghcr.io/epoch8/rasa-for-botfront/rasa:2.3.3-e8-1.2.0
-    image: ghcr.io/epoch8/chatbot-saas/rasa:0.1.0
-    restart: always
-    user: root
-    environment:
-      BF_PROJECT_ID: LxfpscXvZ5LADGhuc
-      BOTFRONT_ENV: development
-      BF_URL: http://172.17.0.1:3000/graphql
-    volumes:
-      - rasa_models:/app/models
-      - ./rasa_config/credentials.yml:/app/credentials.yml:ro
-    ports:
-      - 5005:5005
-    entrypoint:
-      - rasa
-      - run
-      - --enable-api
-      - --response-timeout
-      - '43200'
-      - --debug
-      - --credentials
-      - credentials.yml
+  #   image: ghcr.io/epoch8/chatbot-saas/rasa:0.1.0
+  #   restart: always
+  #   user: root
+  #   environment:
+  #     BF_PROJECT_ID: LxfpscXvZ5LADGhuc
+  #     BOTFRONT_ENV: development
+  #     BF_URL: http://172.17.0.1:3000/graphql
+  #   volumes:
+  #     - rasa_models:/app/models
+  #     - ./rasa_config/credentials.yml:/app/credentials.yml:ro
+  #   ports:
+  #     - 5005:5005
+  #   entrypoint:
+  #     - rasa
+  #     - run
+  #     - --enable-api
+  #     - --response-timeout
+  #     - '43200'
+  #     - --debug
+  #     - --credentials
+  #     - credentials.yml
 
   # actions:
   #   image: ghcr.io/epoch8/chatbot-saas/rasa-actions:0.2.0

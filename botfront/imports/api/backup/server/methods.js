@@ -6,6 +6,7 @@ import { Backup } from '../collection';
 import { checkIfCan } from '../../../lib/scopes';
 import { BACKUPS_PATH } from '../../../../server/config';
 import { auditLog } from '../../../../server/logger';
+import { importSteps } from '../../graphql/project/import.utils';
 
 Meteor.methods({
     /**
@@ -59,11 +60,22 @@ Meteor.methods({
     /**
      * @param {string} projectId
      * @param {string} backupId
-     * @returns {void}
+     * @returns {Promise<{summary, fileMessages?, params?}>}
      */
     async 'backup.checkout'(projectId, backupId) {
         checkIfCan('import:x', projectId);
         check(projectId, String);
         check(backupId, String);
+
+        const backup = Backup.findOne({ _id: backupId, projectId });
+        if (!backup) {
+            throw new Meteor.Error(404, 'Backup not found');
+        }
+        const backupFh = await fs.promises.open(backup.backupPath);
+        return await importSteps({
+            projectId,
+            files: [backupFh],
+            wipeInvolvedCollections: true,
+        });
     },
 });

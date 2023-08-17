@@ -7,3 +7,6 @@ build:
 
 upload:
 	docker push ${IMAGE}
+
+tag:
+	git tag ${VERSION} && git push --tags

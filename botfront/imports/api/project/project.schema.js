@@ -92,11 +92,10 @@ export const ProjectsSchema = new SimpleSchema({
     'training.startTime': { type: Date, optional: true },
     'training.endTime': { type: Date, optional: true },
     'training.message': { type: String, optional: true },
-    externalTraining: { type: Object, optional: true },
-    'externalTraining.instanceStatuses': { type: Array },
-    'externalTraining.instanceStatuses.$': { type: Object },
-    'externalTraining.instanceStatuses.$.host': { type: String },
-    'externalTraining.instanceStatuses.$.status': {
+    externalTraining: { type: Array, optional: true },
+    'externalTraining.$': { type: Object },
+    'externalTraining.$.host': { type: String },
+    'externalTraining.$.status': {
         type: String,
         allowedValues: ['training', 'notTraining', 'notReachable'],
     },

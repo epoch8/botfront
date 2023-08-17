@@ -10,6 +10,7 @@ import { getAppLoggerForFile } from './logger';
 import { Projects } from '../imports/api/project/project.collection';
 import { Instances } from '../imports/api/instances/instances.collection';
 import { createAxiosForRasa } from '../imports/lib/utils';
+import { checkAndUpdateExternalTraining } from '../imports/api/externalTraining/server/utils';
 import packageInfo from '../package.json';
 
 const fileAppLogger = getAppLoggerForFile(__filename);
@@ -158,5 +159,7 @@ Meteor.startup(function () {
                 console.log('Something went wrong while trying to get the rasa status');
             }
         }, 10000); // run every 10 seconds == 10000 msec
+
+        Meteor.setInterval(async () => {}, 10000);
     }
 });

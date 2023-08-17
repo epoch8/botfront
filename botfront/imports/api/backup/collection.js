@@ -5,7 +5,7 @@ import { BackupSchema } from './schema';
 import { checkIfCan } from '../../lib/scopes';
 
 export const Backup = new Mongo.Collection('backup');
-// Deny all client-side updates on the ExternalTraining collection
+// Deny all client-side updates on the Backup collection
 Backup.deny({
     insert() {
         return true;

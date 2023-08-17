@@ -16,7 +16,7 @@ Meteor.methods({
      * @param {string?} image
      * @param {string?} rasaExtraArgs
      * @param {string?} node
-     * @returns {string}
+     * @returns {Promise<string>}
      */
     async 'externalTraining.train'(projectId, host, image, rasaExtraArgs, node) {
         checkIfCan('nlu-data:x', projectId);
@@ -67,8 +67,52 @@ Meteor.methods({
         }
     },
 
-    async 'externalTraining.cancel'(projectId) {},
-    async 'externalTraining.status'(projectId) {},
-    async 'externalTraining.logs'(projectId) {},
-    async 'externalTraining.result'(projectId) {},
+    /**
+     * @param {string} jobId
+     * @returns {Promise<boolean>}
+     */
+    async 'externalTraining.cancel'(jobId) {
+        check(jobId, String);
+        const training = ExternalTraining.findOne({ jobId });
+        if (!training) {
+            return false;
+        }
+        checkIfCan('nlu-data:x', training.projectId);
+        return await betApi.cancel(jobId);
+    },
+    /**
+     * @param {string} jobId
+     * @returns {Promise<string | null>}
+     */
+    async 'externalTraining.status'(jobId) {
+        check(jobId, String);
+        const training = ExternalTraining.findOne({ jobId });
+        if (!training) {
+            return null;
+        }
+        checkIfCan('nlu-data:r', training.projectId);
+        return training.status;
+    },
+    /**
+     * @param {string} jobId
+     * @returns {Promise<string | null>}
+     */
+    async 'externalTraining.logs'(jobId) {
+        check(jobId, String);
+        const training = ExternalTraining.findOne({ jobId });
+        if (!training) {
+            return null;
+        }
+        checkIfCan('nlu-data:r', training.projectId);
+        if (training.status !== 'training') {
+            return training.logs;
+        }
+        const logs = await betApi.logs(jobId);
+        // TODO: maybe redundand
+        ExternalTraining.update(
+            { _id: training._id, updatedAt: training.updatedAt },
+            { $set: { logs } },
+        );
+        return logs;
+    },
 });

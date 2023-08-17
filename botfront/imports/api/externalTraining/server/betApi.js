@@ -29,6 +29,20 @@ const axiosClient = axios.create({ headers: authHeaders() });
 
 export class BetApi {
     /**
+     * @param {string} trainingHost
+     * @returns {Promise<boolean>}
+     */
+    ping = async (trainingHost) => {
+        try {
+            const resp = await axiosClient.get(trainingHost);
+            return resp.status === 200;
+        } catch (error) {
+            console.error(`External trainer ${trainingHost}: ${error.message}`);
+        }
+        return false;
+    };
+
+    /**
      * @param {string} projectId
      * @param {string} trainingHost
      * @param {string} trainingData
@@ -88,7 +102,7 @@ export class BetApi {
         const resp = await axiosClient.get(url);
         checkStatus(resp);
         return resp.data.status;
-    }
+    };
 
     /**
      * @param {string} jobId

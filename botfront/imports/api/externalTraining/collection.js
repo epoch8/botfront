@@ -21,19 +21,29 @@ ExternalTraining.deny({
 Meteor.startup(() => {
     if (Meteor.isServer) {
         ExternalTraining.createIndex({ projectId: 1, updatedAt: -1 });
-        ExternalTraining.createIndex({ jobId: 1 });
+        ExternalTraining.createIndex({ projectId: 1, status: 1 });
     }
 });
 
 if (Meteor.isServer) {
     Meteor.publish('externalTraining', function (projectId) {
         try {
-            checkIfCan('projects:r', projectId);
+            checkIfCan('nlu-data:r', projectId);
         } catch (err) {
             return this.ready();
         }
         check(projectId, String);
         return ExternalTraining.find({ projectId }, { sort: { updatedAt: -1 } });
+    });
+    Meteor.publish('externalTrainingById', function (projectId, etId) {
+        try {
+            checkIfCan('nlu-data:r', projectId);
+        } catch (err) {
+            return this.ready();
+        }
+        check(projectId, String);
+        check(etId, String);
+        return ExternalTraining.findOne({ _id: etId, projectId });
     });
 }
 

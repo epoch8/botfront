@@ -36,6 +36,7 @@ module.exports = {
         'no-trailing-spaces': ['error', { skipBlankLines: true }],
         'no-extra-boolean-cast': 'off',
         'no-nested-ternary': 'off',
+        'no-return-await': 'off',
         'import/prefer-default-export': 'off',
         'react/jsx-indent': ['error', 4],
         'react/jsx-indent-props': ['error', 4],

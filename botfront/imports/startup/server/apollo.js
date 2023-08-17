@@ -90,11 +90,11 @@ const getUserFromRequest = async (req) => {
 
 /**
  * @param {string} token
- * @returns {boolean}
+ * @returns {Promise<boolean>}
  */
 const checkApiToken = async (token) => {
     if (API_TOKEN_HASH) {
-        return bcrypt.compare(token, API_TOKEN_HASH);
+        return await bcrypt.compare(token, API_TOKEN_HASH);
     }
     if (API_KEY) {
         return token === API_KEY;
@@ -107,7 +107,7 @@ const checkApiToken = async (token) => {
  * Description
  * @param {Array<string> | null} methods
  * @param {(req: IncomingMessage, res: ServerResponse, next: any) => Promise<void>} handler
- * @returns {any}
+ * @returns {(req: IncomingMessage, res: ServerResponse, next: any) => Promise<void>}
  */
 const apiWrapper = (methods, handler) => async (req, res, next) => {
     if (methods && !methods.includes(req.method)) {
