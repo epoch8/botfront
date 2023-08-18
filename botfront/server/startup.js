@@ -10,10 +10,36 @@ import { getAppLoggerForFile } from './logger';
 import { Projects } from '../imports/api/project/project.collection';
 import { Instances } from '../imports/api/instances/instances.collection';
 import { createAxiosForRasa } from '../imports/lib/utils';
-import { checkAndUpdateExternalTraining } from '../imports/api/externalTraining/server/utils';
+import {
+    checkAndUpdateExternalTraining,
+    checkBet,
+    activeTrainings,
+} from '../imports/api/externalTraining/server/utils';
 import packageInfo from '../package.json';
 
 const fileAppLogger = getAppLoggerForFile(__filename);
+
+/**
+ * @param {string} projectId
+ * @param {string} host
+ * @returns {Promise<string>}
+ */
+const getTrainingStatus = async (projectId, host) => {
+    try {
+        const betReacheble = await checkBet(host);
+        if (!betReacheble) {
+            return 'notReachable';
+        }
+        const currentTrainings = activeTrainings(projectId, host);
+        if (currentTrainings.length === 0) {
+            return 'notTraining';
+        }
+        return 'training';
+    } catch (error) {
+        console.error(error);
+    }
+    return 'notReachable';
+};
 
 Meteor.startup(function () {
     if (Meteor.isServer) {
@@ -58,9 +84,10 @@ Meteor.startup(function () {
                 const instancesInfo = Instances.find();
                 const newStatuses = await Promise.all(
                     instancesInfo.map(async (instance) => {
+                        const { projectId, externalTraining } = instance;
                         let instanceState;
                         try {
-                            const client = await createAxiosForRasa(instance.projectId);
+                            const client = await createAxiosForRasa(projectId);
                             const data = await client.get('/status');
                             instanceState = get(
                                 data,
@@ -75,91 +102,59 @@ Meteor.startup(function () {
                         if (instanceState === 0) status = 'notTraining';
                         if (instanceState === -1) status = 'notReachable';
 
-                        // ! Legacy
-                        // const externalTrainingStatuses = await Promise.all(
-                        //     (instance.externalTraining || []).map(async (trainingConfig) => {
-                        //         let externalTrainingStatus = 'notReachable';
-                        //         const { host } = trainingConfig;
-                        //         try {
-                        //             const resp = await axios.post(
-                        //                 `${host}/status/${instance.projectId}`,
-                        //             );
-                        //             const respTrainingStatus = resp.data[0].status;
-                        //             switch (respTrainingStatus) {
-                        //             case 'scheduled':
-                        //             case 'queued':
-                        //             case 'running':
-                        //             case 'restarting':
-                        //             case 'shutdown':
-                        //             case 'up_for_retry':
-                        //             case 'up_for_reschedule':
-                        //             case 'deferred':
-                        //                 externalTrainingStatus = 'training';
-                        //                 break;
-                        //             case 'unknown':
-                        //             case 'none':
-                        //             case 'success':
-                        //             case 'failed':
-                        //             case 'skipped':
-                        //             case 'upstream_failed':
-                        //             case 'removed':
-                        //                 externalTrainingStatus = 'notTraining';
-                        //                 break;
-                        //             default:
-                        //                 externalTrainingStatus = 'notReachable';
-                        //                 break;
-                        //             }
-                        //         } catch (error) {
-                        //             console.error(error);
-                        //         }
-                        //         return { host, status: externalTrainingStatus };
-                        //     }),
-                        // );
-                        // { status: none/training/success/failed }
-
                         const externalTrainingStatuses = await Promise.all(
-                            (instance.externalTraining || []).map(async (trainingConfig) => {
+                            (externalTraining || []).map(async (trainingConfig) => {
                                 const { host } = trainingConfig;
-                                const externalTrainingStatus = 'notReachable';
-                                // TODO tmp commented
-                                // try {
-                                //     const respTrainingStatus = await etStatus(
-                                //         instance.projectId, host, { token },
-                                //     );
-                                //     if (respTrainingStatus === 'training') {
-                                //         externalTrainingStatus = 'training';
-                                //     } else {
-                                //         externalTrainingStatus = 'notTraining';
-                                //     }
-                                // } catch (error) {
-                                //     console.error(error);
-                                // }
-                                return { host, status: externalTrainingStatus };
+                                const etStatus = await getTrainingStatus(projectId, host);
+                                return { host, status: etStatus };
                             }),
                         );
 
-                        return { status, externalTrainingStatuses, projectId: instance.projectId };
+                        return {
+                            instanceStatus: status,
+                            projectId,
+                            externalTrainingStatuses,
+                        };
                     }),
                 );
-                newStatuses.forEach((status) => {
-                    Projects.update(
-                        { _id: status.projectId },
-                        {
-                            $set: {
-                                'training.instanceStatus': status.status,
-                                'externalTraining.instanceStatuses': status.externalTrainingStatuses,
+                newStatuses.forEach(
+                    ({ instanceStatus, projectId, externalTrainingStatuses }) => {
+                        Projects.update(
+                            { _id: projectId },
+                            {
+                                $set: {
+                                    'training.instanceStatus': instanceStatus,
+                                    externalTraining: externalTrainingStatuses,
+                                },
                             },
-                        },
-                    );
-                });
+                        );
+                    },
+                );
             } catch (e) {
-                // eslint-disable-next-line no-console
                 console.log(e);
-                // eslint-disable-next-line no-console
                 console.log('Something went wrong while trying to get the rasa status');
             }
         }, 10000); // run every 10 seconds == 10000 msec
 
-        Meteor.setInterval(async () => {}, 10000);
+        const externalTrainingUpdateRoutine = async () => {
+            try {
+                const projects = Projects.find({}, { fields: { _id: 1 } });
+                await Promise.all(
+                    projects.forEach(async ({ _id: projectId }) => {
+                        const currentTrainings = activeTrainings(projectId);
+                        await Promise.all(
+                            currentTrainings.map(async (training) => {
+                                await checkAndUpdateExternalTraining(training._id);
+                            }),
+                        );
+                    }),
+                );
+            } catch (error) {
+                console.error(error);
+            }
+            Meteor.setTimeout(externalTrainingUpdateRoutine, 10000);
+        };
+
+        Meteor.defer(externalTrainingUpdateRoutine);
     }
 });

@@ -4,7 +4,6 @@ import { saveModel } from '../../model/server/model.utils';
 
 const betApi = new BetApi();
 
-
 /**
  * @param {string} host
  * @returns {Promise<boolean>}
@@ -48,19 +47,21 @@ export const checkAndUpdateExternalTraining = async (etId) => {
 
 /**
  * @param {string} projectId
+ * @param {string?} host
  * @returns {Document[]}
  */
-export const activeTrainings = (projectId) => {
-    const trainings = ExternalTraining.find(
-        { projectId, status: 'training' },
-        {
-            fields: {
-                jobId: 1,
-                projectId: 1,
-                betUrl: 1,
-                status: 1,
-            },
+export const activeTrainings = (projectId, host) => {
+    const filter = { projectId, status: 'training' };
+    if (host) {
+        filter.host = host;
+    }
+    const trainings = ExternalTraining.find(filter, {
+        fields: {
+            jobId: 1,
+            projectId: 1,
+            betUrl: 1,
+            status: 1,
         },
-    );
+    });
     return trainings.fetch();
 };
