@@ -25,6 +25,7 @@ import Welcome from '../../ui/components/setup/Welcome';
 import Login from '../../ui/components/account/Login';
 import Incoming from '../../ui/components/incoming/Incoming';
 import ModelsList from '../../ui/components/models/Models';
+import TrainingView from '../../ui/components/externalTraining/TrainingView';
 
 import { can, areScopeReady } from '../../lib/scopes';
 import AccountLayout from '../../ui/layouts/account';
@@ -174,6 +175,7 @@ class Routes extends React.PureComponent {
                                     />
                                     <Route path='/project/:project_id/dialogue' component={StoriesContainer} name='Stories' onEnter={authenticate('stories:r')} />
                                     <Route path='/project/:project_id/responses' component={TemplatesContainer} name='Templates' onEnter={authenticate('responses:r')} />
+                                    <Route path='/project/:project_id/trainings' component={TrainingView} name='Trainings' onEnter={authenticate('nlu-data:r')} />
                                     <Route path='/project/:project_id/models' component={ModelsList} name='Models' onEnter={authenticate('models:r')} />
                                     <Route path='/project/:project_id/connect_handoff' component={ConnectHandoff} name='Connect Handoff' onEnter={authenticate('stories:w')} />
                                     <Route path='/project/:project_id/analytics' component={AnalyticsContainer} name='Analytics' onEnter={authenticate('analytics:r')} />

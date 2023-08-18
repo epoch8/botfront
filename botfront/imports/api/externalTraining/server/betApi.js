@@ -4,7 +4,10 @@ import axios, { AxiosResponse } from 'axios';
 // eslint-disable-next-line no-unused-vars
 import { Stream } from 'stream';
 
-const { EXTERNAL_TRAINING_TOKEN, EXTERNAL_TRAINING_IMAGE, ROOT_URL } = process.env;
+import {
+    EXTERNAL_TRAINING_TOKEN,
+    EXTERNAL_TRAINING_IMAGE,
+} from '../../../../server/config';
 
 /**
  * @param {AxiosResponse} resp
@@ -50,10 +53,6 @@ export class BetApi {
      * @returns {Promise<string>}
      */
     train = async (projectId, trainingHost, trainingData, opts = {}) => {
-        const rootUrl = opts.botfrntUrl || ROOT_URL;
-        if (!rootUrl) {
-            throw new Error('botfrntUrl not provided and ROOT_URL env is not set');
-        }
         const image = opts.image || EXTERNAL_TRAINING_IMAGE;
         if (!image) {
             throw new Error(

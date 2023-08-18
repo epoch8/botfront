@@ -23,3 +23,5 @@ dev_project
 scripts/db
 *.bak
 /mongodb/
+/models/
+/backups/

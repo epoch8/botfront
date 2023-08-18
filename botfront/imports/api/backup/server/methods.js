@@ -1,7 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import fs from 'fs';
-import { pipeline } from 'stream/promises';
 import { Backup } from '../collection';
 import { checkIfCan } from '../../../lib/scopes';
 import { BACKUPS_PATH } from '../../../../server/config';
@@ -37,10 +36,13 @@ Meteor.methods({
             projectId,
         });
 
-        await pipeline(
-            zipContainer.generateNodeStream({ streamFiles: true }),
-            fs.createWriteStream(backupPath),
-        );
+        await new Promise((resolve, reject) => {
+            zipContainer
+                .generateNodeStream({ streamFiles: true })
+                .pipe(fs.createWriteStream(backupPath))
+                .on('finish', resolve)
+                .on('error', reject);
+        });
 
         const backupId = Backup.insert({
             projectId,

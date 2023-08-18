@@ -20,12 +20,12 @@ Backup.deny({
 
 Meteor.startup(() => {
     if (Meteor.isServer) {
-        Backup.createIndex({ projectId: 1, createdAt: -1 });
+        Backup.rawCollection().createIndex({ projectId: 1, createdAt: -1 });
     }
 });
 
 if (Meteor.isServer) {
-    Meteor.publish('externalTraining', function (projectId) {
+    Meteor.publish('backups', function (projectId) {
         try {
             checkIfCan('projects:r', projectId);
         } catch (err) {

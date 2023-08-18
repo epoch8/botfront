@@ -138,15 +138,10 @@ Meteor.startup(function () {
 
         const externalTrainingUpdateRoutine = async () => {
             try {
-                const projects = Projects.find({}, { fields: { _id: 1 } });
+                const currentTrainings = activeTrainings();
                 await Promise.all(
-                    projects.forEach(async ({ _id: projectId }) => {
-                        const currentTrainings = activeTrainings(projectId);
-                        await Promise.all(
-                            currentTrainings.map(async (training) => {
-                                await checkAndUpdateExternalTraining(training._id);
-                            }),
-                        );
+                    currentTrainings.map(async (training) => {
+                        await checkAndUpdateExternalTraining(training._id);
                     }),
                 );
             } catch (error) {

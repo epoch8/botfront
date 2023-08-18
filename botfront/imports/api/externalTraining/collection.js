@@ -20,8 +20,8 @@ ExternalTraining.deny({
 
 Meteor.startup(() => {
     if (Meteor.isServer) {
-        ExternalTraining.createIndex({ projectId: 1, updatedAt: -1 });
-        ExternalTraining.createIndex({ projectId: 1, status: 1 });
+        ExternalTraining.rawCollection().createIndex({ projectId: 1, updatedAt: -1 });
+        ExternalTraining.rawCollection().createIndex({ projectId: 1, status: 1 });
     }
 });
 

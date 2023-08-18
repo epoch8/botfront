@@ -76,8 +76,8 @@ function ModelsContainer({ projectId }) {
                 Alert.error(`${t('Error deploying model')} ${editorModel.name}`);
                 return;
             }
-            if (res.error) {
-                Alert.error(res.error);
+            if (res.errorMsg) {
+                Alert.error(res.errorMsg);
                 return;
             }
             Alert.success(`${t('Sucessfulyl deployed model')} ${editorModel.name}`);

@@ -46,12 +46,15 @@ export const checkAndUpdateExternalTraining = async (etId) => {
 };
 
 /**
- * @param {string} projectId
+ * @param {string?} projectId
  * @param {string?} host
  * @returns {Document[]}
  */
 export const activeTrainings = (projectId, host) => {
-    const filter = { projectId, status: 'training' };
+    const filter = { status: 'training' };
+    if (projectId) {
+        filter.projectId = projectId;
+    }
     if (host) {
         filter.host = host;
     }
