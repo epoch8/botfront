@@ -25,7 +25,6 @@ import { dropNullValuesFromObject } from '../../lib/client.safe.utils';
 import { Projects } from '../project/project.collection';
 import { deduplicateArray } from '../../lib/importers/validateDomain';
 
-
 const replaceMongoReservedChars = (input) => {
     if (Array.isArray(input)) return input.map(replaceMongoReservedChars);
     if (typeof input === 'object') {
@@ -79,7 +78,9 @@ const convertExampleJsonToRasa = ({ text, entities = [] }) => {
         if (entity.role) {
             entityParams.role = entity.rolel;
         }
-        parts.push(`[${text.slice(entity.start, entity.end)}]${JSON.stringify(entityParams)}`);
+        parts.push(
+            `[${text.slice(entity.start, entity.end)}]${JSON.stringify(entityParams)}`,
+        );
         cursor = entity.end;
     }
     if (cursor < text.length) {
@@ -145,7 +146,9 @@ const convertDomainBotfrontToRasa = (domain) => {
                 for (const { source, target } of formParams.graph_elements.edges) {
                     if (source === currentSlot) {
                         if (requiredSlots.includes(target)) {
-                            throw new Error(`Circular dependency in "${formName}" form graph!`);
+                            throw new Error(
+                                `Circular dependency in "${formName}" form graph!`,
+                            );
                         }
                         requiredSlots.push(target);
                         currentSlot = target;
@@ -175,36 +178,38 @@ const convertDomainBotfrontToRasa = (domain) => {
     };
 };
 
-const convertNluBotfrontToRasa = (intents = [], entity_synonyms = [], regex_features = []) => {
-    const rasaIntents = Object.entries(
-        _.groupBy(intents, ({ intent }) => intent),
-    ).map(([intent, examplesGroup]) => ({
-        intent,
-        examples: `- ${examplesGroup.map(convertExampleJsonToRasa).join('\n- ')}`,
-    }));
+const convertNluBotfrontToRasa = (
+    intents = [],
+    entity_synonyms = [],
+    regex_features = [],
+) => {
+    const rasaIntents = Object.entries(_.groupBy(intents, ({ intent }) => intent)).map(
+        ([intent, examplesGroup]) => ({
+            intent,
+            examples: `- ${examplesGroup.map(convertExampleJsonToRasa).join('\n- ')}`,
+        }),
+    );
     const rasaSynonyms = Object.entries(
         _.groupBy(entity_synonyms, ({ value }) => value),
     ).map(([synonym, synonymsGroup]) => ({
         synonym,
-        examples: `- ${synonymsGroup.map(({ synonyms }) => synonyms.join('\n- ')).join('\n- ')}`,
+        examples: `- ${synonymsGroup
+            .map(({ synonyms }) => synonyms.join('\n- '))
+            .join('\n- ')}`,
     }));
-    const rasaRegex = Object.entries(
-        _.groupBy(regex_features, ({ name }) => name),
-    ).map(([regex, regexGroup]) => ({
-        regex,
-        examples: `- ${regexGroup.map(({ pattern }) => pattern).join('\n- ')}`,
-    }));
+    const rasaRegex = Object.entries(_.groupBy(regex_features, ({ name }) => name)).map(
+        ([regex, regexGroup]) => ({
+            regex,
+            examples: `- ${regexGroup.map(({ pattern }) => pattern).join('\n- ')}`,
+        }),
+    );
     return [...rasaIntents, ...rasaSynonyms, ...rasaRegex];
 };
-
 
 // TODO modify tests
 export const getRasaNluDataAndConfig = async (projectId, language, intents) => {
     const nluFilter = language ? { projectId, language } : { projectId };
-    const model = await NLUModels.findOne(
-        nluFilter,
-        { training_data: 1, config: 1 },
-    );
+    const model = await NLUModels.findOne(nluFilter, { training_data: 1, config: 1 });
     if (!model) {
         throw new Error(`Could not find ${language} model for project ${projectId}.`);
     }
@@ -275,7 +280,10 @@ export const getNluDataAndConfig = async (projectId, language, intents) => {
         rasa_nlu_data: {
             common_examples: common_examples.map(
                 ({
-                    text, intent, entities = [], metadata: { canonical, ...metadata } = {},
+                    text,
+                    intent,
+                    entities = [],
+                    metadata: { canonical, ...metadata } = {},
                 }) => ({
                     text,
                     intent,
@@ -296,7 +304,6 @@ export const getNluDataAndConfig = async (projectId, language, intents) => {
         }),
     };
 };
-
 
 const hashParams = (params) => {
     const hash = createHash('md5');
@@ -358,7 +365,9 @@ if (Meteor.isServer) {
             );
             appMethodLogger.debug('Parsing nlu');
             try {
-                const client = await createAxiosForRasa(instance.projectId, { timeout: 100 * 1000 });
+                const client = await createAxiosForRasa(instance.projectId, {
+                    timeout: 100 * 1000,
+                });
                 addLoggingInterceptors(client, appMethodLogger);
                 // axiosRetry(client, { retries: 3, retryDelay: axiosRetry.exponentialDelay });
                 const requests = examples.map(({ text, lang }) => {
@@ -423,12 +432,11 @@ if (Meteor.isServer) {
             const config = {};
 
             const {
-                stories = [], rules = [], domain, wasPartial,
-            } = await getFragmentsAndDomain(
-                projectId,
-                language,
-                env,
-            );
+                stories = [],
+                rules = [],
+                domain,
+                wasPartial,
+            } = await getFragmentsAndDomain(projectId, language, env);
             stories.sort((a, b) => a.story.localeCompare(b.story));
             rules.sort((a, b) => a.rule.localeCompare(b.rule));
             const selectedIntents = wasPartial
@@ -440,10 +448,7 @@ if (Meteor.isServer) {
                 languages = project ? project.languages : [];
             }
             for (const lang of languages) {
-                const {
-                    rasa_nlu_data,
-                    config: configForLang,
-                } = await getNluDataAndConfig(projectId, lang, selectedIntents);
+                const { rasa_nlu_data, config: configForLang } = await getNluDataAndConfig(projectId, lang, selectedIntents);
                 nlu[lang] = { rasa_nlu_data };
                 config[lang] = `${configForLang}\n\n${corePolicies}`;
             }
@@ -499,13 +504,12 @@ if (Meteor.isServer) {
                     { skipInvalid: true },
                 );
                 payload.load_model_after = true;
-                const trainingClient = await createAxiosForRasa(projectId,
-                    {
-                        timeout: process.env.TRAINING_TIMEOUT || 0,
-                        responseType: 'stream',
-                        maxContentLength: process.env.TRAINING_MAX_CONTENT_LEN || Infinity,
-                        maxBodyLength: process.env.TRAINING_MAX_BODY_LEN || Infinity,
-                    });
+                const trainingClient = await createAxiosForRasa(projectId, {
+                    timeout: process.env.TRAINING_TIMEOUT || 0,
+                    responseType: 'stream',
+                    maxContentLength: process.env.TRAINING_MAX_CONTENT_LEN || Infinity,
+                    maxBodyLength: process.env.TRAINING_MAX_BODY_LEN || Infinity,
+                });
 
                 addLoggingInterceptors(trainingClient, appMethodLogger);
                 const trainingResponse = await trainingClient.post(
@@ -557,12 +561,11 @@ if (Meteor.isServer) {
             );
 
             const {
-                stories = [], rules = [], domain, wasPartial,
-            } = await getFragmentsAndDomain(
-                projectId,
-                language,
-                env,
-            );
+                stories = [],
+                rules = [],
+                domain,
+                wasPartial,
+            } = await getFragmentsAndDomain(projectId, language, env);
             const [processedStories, storiesActionsParams] = processParametrizedActions(stories);
             const [processedRules, rulesActionsParams] = processParametrizedActions(rules);
             domain.actions_params = { ...storiesActionsParams, ...rulesActionsParams };
@@ -571,10 +574,11 @@ if (Meteor.isServer) {
             const selectedIntents = wasPartial
                 ? yaml.safeLoad(domain).intents
                 : undefined;
-            const {
-                nlu,
-                config,
-            } = await getRasaNluDataAndConfig(projectId, language, selectedIntents);
+            const { nlu, config } = await getRasaNluDataAndConfig(
+                projectId,
+                language,
+                selectedIntents,
+            );
             const payload = {
                 ...convertDomainBotfrontToRasa(domain),
                 stories: processedStories,
@@ -583,6 +587,7 @@ if (Meteor.isServer) {
                 ...config,
                 ...yaml.safeLoad(corePolicies),
                 augmentationFactor,
+                language,
             };
             auditLog('Retreived training payload for project', {
                 user: Meteor.user(),
@@ -616,20 +621,21 @@ if (Meteor.isServer) {
             appMethodLogger.debug(`Training project ${projectId}...`);
             const t0 = performance.now();
             try {
-                const { augmentationFactor, ...payload } = await Meteor.call(
-                    'rasa3.getTrainingPayload', projectId, { env, language },
+                const { augmentationFactor, ...payload } = await Meteor.callWithPromise(
+                    'rasa3.getTrainingPayload',
+                    projectId,
+                    { env, language },
                 );
-                const trainingClient = await createAxiosForRasa(projectId,
-                    {
-                        timeout: process.env.TRAINING_TIMEOUT || 0,
-                        responseType: 'stream',
-                        maxContentLength: process.env.TRAINING_MAX_CONTENT_LEN || Infinity,
-                        maxBodyLength: process.env.TRAINING_MAX_BODY_LEN || Infinity,
-                    });
-                const yamlPayload = yaml.safeDump(
-                    payload,
-                    { sortKeys: true, skipInvalid: true },
-                );
+                const trainingClient = await createAxiosForRasa(projectId, {
+                    timeout: process.env.TRAINING_TIMEOUT || 0,
+                    responseType: 'stream',
+                    maxContentLength: process.env.TRAINING_MAX_CONTENT_LEN || Infinity,
+                    maxBodyLength: process.env.TRAINING_MAX_BODY_LEN || Infinity,
+                });
+                const yamlPayload = yaml.safeDump(payload, {
+                    sortKeys: true,
+                    skipInvalid: true,
+                });
                 appMethodLogger.debug(yamlPayload);
                 addLoggingInterceptors(trainingClient, appMethodLogger);
                 const fixedModelName = getProjectModelFileName(projectId);
@@ -698,7 +704,8 @@ if (Meteor.isServer) {
                     projectId,
                     {
                         timeout: process.env.EVALUATION_TIMEOUT || 0,
-                        maxContentLength: process.env.EVALUATION_MAX_CONTENT_LEN || Infinity,
+                        maxContentLength:
+                            process.env.EVALUATION_MAX_CONTENT_LEN || Infinity,
                         maxBodyLength: process.env.EVALUATION_MAX_BODY_LEN || Infinity,
                     },
                     { language },
@@ -730,39 +737,5 @@ if (Meteor.isServer) {
                 throw formatError(e);
             }
         },
-
-        // ! Legacy
-        // async 'externalTraining.train'(projectId, trainingHost) {
-        //     checkIfCan('nlu-data:x', projectId);
-        //     check(projectId, String);
-        //     check(trainingHost, String);
-        //     if (!trainingHostExists(projectId, trainingHost)) {
-        //         getAppLoggerForMethod(
-        //             trainingAppLogger,
-        //             'externalTraining.train',
-        //             Meteor.userId(),
-        //             { projectId, trainingHost },
-        //         ).error('Host not found');
-        //         return;
-        //     }
-        //     await axios.post(`${trainingHost}/train/${projectId}`);
-        // },
-
-        // ! Legacy
-        // async 'externalTraining.cancel'(projectId, trainingHost) {
-        //     checkIfCan('nlu-data:x', projectId);
-        //     check(projectId, String);
-        //     check(trainingHost, String);
-        //     if (!trainingHostExists(projectId, trainingHost)) {
-        //         getAppLoggerForMethod(
-        //             trainingAppLogger,
-        //             'externalTraining.cancel',
-        //             Meteor.userId(),
-        //             { projectId, trainingHost },
-        //         ).error('Host not found');
-        //         return;
-        //     }
-        //     await axios.post(`${trainingHost}/cancel/${projectId}`);
-        // },
     });
 }

@@ -18,7 +18,7 @@ Meteor.methods({
         check(projectId, String);
         check(comment, Match.Maybe(String));
 
-        const { zipContainer } = await Meteor.callWithPromise(
+        const zipContainer = await Meteor.callWithPromise(
             'exportRasa',
             projectId,
             'all',

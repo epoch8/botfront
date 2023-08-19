@@ -14,7 +14,7 @@ import {
     checkAndUpdateExternalTraining,
     checkBet,
     activeTrainings,
-} from '../imports/api/externalTraining/server/utils';
+} from '../imports/api/externalTrainings/server/utils';
 import packageInfo from '../package.json';
 
 const fileAppLogger = getAppLoggerForFile(__filename);
@@ -24,21 +24,21 @@ const fileAppLogger = getAppLoggerForFile(__filename);
  * @param {string} host
  * @returns {Promise<string>}
  */
-const getTrainingStatus = async (projectId, host) => {
+const getTrainingInfo = async (projectId, host) => {
     try {
         const betReacheble = await checkBet(host);
         if (!betReacheble) {
-            return 'notReachable';
+            return { status: 'notReachable', jobId: null };
         }
         const currentTrainings = activeTrainings(projectId, host);
         if (currentTrainings.length === 0) {
-            return 'notTraining';
+            return { status: 'notTraining', jobId: null };
         }
-        return 'training';
+        return { status: 'training', jobId: currentTrainings[0].jobId };
     } catch (error) {
         console.error(error);
     }
-    return 'notReachable';
+    return { status: 'notReachable', jobId: null };
 };
 
 Meteor.startup(function () {
@@ -97,34 +97,34 @@ Meteor.startup(function () {
                         } catch (e) {
                             instanceState = -1;
                         }
-                        let status;
-                        if (instanceState >= 1) status = 'training';
-                        if (instanceState === 0) status = 'notTraining';
-                        if (instanceState === -1) status = 'notReachable';
+                        let instanceStatus;
+                        if (instanceState >= 1) instanceStatus = 'training';
+                        if (instanceState === 0) instanceStatus = 'notTraining';
+                        if (instanceState === -1) instanceStatus = 'notReachable';
 
-                        const externalTrainingStatuses = await Promise.all(
+                        const externalTrainingsInfo = await Promise.all(
                             (externalTraining || []).map(async (trainingConfig) => {
                                 const { host } = trainingConfig;
-                                const etStatus = await getTrainingStatus(projectId, host);
-                                return { host, status: etStatus };
+                                const { status, jobId } = await getTrainingInfo(projectId, host);
+                                return { host, status, jobId };
                             }),
                         );
 
                         return {
-                            instanceStatus: status,
+                            instanceStatus,
                             projectId,
-                            externalTrainingStatuses,
+                            externalTrainingsInfo,
                         };
                     }),
                 );
                 newStatuses.forEach(
-                    ({ instanceStatus, projectId, externalTrainingStatuses }) => {
+                    ({ instanceStatus, projectId, externalTrainingsInfo }) => {
                         Projects.update(
                             { _id: projectId },
                             {
                                 $set: {
                                     'training.instanceStatus': instanceStatus,
-                                    externalTraining: externalTrainingStatuses,
+                                    externalTraining: externalTrainingsInfo,
                                 },
                             },
                         );

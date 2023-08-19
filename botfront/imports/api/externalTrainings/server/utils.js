@@ -1,4 +1,4 @@
-import { ExternalTraining } from '../collection';
+import { ExternalTrainings } from '../collection';
 import { BetApi } from './betApi';
 import { saveModel } from '../../model/server/model.utils';
 
@@ -15,7 +15,7 @@ export const checkBet = async host => await betApi.ping(host);
  * @returns {Promise<boolean>}
  */
 export const checkAndUpdateExternalTraining = async (etId) => {
-    const et = ExternalTraining.findOne(
+    const et = ExternalTrainings.findOne(
         { _id: etId },
         {
             fields: {
@@ -41,7 +41,7 @@ export const checkAndUpdateExternalTraining = async (etId) => {
         const resultStream = await betApi.result(jobId, betUrl);
         await saveModel(projectId, resultStream);
     }
-    ExternalTraining.update({ _id: etId }, { $set: { status: newStatus, logs } });
+    ExternalTrainings.update({ _id: etId }, { $set: { status: newStatus, logs } });
     return true;
 };
 
@@ -56,9 +56,9 @@ export const activeTrainings = (projectId, host) => {
         filter.projectId = projectId;
     }
     if (host) {
-        filter.host = host;
+        filter.betUrl = host;
     }
-    const trainings = ExternalTraining.find(filter, {
+    const trainings = ExternalTrainings.find(filter, {
         fields: {
             jobId: 1,
             projectId: 1,

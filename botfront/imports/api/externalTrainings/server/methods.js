@@ -3,7 +3,7 @@ import { check, Match } from 'meteor/check';
 import yaml from 'js-yaml';
 import { formatError } from '../../../lib/utils';
 import { BetApi } from './betApi';
-import { ExternalTraining } from '../collection';
+import { ExternalTrainings } from '../collection';
 import { checkIfCan } from '../../../lib/scopes';
 import { auditLog } from '../../../../server/logger';
 
@@ -12,15 +12,18 @@ export const betApi = new BetApi();
 Meteor.methods({
     /**
      * @param {string} projectId
+     * @param {string} language
      * @param {string} host
+     * @param {string?} name
      * @param {string?} image
      * @param {string?} rasaExtraArgs
      * @param {string?} node
      * @returns {Promise<string>}
      */
-    async 'externalTraining.train'(projectId, host, image, rasaExtraArgs, node) {
+    async 'externalTraining.train'(projectId, language, host, name, image, rasaExtraArgs, node) {
         checkIfCan('nlu-data:x', projectId);
         check(projectId, String);
+        check(language, String);
         check(host, String);
         check(image, Match.Maybe(String));
         check(rasaExtraArgs, Match.Maybe(String));
@@ -35,6 +38,8 @@ Meteor.methods({
         const { augmentationFactor, ...trainingData } = await Meteor.callWithPromise(
             'rasa3.getTrainingPayload',
             projectId,
+            { language },
+
         );
         const yamlTrainingData = yaml.safeDump(trainingData, {
             sortKeys: true,
@@ -53,10 +58,11 @@ Meteor.methods({
         });
 
         try {
-            ExternalTraining.insert({
+            ExternalTrainings.insert({
                 jobId,
                 projectId,
                 betUrl: host,
+                name,
                 backupId,
                 status: 'training',
                 createdAt: new Date(),
@@ -69,16 +75,20 @@ Meteor.methods({
 
     /**
      * @param {string} jobId
+     * @param {host} jobId
      * @returns {Promise<boolean>}
      */
-    async 'externalTraining.cancel'(jobId) {
+    async 'externalTraining.cancel'(jobId, host) {
         check(jobId, String);
-        const training = ExternalTraining.findOne({ jobId });
+        check(host, String);
+        const training = ExternalTrainings.findOne({ jobId });
         if (!training) {
             return false;
         }
         checkIfCan('nlu-data:x', training.projectId);
-        return await betApi.cancel(jobId);
+        const cancelled = await betApi.cancel(jobId, host);
+        ExternalTrainings.update({ _id: training._id }, { $set: { status: 'cancelled' } });
+        return cancelled;
     },
     /**
      * @param {string} jobId
@@ -86,7 +96,7 @@ Meteor.methods({
      */
     async 'externalTraining.status'(jobId) {
         check(jobId, String);
-        const training = ExternalTraining.findOne({ jobId });
+        const training = ExternalTrainings.findOne({ jobId });
         if (!training) {
             return null;
         }
@@ -95,11 +105,13 @@ Meteor.methods({
     },
     /**
      * @param {string} jobId
+     * @param {host} jobId
      * @returns {Promise<string | null>}
      */
-    async 'externalTraining.logs'(jobId) {
+    async 'externalTraining.logs'(jobId, host) {
         check(jobId, String);
-        const training = ExternalTraining.findOne({ jobId });
+        check(host, String);
+        const training = ExternalTrainings.findOne({ jobId });
         if (!training) {
             return null;
         }
@@ -107,9 +119,9 @@ Meteor.methods({
         if (training.status !== 'training') {
             return training.logs;
         }
-        const logs = await betApi.logs(jobId);
+        const logs = await betApi.logs(jobId, host);
         // TODO: maybe redundand
-        ExternalTraining.update(
+        ExternalTrainings.update(
             { _id: training._id, updatedAt: training.updatedAt },
             { $set: { logs } },
         );

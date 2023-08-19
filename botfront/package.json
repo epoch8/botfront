@@ -1,11 +1,11 @@
 {
   "name": "botfront",
-  "version": "v2.0.0b3",
+  "version": "v2.2.0-alpha.1",
   "repository": "https://github.com/botfront/botfront",
   "license": "Apache-2.0",
   "scripts": {
     "start": "meteor run",
-    "start:dev": "MODE=development BF_PROJECT_ID=bf MONGO_URL=mongodb://botfront:io2LHp4dI31r1bcU@localhost:27117/bf MODELS_PATH=/home/nanoeti/projects/epoch8/botfront/models meteor run",
+    "start:dev": "MODE=development BF_PROJECT_ID=bf MONGO_URL=mongodb://botfront:io2LHp4dI31r1bcU@localhost:27117/bf MODELS_PATH=/home/nanoeti/projects/epoch8/botfront/models BACKUPS_PATH=/home/nanoeti/projects/epoch8/botfront/backups EXTERNAL_TRAINING_TOKEN=wHcL9Z77ccv6ixOw meteor run",
     "start:docker-compose": "BF_PROJECT_ID=bf meteor run",
     "start:docker-compose.dev": "MODE=development BF_PROJECT_ID=bf MONGO_URL=mongodb://localhost:27017/bf-os meteor run",
     "start:docker-compose.ci": "MODE=test BF_PROJECT_ID=bf MONGO_URL=mongodb://localhost:27017/bf meteor run",

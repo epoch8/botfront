@@ -4,9 +4,9 @@ import { check } from 'meteor/check';
 import { ExternalTrainingSchema } from './schema';
 import { checkIfCan } from '../../lib/scopes';
 
-export const ExternalTraining = new Mongo.Collection('externalTraining');
-// Deny all client-side updates on the ExternalTraining collection
-ExternalTraining.deny({
+export const ExternalTrainings = new Mongo.Collection('externalTrainings');
+// Deny all client-side updates on the ExternalTrainings collection
+ExternalTrainings.deny({
     insert() {
         return true;
     },
@@ -20,20 +20,20 @@ ExternalTraining.deny({
 
 Meteor.startup(() => {
     if (Meteor.isServer) {
-        ExternalTraining.rawCollection().createIndex({ projectId: 1, updatedAt: -1 });
-        ExternalTraining.rawCollection().createIndex({ projectId: 1, status: 1 });
+        ExternalTrainings.rawCollection().createIndex({ projectId: 1, updatedAt: -1 });
+        ExternalTrainings.rawCollection().createIndex({ projectId: 1, status: 1 });
     }
 });
 
 if (Meteor.isServer) {
-    Meteor.publish('externalTraining', function (projectId) {
+    Meteor.publish('externalTrainings', function (projectId) {
         try {
             checkIfCan('nlu-data:r', projectId);
         } catch (err) {
             return this.ready();
         }
         check(projectId, String);
-        return ExternalTraining.find({ projectId }, { sort: { updatedAt: -1 } });
+        return ExternalTrainings.find({ projectId }, { sort: { updatedAt: -1 } });
     });
     Meteor.publish('externalTrainingById', function (projectId, etId) {
         try {
@@ -43,8 +43,8 @@ if (Meteor.isServer) {
         }
         check(projectId, String);
         check(etId, String);
-        return ExternalTraining.findOne({ _id: etId, projectId });
+        return ExternalTrainings.findOne({ _id: etId, projectId });
     });
 }
 
-ExternalTraining.attachSchema(ExternalTrainingSchema);
+ExternalTrainings.attachSchema(ExternalTrainingSchema);

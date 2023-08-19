@@ -76,7 +76,7 @@ class ProjectSidebar extends React.Component {
                     </Can>
                     <Can I='nlu-data:r' projectId={projectId}>
                         <Link to={`/project/${projectId}/trainings`}>
-                            <Menu.Item name={t('Trainings')} icon='coffee' />
+                            <Menu.Item name={t('Trainings')} icon='tasks' />
                         </Link>
                     </Can>
                     <Can I='models:r' projectId={projectId}>

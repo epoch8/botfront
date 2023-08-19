@@ -3,6 +3,7 @@
 import axios, { AxiosResponse } from 'axios';
 // eslint-disable-next-line no-unused-vars
 import { Stream } from 'stream';
+import FormData from 'form-data';
 
 import {
     EXTERNAL_TRAINING_TOKEN,
@@ -16,7 +17,7 @@ import {
 const checkStatus = (resp) => {
     if (resp.status.toString()[0] !== '2') {
         const { url, method } = resp.config;
-        console.error(`${method}: ${url} Resp: ${resp.statusText}`);
+        console.error(`${method}: ${url} Resp: ${JSON.stringify(resp.data)}`);
         throw new Error(resp.statusText);
     }
 };
@@ -28,7 +29,7 @@ const authHeaders = () => ({
     Authorization: EXTERNAL_TRAINING_TOKEN,
 });
 
-const axiosClient = axios.create({ headers: authHeaders() });
+const axiosClient = axios.create({ headers: authHeaders(), validateStatus: false });
 
 export class BetApi {
     /**
@@ -62,7 +63,10 @@ export class BetApi {
         const formData = new FormData();
         formData.append('project_id', projectId);
         formData.append('image', image);
-        formData.append('training_data', new Blob([trainingData], { type: 'text/yaml' }));
+        formData.append('training_data', Buffer.from(trainingData, 'utf-8'), {
+            filename: 'data.yml',
+            contentType: 'text/yaml',
+        });
         if (opts.rasaExtraArgs) {
             formData.append('rasa_extra_args', opts.rasaExtraArgs);
         }
@@ -72,7 +76,7 @@ export class BetApi {
         const url = `${trainingHost}/train`;
         const resp = await axiosClient.post(url, formData, {
             headers: {
-                'Content-Type': 'multipart/form-data',
+                'Content-Type': `multipart/form-data; boundary=${formData.getBoundary()}`,
             },
         });
         checkStatus(resp);

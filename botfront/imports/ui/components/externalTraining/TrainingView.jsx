@@ -8,12 +8,12 @@ import {
     Container, Table, Icon, Modal, Button, Input, Segment,
 } from 'semantic-ui-react';
 
-import { ExternalTraining } from '../../../api/externalTraining/collection';
+import { ExternalTrainings } from '../../../api/externalTrainings/collection';
 import PageMenu from '../utils/PageMenu';
 import { Loading } from '../utils/Utils';
 import Can from '../roles/Can';
 
-const Trainings = ({ trainings, openDetails, onCancel }) => (
+const Trainings = ({ trainings, openDetails }) => (
     <Table.Body>
         {trainings.map(training => (
             <Table.Row
@@ -24,38 +24,85 @@ const Trainings = ({ trainings, openDetails, onCancel }) => (
                 }}
             >
                 <Table.Cell>{training.name}</Table.Cell>
-                <Table.Cell>{training.host}</Table.Cell>
-                <Table.Cell>{training.createdAt}</Table.Cell>
+                <Table.Cell>{training.betUrl}</Table.Cell>
+                <Table.Cell>{training.createdAt.toDateString()}</Table.Cell>
                 <Table.Cell>{training.status}</Table.Cell>
-                <Can I='nlu-data:x' projectId={training.projectId}>
-                    <Table.Cell textAlign='center'>
-                        <Icon
-                            link
-                            data-cy={`cancel-training-${training._id}`}
-                            name='cancel'
-                            // color='grey'
-                            // size='small'
-                            onClick={() => {
-                                onCancel(training);
-                            }}
-                        />
-                    </Table.Cell>
-                </Can>
             </Table.Row>
         ))}
     </Table.Body>
 );
 
 Trainings.propTypes = {
-    trainings: PropTypes.arrayOf(PropTypes.object).isRequired,
+    trainings: PropTypes.arrayOf(
+        PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            betUrl: PropTypes.string.isRequired,
+            createdAt: PropTypes.instanceOf(Date).isRequired,
+            status: PropTypes.string.isRequired,
+        }),
+    ).isRequired,
     openDetails: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
+};
+
+const TrainingDetails = ({ training, open, setOpen }) => {
+    const { t } = useTranslation('externalTraining');
+    return (
+        <Modal open={open} onClose={() => setOpen(false)}>
+            <Modal.Header className={`training-header-${training.status}`}>
+                <div className='flex-row-container'>
+                    <div className='flex-auto-item'>
+                        {training.name}
+                    </div>
+                    <div className='flex-auto-item'>
+                        {training.createdAt.toDateString()}
+                    </div>
+                    <div className='flex-auto-item'>
+                        {training.status}
+                    </div>
+                </div>
+            </Modal.Header>
+            <Modal.Content>
+                {/* <Input
+                    label={t('Comment')}
+                    ref={commentRef}
+                    defaultValue={detailsTraining.comment}
+                    fluid
+                /> */}
+            </Modal.Content>
+            {/* <Modal.Actions>
+                <Can I='models:x' projectId={projectId}>
+                    <Button
+                        onClick={() => setConfirmDeployOpen(true)}
+                        color='red'
+                        disabled={detailsTraining.deployed}
+                    >
+                        <Icon name='external' /> {t('Deploy')}
+                    </Button>
+                </Can>
+                <Button onClick={updateComment} primary>
+                    <Icon name='save' /> {t('Save')}
+                </Button>
+            </Modal.Actions> */}
+        </Modal>
+    );
+};
+
+TrainingDetails.propTypes = {
+    training: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        betUrl: PropTypes.string.isRequired,
+        createdAt: PropTypes.instanceOf(Date).isRequired,
+        status: PropTypes.string.isRequired,
+        logs: PropTypes.string,
+    }).isRequired,
+    open: PropTypes.bool.isRequired,
+    setOpen: PropTypes.func.isRequired,
 };
 
 function TrainingView({ projectId }) {
     const { ready, trainings } = useTracker(() => {
-        const trainingsHandler = Meteor.subscribe('externalTraining', projectId);
-        const externalTrainings = ExternalTraining.find(
+        const trainingsHandler = Meteor.subscribe('externalTrainings', projectId);
+        const externalTrainings = ExternalTrainings.find(
             { projectId },
             { sort: { createdAt: -1 } },
         ).fetch();
@@ -68,14 +115,14 @@ function TrainingView({ projectId }) {
     const { t } = useTranslation('externalTraining');
 
     const [detailsOpen, setDetailsOpen] = useState(false);
-    const [detailsModel, setDetailsModel] = useState({});
+    const [detailsTraining, setDetailsTraining] = useState({});
     const [confirmDeployOpen, setConfirmDeployOpen] = useState(false);
     const commentRef = useRef();
 
     useEffect(() => {
-        if (detailsModel._id) {
-            setDetailsModel(
-                trainings.find(training => detailsModel._id === training._id) || {},
+        if (detailsTraining._id) {
+            setDetailsTraining(
+                trainings.find(training => detailsTraining._id === training._id) || {},
             );
         }
     }, [trainings]);
@@ -85,12 +132,14 @@ function TrainingView({ projectId }) {
         Meteor.call(
             'model.updateComment',
             projectId,
-            detailsModel._id,
+            detailsTraining._id,
             comment,
             (err) => {
                 if (err) {
                     Alert.error(
-                        `${t('Error updating comment for model')} ${detailsModel.name}`,
+                        `${t('Error updating comment for model')} ${
+                            detailsTraining.name
+                        }`,
                     );
                 }
             },
@@ -98,20 +147,23 @@ function TrainingView({ projectId }) {
     };
 
     const deploy = () => {
-        Meteor.call('model.deploy', projectId, detailsModel._id, (err, res) => {
+        Meteor.call('model.deploy', projectId, detailsTraining._id, (err, res) => {
             if (err) {
-                Alert.error(`${t('Error deploying model')} ${detailsModel.name}`);
+                Alert.error(`${t('Error deploying model')} ${detailsTraining.name}`);
                 return;
             }
             if (res.errorMsg) {
                 Alert.error(res.errorMsg);
                 return;
             }
-            Alert.success(`${t('Sucessfulyl deployed model')} ${detailsModel.name}`);
+            Alert.success(`${t('Sucessfulyl deployed model')} ${detailsTraining.name}`);
         });
     };
 
-    const openDetails = () => {};
+    const openDetails = (training) => {
+        setDetailsTraining(training);
+        setDetailsOpen(true);
+    };
     const onCancel = () => {};
 
     return (
@@ -119,7 +171,7 @@ function TrainingView({ projectId }) {
             <PageMenu title={t('Trainings')} icon='list' withTraining />
             <Loading loading={!ready}>
                 <Container>
-                    <Table striped>
+                    <Table>
                         <Table.Header>
                             <Table.Row>
                                 <Table.HeaderCell>{t('Name')}</Table.HeaderCell>
@@ -137,31 +189,13 @@ function TrainingView({ projectId }) {
                             onCancel={onCancel}
                         />
                     </Table>
-                    <Modal open={detailsOpen} onClose={() => setDetailsOpen(false)}>
-                        <Modal.Header>{detailsModel.name}</Modal.Header>
-                        <Modal.Content>
-                            <Input
-                                label={t('Comment')}
-                                ref={commentRef}
-                                defaultValue={detailsModel.comment}
-                                fluid
-                            />
-                        </Modal.Content>
-                        <Modal.Actions>
-                            <Can I='models:x' projectId={projectId}>
-                                <Button
-                                    onClick={() => setConfirmDeployOpen(true)}
-                                    color='red'
-                                    disabled={detailsModel.deployed}
-                                >
-                                    <Icon name='external' /> {t('Deploy')}
-                                </Button>
-                            </Can>
-                            <Button onClick={updateComment} primary>
-                                <Icon name='save' /> {t('Save')}
-                            </Button>
-                        </Modal.Actions>
-                    </Modal>
+                    {detailsTraining._id && (
+                        <TrainingDetails
+                            training={detailsTraining}
+                            open={detailsOpen}
+                            setOpen={setDetailsOpen}
+                        />
+                    )}
                     <Can I='models:x' projectId={projectId}>
                         <Modal
                             open={confirmDeployOpen}
@@ -171,10 +205,10 @@ function TrainingView({ projectId }) {
                             <Modal.Content>
                                 <b>
                                     {t('Are your shure you want to deploy model')}{' '}
-                                    {detailsModel.name}?
+                                    {detailsTraining.name}?
                                 </b>
-                                {detailsModel.comment ? (
-                                    <Segment>{detailsModel.comment}</Segment>
+                                {detailsTraining.comment ? (
+                                    <Segment>{detailsTraining.comment}</Segment>
                                 ) : (
                                     <></>
                                 )}

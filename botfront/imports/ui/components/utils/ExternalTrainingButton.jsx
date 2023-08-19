@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable no-console */
+import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 import { Meteor } from 'meteor/meteor';
@@ -7,35 +8,36 @@ import { useTranslation } from 'react-i18next';
 
 import { Projects } from '../../../api/project/project.collection';
 import { Can } from '../../../lib/scopes';
+import { ProjectContext } from '../../layouts/context';
 
 const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
-    const { trainingStatus } = useTracker(() => {
+    const { status, jobId } = useTracker(() => {
         const trainingStatusHandler = Meteor.subscribe(
-            'externalTraining.instanceStatuses',
+            'project.externalTraining',
             projectId,
         );
-        let status = 'notReachable';
         if (trainingStatusHandler.ready()) {
-            const instance = Projects.findOne(
+            const { externalTraining } = Projects.findOne(
                 { _id: projectId },
-                { fields: { 'externalTraining.instanceStatuses': 1 } },
+                { fields: { externalTraining: 1 } },
             );
-            const instanceStatuses = instance.externalTraining?.instanceStatuses;
-            if (instanceStatuses) {
-                const instanceStatus = instanceStatuses.find(({ host }) => host === trainingConfig.host);
-                if (instanceStatus) {
-                    ({ status } = instanceStatus);
+            if (externalTraining) {
+                const trainingInfo = externalTraining.find(
+                    ({ host }) => host === trainingConfig.host,
+                );
+                if (trainingInfo) {
+                    return trainingInfo;
                 }
             }
         }
-        return {
-            trainingStatus: status,
-        };
+        return { status: 'notReachable', jobId: null };
     });
+
+    const { language } = useContext(ProjectContext);
 
     const { t } = useTranslation('utils');
 
-    const training = trainingStatus === 'training';
+    const training = status === 'training';
     const [clicked, setClicked] = useState(false);
     const [timeout, setTimeout] = useState(null);
 
@@ -43,20 +45,34 @@ const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
         setClicked(false);
         if (timeout !== null) Meteor.clearTimeout(timeout);
         setTimeout(null);
-    }, [trainingStatus, projectId]);
+    }, [status, projectId]);
 
     const onTrainClick = async () => {
-        if (clicked || trainingStatus === 'notReachable') {
+        if (clicked || status === 'notReachable') {
             return;
         }
         setClicked(true);
         try {
             if (training) {
-                await Meteor.callWithPromise('externalTraining.cancel',
-                    projectId, trainingConfig.host);
+                await Meteor.callWithPromise(
+                    'externalTraining.cancel',
+                    jobId,
+                    trainingConfig.host,
+                );
             } else {
-                await Meteor.callWithPromise('externalTraining.train',
-                    projectId, trainingConfig.host, trainingConfig);
+                const {
+                    host, image, name, rasaExtraArgs, node,
+                } = trainingConfig;
+                await Meteor.callWithPromise(
+                    'externalTraining.train',
+                    projectId,
+                    language,
+                    host,
+                    name,
+                    image,
+                    rasaExtraArgs,
+                    node,
+                );
             }
         } catch (error) {
             console.error(error);
@@ -76,10 +92,16 @@ const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
                 <Button.Group color={training ? 'yellow' : 'blue'}>
                     {training ? <Button primary loading /> : <></>}
                     <Button
-                        content={training ? t('Cancel {name} training').replace('{name}', trainingConfig.name)
-                            : `${t('Train')} ${trainingConfig.name}`}
+                        content={
+                            training
+                                ? t('Cancel {name} training').replace(
+                                    '{name}',
+                                    trainingConfig.name,
+                                )
+                                : `${t('Train')} ${trainingConfig.name}`
+                        }
                         primary
-                        disabled={trainingStatus === 'notReachable'}
+                        disabled={status === 'notReachable'}
                         loading={clicked}
                         onClick={onTrainClick}
                     />
@@ -94,6 +116,9 @@ ExternalTrainingButton.propTypes = {
     trainingConfig: PropTypes.shape({
         name: PropTypes.string.isRequired,
         host: PropTypes.string.isRequired,
+        image: PropTypes.string,
+        rasaExtraArgs: PropTypes.string,
+        node: PropTypes.string,
     }).isRequired,
 };
 

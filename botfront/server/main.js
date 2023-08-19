@@ -42,8 +42,8 @@ import '../imports/api/model/model.collection';
 import '../imports/api/model/server/model.methods';
 import '../imports/api/backup/collection';
 import '../imports/api/backup/server/methods';
-import '../imports/api/externalTraining/collection';
-import '../imports/api/externalTraining/server/methods';
+import '../imports/api/externalTrainings/collection';
+import '../imports/api/externalTrainings/server/methods';
 
 if (!Meteor.isTest) {
     import './migrations';

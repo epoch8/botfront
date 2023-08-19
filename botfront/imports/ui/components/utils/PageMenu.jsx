@@ -43,6 +43,9 @@ export default function PageMenu(props) {
             {withTraining && (
                 <>
                     <Menu.Item position='right'>
+                        {renderExternalTraining()}
+                    </Menu.Item>
+                    <Menu.Item position='right'>
                         {!isTraining(project) && status === 'success' && (
                             <Popup
                                 trigger={(
@@ -98,7 +101,6 @@ export default function PageMenu(props) {
                         )}
                     </Menu.Item>
                     <Menu.Item position='right'>
-                        {renderExternalTraining()}
                         <TrainButton
                             project={project}
                             instance={instance}

@@ -99,6 +99,10 @@ export const ProjectsSchema = new SimpleSchema({
         type: String,
         allowedValues: ['training', 'notTraining', 'notReachable'],
     },
+    'externalTraining.$.jobId': {
+        type: String,
+        optional: true,
+    },
     deploymentEnvironments: {
         type: Array,
         defaultValue: [],
