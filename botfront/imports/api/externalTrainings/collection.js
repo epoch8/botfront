@@ -33,17 +33,17 @@ if (Meteor.isServer) {
             return this.ready();
         }
         check(projectId, String);
-        return ExternalTrainings.find({ projectId }, { sort: { updatedAt: -1 } });
+        return ExternalTrainings.find({ projectId }, { sort: { updatedAt: -1 }, fields: { logs: 0 } });
     });
     Meteor.publish('externalTrainingById', function (projectId, etId) {
+        check(projectId, String);
+        check(etId, String);
         try {
             checkIfCan('nlu-data:r', projectId);
         } catch (err) {
             return this.ready();
         }
-        check(projectId, String);
-        check(etId, String);
-        return ExternalTrainings.findOne({ _id: etId, projectId });
+        return ExternalTrainings.find({ _id: etId, projectId });
     });
 }
 

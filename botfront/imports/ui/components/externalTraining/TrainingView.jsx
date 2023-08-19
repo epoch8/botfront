@@ -5,9 +5,17 @@ import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import Alert from 'react-s-alert';
 import {
-    Container, Table, Icon, Modal, Button, Input, Segment,
+    Container,
+    Table,
+    Icon,
+    Modal,
+    Button,
+    Input,
+    Segment,
+    TextArea,
 } from 'semantic-ui-react';
 
+import TextareaAutosize from 'react-autosize-textarea';
 import { ExternalTrainings } from '../../../api/externalTrainings/collection';
 import PageMenu from '../utils/PageMenu';
 import { Loading } from '../utils/Utils';
@@ -20,7 +28,7 @@ const Trainings = ({ trainings, openDetails }) => (
                 key={training._id}
                 className={`training-row-${training.status}`}
                 onClick={() => {
-                    openDetails(training);
+                    openDetails(training._id);
                 }}
             >
                 <Table.Cell>{training.name}</Table.Cell>
@@ -44,59 +52,88 @@ Trainings.propTypes = {
     openDetails: PropTypes.func.isRequired,
 };
 
-const TrainingDetails = ({ training, open, setOpen }) => {
+const TrainingDetails = ({
+    projectId, trainingId, open, setOpen, cancelTraining, checkoutProject,
+}) => {
     const { t } = useTranslation('externalTraining');
+    const { ready, training } = useTracker(() => {
+        const trainingsHandler = Meteor.subscribe(
+            'externalTrainingById',
+            projectId,
+            trainingId,
+        );
+        const externalTraining = ExternalTrainings.findOne({ _id: trainingId });
+        return {
+            ready: trainingsHandler.ready(),
+            training: externalTraining,
+        };
+    }, [trainingId]);
+    if (!ready) {
+        return <></>;
+    }
+    const renderCancelButton = () => {
+        if (training.status !== 'training') {
+            return <></>;
+        }
+        return (
+            <Can I='nlu-data:x' projectId={projectId}>
+                <Button
+                    onClick={() => {
+                        cancelTraining(trainingId);
+                    }}
+                    color='yellow'
+                >
+                    <Icon name='stop' /> {t('Cancel')}
+                </Button>
+            </Can>
+        );
+    };
+    const renderRollbackButton = () => (
+        <Can I='import:x' projectId={projectId}>
+            <Button
+                onClick={() => {
+                    checkoutProject(training.backupId);
+                }}
+                color='red'
+            >
+                <Icon name='code branch' /> {t('Checkout')}
+            </Button>
+        </Can>
+    );
+
     return (
-        <Modal open={open} onClose={() => setOpen(false)}>
+        <Modal size='large' open={open} onClose={() => setOpen(false)}>
             <Modal.Header className={`training-header-${training.status}`}>
                 <div className='flex-row-container'>
-                    <div className='flex-auto-item'>
-                        {training.name}
-                    </div>
+                    <div className='flex-auto-item'>{training.name}</div>
                     <div className='flex-auto-item'>
                         {training.createdAt.toDateString()}
                     </div>
-                    <div className='flex-auto-item'>
-                        {training.status}
-                    </div>
+                    <div className='flex-auto-item'>{training.status}</div>
                 </div>
             </Modal.Header>
+            <Modal.Actions>
+                {renderCancelButton()}
+                {renderRollbackButton()}
+            </Modal.Actions>
             <Modal.Content>
-                {/* <Input
-                    label={t('Comment')}
-                    ref={commentRef}
-                    defaultValue={detailsTraining.comment}
-                    fluid
-                /> */}
+                <TextareaAutosize
+                    style={{ width: '100%' }}
+                    contentEditable={false}
+                    value={training.logs}
+                />
             </Modal.Content>
-            {/* <Modal.Actions>
-                <Can I='models:x' projectId={projectId}>
-                    <Button
-                        onClick={() => setConfirmDeployOpen(true)}
-                        color='red'
-                        disabled={detailsTraining.deployed}
-                    >
-                        <Icon name='external' /> {t('Deploy')}
-                    </Button>
-                </Can>
-                <Button onClick={updateComment} primary>
-                    <Icon name='save' /> {t('Save')}
-                </Button>
-            </Modal.Actions> */}
         </Modal>
     );
 };
 
 TrainingDetails.propTypes = {
-    training: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        betUrl: PropTypes.string.isRequired,
-        createdAt: PropTypes.instanceOf(Date).isRequired,
-        status: PropTypes.string.isRequired,
-        logs: PropTypes.string,
-    }).isRequired,
+    projectId: PropTypes.string.isRequired,
+    trainingId: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     setOpen: PropTypes.func.isRequired,
+    cancelTraining: PropTypes.func.isRequired,
+    checkoutProject: PropTypes.func.isRequired,
 };
 
 function TrainingView({ projectId }) {
@@ -115,56 +152,28 @@ function TrainingView({ projectId }) {
     const { t } = useTranslation('externalTraining');
 
     const [detailsOpen, setDetailsOpen] = useState(false);
-    const [detailsTraining, setDetailsTraining] = useState({});
-    const [confirmDeployOpen, setConfirmDeployOpen] = useState(false);
-    const commentRef = useRef();
+    const [detailsTraining, setDetailsTraining] = useState(null);
 
-    useEffect(() => {
-        if (detailsTraining._id) {
-            setDetailsTraining(
-                trainings.find(training => detailsTraining._id === training._id) || {},
-            );
-        }
-    }, [trainings]);
-
-    const updateComment = () => {
-        const comment = commentRef.current?.inputRef?.current?.value || '';
-        Meteor.call(
-            'model.updateComment',
-            projectId,
-            detailsTraining._id,
-            comment,
-            (err) => {
-                if (err) {
-                    Alert.error(
-                        `${t('Error updating comment for model')} ${
-                            detailsTraining.name
-                        }`,
-                    );
-                }
-            },
-        );
-    };
-
-    const deploy = () => {
-        Meteor.call('model.deploy', projectId, detailsTraining._id, (err, res) => {
-            if (err) {
-                Alert.error(`${t('Error deploying model')} ${detailsTraining.name}`);
-                return;
-            }
-            if (res.errorMsg) {
-                Alert.error(res.errorMsg);
-                return;
-            }
-            Alert.success(`${t('Sucessfulyl deployed model')} ${detailsTraining.name}`);
-        });
-    };
+    // const deploy = () => {
+    //     Meteor.call('model.deploy', projectId, detailsTraining._id, (err, res) => {
+    //         if (err) {
+    //             Alert.error(`${t('Error deploying model')} ${detailsTraining.name}`);
+    //             return;
+    //         }
+    //         if (res.errorMsg) {
+    //             Alert.error(res.errorMsg);
+    //             return;
+    //         }
+    //         Alert.success(`${t('Sucessfulyl deployed model')} ${detailsTraining.name}`);
+    //     });
+    // };
 
     const openDetails = (training) => {
         setDetailsTraining(training);
         setDetailsOpen(true);
     };
-    const onCancel = () => {};
+    const cancelTraining = () => {};
+    const checkoutProject = () => {};
 
     return (
         <div data-cy='trainings-screen'>
@@ -186,53 +195,19 @@ function TrainingView({ projectId }) {
                         <Trainings
                             trainings={trainings}
                             openDetails={openDetails}
-                            onCancel={onCancel}
                         />
                     </Table>
-                    {detailsTraining._id && (
-                        <TrainingDetails
-                            training={detailsTraining}
-                            open={detailsOpen}
-                            setOpen={setDetailsOpen}
-                        />
-                    )}
-                    <Can I='models:x' projectId={projectId}>
-                        <Modal
-                            open={confirmDeployOpen}
-                            onClose={() => setConfirmDeployOpen(false)}
-                        >
-                            <Modal.Header>{t('Deploy model')}</Modal.Header>
-                            <Modal.Content>
-                                <b>
-                                    {t('Are your shure you want to deploy model')}{' '}
-                                    {detailsTraining.name}?
-                                </b>
-                                {detailsTraining.comment ? (
-                                    <Segment>{detailsTraining.comment}</Segment>
-                                ) : (
-                                    <></>
-                                )}
-                            </Modal.Content>
-                            <Modal.Actions>
-                                <Button
-                                    onClick={() => setConfirmDeployOpen(false)}
-                                    color='green'
-                                >
-                                    {t('No')}
-                                </Button>
-                                <Button
-                                    onClick={() => {
-                                        deploy();
-                                        setConfirmDeployOpen(false);
-                                    }}
-                                    color='red'
-                                >
-                                    {t('Yes')}
-                                </Button>
-                            </Modal.Actions>
-                        </Modal>
-                    </Can>
                 </Container>
+                {detailsTraining && (
+                    <TrainingDetails
+                        projectId={projectId}
+                        trainingId={detailsTraining}
+                        open={detailsOpen}
+                        setOpen={setDetailsOpen}
+                        cancelTraining={cancelTraining}
+                        checkoutProject={checkoutProject}
+                    />
+                )}
             </Loading>
         </div>
     );

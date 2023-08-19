@@ -25,6 +25,7 @@ Meteor.methods({
         check(projectId, String);
         check(language, String);
         check(host, String);
+        check(name, Match.Maybe(String));
         check(image, Match.Maybe(String));
         check(rasaExtraArgs, Match.Maybe(String));
         check(node, Match.Maybe(String));
