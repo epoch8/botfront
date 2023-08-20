@@ -1,7 +1,7 @@
 {
   "name": "botfront",
-  "version": "v2.2.0-alpha.1",
-  "repository": "https://github.com/botfront/botfront",
+  "version": "v2.2.0-rc.1",
+  "repository": "https://github.com/epoch8/botfront",
   "license": "Apache-2.0",
   "scripts": {
     "start": "meteor run",

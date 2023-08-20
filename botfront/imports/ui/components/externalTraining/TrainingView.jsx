@@ -1,25 +1,24 @@
 import PropTypes from 'prop-types';
 import { useTracker } from 'meteor/react-meteor-data';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-import Alert from 'react-s-alert';
 import {
     Container,
     Table,
     Icon,
     Modal,
     Button,
-    Input,
-    Segment,
-    TextArea,
+    Confirm,
 } from 'semantic-ui-react';
+import Alert from 'react-s-alert';
 
 import TextareaAutosize from 'react-autosize-textarea';
 import { ExternalTrainings } from '../../../api/externalTrainings/collection';
 import PageMenu from '../utils/PageMenu';
 import { Loading } from '../utils/Utils';
 import Can from '../roles/Can';
+import { wrapMeteorCallback } from '../utils/Errors';
 
 const Trainings = ({ trainings, openDetails }) => (
     <Table.Body>
@@ -53,7 +52,7 @@ Trainings.propTypes = {
 };
 
 const TrainingDetails = ({
-    projectId, trainingId, open, setOpen, cancelTraining, checkoutProject,
+    projectId, trainingId, open, setOpen,
 }) => {
     const { t } = useTranslation('externalTraining');
     const { ready, training } = useTracker(() => {
@@ -68,61 +67,121 @@ const TrainingDetails = ({
             training: externalTraining,
         };
     }, [trainingId]);
-    if (!ready) {
-        return <></>;
-    }
+
+    const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
+    const [checkoutConfirmOpen, setCheckoutConfirmOpen] = useState(false);
+
+    const cancelTraining = () => {
+        Meteor.call(
+            'externalTraining.cancel',
+            training.jobId,
+            training.betUrl,
+            wrapMeteorCallback(null, 'Training cancelled'),
+        );
+    };
+
+    const checkoutProject = () => {
+        Meteor.call(
+            'backup.checkout',
+            projectId,
+            training.backupId,
+            wrapMeteorCallback(
+                (err, result) => {
+                    if (!result) return;
+                    const { summary } = result;
+                    Alert.info(JSON.stringify(summary), {
+                        position: 'top-right',
+                        timeout: 'none',
+                    });
+                },
+                `Project data restored from backup ${training.backupId}`,
+            ),
+        );
+    };
+
     const renderCancelButton = () => {
         if (training.status !== 'training') {
             return <></>;
         }
         return (
             <Can I='nlu-data:x' projectId={projectId}>
-                <Button
-                    onClick={() => {
-                        cancelTraining(trainingId);
-                    }}
-                    color='yellow'
-                >
-                    <Icon name='stop' /> {t('Cancel')}
-                </Button>
+                <>
+                    <Button
+                        onClick={() => {
+                            setCancelConfirmOpen(true);
+                        }}
+                        color='yellow'
+                    >
+                        <Icon name='stop' /> {t('Cancel')}
+                    </Button>
+                    <Confirm
+                        header='Cancel training'
+                        open={open && cancelConfirmOpen}
+                        onCancel={() => setCancelConfirmOpen(false)}
+                        onConfirm={() => {
+                            cancelTraining(trainingId);
+                            setCancelConfirmOpen(false);
+                        }}
+                    />
+                </>
             </Can>
         );
     };
-    const renderRollbackButton = () => (
-        <Can I='import:x' projectId={projectId}>
-            <Button
-                onClick={() => {
-                    checkoutProject(training.backupId);
-                }}
-                color='red'
-            >
-                <Icon name='code branch' /> {t('Checkout')}
-            </Button>
-        </Can>
-    );
+
+    const renderRollbackButton = () => {
+        if (!training.backupId) {
+            return <></>;
+        }
+        return (
+            <Can I='import:x' projectId={projectId}>
+                <>
+                    <Button
+                        onClick={() => {
+                            setCheckoutConfirmOpen(true);
+                        }}
+                        color='red'
+                    >
+                        <Icon name='code branch' /> {t('Checkout')}
+                    </Button>
+                    <Confirm
+                        header='Checkout project'
+                        open={open && checkoutConfirmOpen}
+                        onCancel={() => setCheckoutConfirmOpen(false)}
+                        onConfirm={() => {
+                            checkoutProject(training.backupId);
+                            setCheckoutConfirmOpen(false);
+                        }}
+                    />
+                </>
+            </Can>
+        );
+    };
 
     return (
         <Modal size='large' open={open} onClose={() => setOpen(false)}>
-            <Modal.Header className={`training-header-${training.status}`}>
-                <div className='flex-row-container'>
-                    <div className='flex-auto-item'>{training.name}</div>
-                    <div className='flex-auto-item'>
-                        {training.createdAt.toDateString()}
+            <Loading loading={!ready}>
+                <Modal.Header className={`training-header-${training.status}`}>
+                    <div className='flex-row-container'>
+                        <div className='flex-auto-item'>{training.name}</div>
+                        <div className='flex-auto-item'>
+                            {training.createdAt.toDateString()}
+                        </div>
+                        <div className='flex-auto-item'>{training.status}</div>
                     </div>
-                    <div className='flex-auto-item'>{training.status}</div>
-                </div>
-            </Modal.Header>
-            <Modal.Actions>
-                {renderCancelButton()}
-                {renderRollbackButton()}
-            </Modal.Actions>
-            <Modal.Content>
-                <TextareaAutosize
-                    style={{ width: '100%' }}
-                    contentEditable={false}
-                    value={training.logs}
-                />
-            </Modal.Content>
+                </Modal.Header>
+                <Modal.Actions>
+                    {renderCancelButton()}
+                    {renderRollbackButton()}
+                </Modal.Actions>
+                <Modal.Content>
+                    <TextareaAutosize
+                        spellCheck={false}
+                        style={{ width: '100%' }}
+                        contentEditable={false}
+                        value={training.logs}
+                    />
+                </Modal.Content>
+            </Loading>
         </Modal>
     );
 };
@@ -132,8 +191,6 @@ TrainingDetails.propTypes = {
     trainingId: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     setOpen: PropTypes.func.isRequired,
-    cancelTraining: PropTypes.func.isRequired,
-    checkoutProject: PropTypes.func.isRequired,
 };
 
 function TrainingView({ projectId }) {
@@ -154,26 +211,10 @@ function TrainingView({ projectId }) {
     const [detailsOpen, setDetailsOpen] = useState(false);
     const [detailsTraining, setDetailsTraining] = useState(null);
 
-    // const deploy = () => {
-    //     Meteor.call('model.deploy', projectId, detailsTraining._id, (err, res) => {
-    //         if (err) {
-    //             Alert.error(`${t('Error deploying model')} ${detailsTraining.name}`);
-    //             return;
-    //         }
-    //         if (res.errorMsg) {
-    //             Alert.error(res.errorMsg);
-    //             return;
-    //         }
-    //         Alert.success(`${t('Sucessfulyl deployed model')} ${detailsTraining.name}`);
-    //     });
-    // };
-
     const openDetails = (training) => {
         setDetailsTraining(training);
         setDetailsOpen(true);
     };
-    const cancelTraining = () => {};
-    const checkoutProject = () => {};
 
     return (
         <div data-cy='trainings-screen'>
@@ -192,10 +233,7 @@ function TrainingView({ projectId }) {
                                 </Can>
                             </Table.Row>
                         </Table.Header>
-                        <Trainings
-                            trainings={trainings}
-                            openDetails={openDetails}
-                        />
+                        <Trainings trainings={trainings} openDetails={openDetails} />
                     </Table>
                 </Container>
                 {detailsTraining && (
@@ -204,8 +242,6 @@ function TrainingView({ projectId }) {
                         trainingId={detailsTraining}
                         open={detailsOpen}
                         setOpen={setDetailsOpen}
-                        cancelTraining={cancelTraining}
-                        checkoutProject={checkoutProject}
                     />
                 )}
             </Loading>

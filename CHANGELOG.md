@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 2.0.0
+
+### Features
+
+* [Rasa 3](https://github.com/epoch8/rasa/tree/e8)
+* [Parametrized actions](https://github.com/epoch8/rasa-sdk/tree/parametrized-actions)
+* Remove branching from forms
+
+
 ### [1.0.5](https://github.com/botfront/botfront/compare/v1.0.4...v1.0.5) (2021-03-19)
 
 ### [1.0.4](https://github.com/botfront/botfront/compare/v1.0.3...v1.0.4) (2021-03-16)

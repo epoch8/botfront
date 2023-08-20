@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { check, Match } from 'meteor/check';
 import fs from 'fs';
-import { Backup } from '../collection';
+import { Backups } from '../collection';
 import { checkIfCan } from '../../../lib/scopes';
 import { BACKUPS_PATH } from '../../../../server/config';
 import { auditLog } from '../../../../server/logger';
@@ -44,7 +44,7 @@ Meteor.methods({
                 .on('error', reject);
         });
 
-        const backupId = Backup.insert({
+        const backupId = Backups.insert({
             projectId,
             backupPath,
             comment,
@@ -69,14 +69,14 @@ Meteor.methods({
         check(projectId, String);
         check(backupId, String);
 
-        const backup = Backup.findOne({ _id: backupId, projectId });
+        const backup = Backups.findOne({ _id: backupId, projectId });
         if (!backup) {
             throw new Meteor.Error(404, 'Backup not found');
         }
-        const backupFh = await fs.promises.open(backup.backupPath);
+        const backupStream = fs.createReadStream(backup.backupPath);
         return await importSteps({
             projectId,
-            files: [backupFh],
+            files: [{ filename: backup.backupPath, stream: backupStream }],
             wipeInvolvedCollections: true,
         });
     },
