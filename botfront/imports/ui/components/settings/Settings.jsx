@@ -17,6 +17,7 @@ import DefaultDomain from './DefaultDomain';
 import ImportExportProject from './ImportExportProject';
 import ChatWidgetForm from './ChatWidgetForm';
 import GitSettings from './GitSettings';
+import Faq from './Faq';
 
 class Settings extends React.Component {
     componentDidMount() {
@@ -40,6 +41,7 @@ class Settings extends React.Component {
         const canExport = can('export:x', projectId);
         const canImport = can('import:x', projectId);
         const canViewGitCredentials = can('git-credentials:r', projectId);
+        const canViewFaq = can('nlu-data:w', projectId);
         const panes = [
             ...(canViewProjects ? [
                 {
@@ -94,10 +96,17 @@ class Settings extends React.Component {
                     render: () => <Tab.Pane><ImportExportProject /></Tab.Pane>,
                 }] : []),
 
-            ...(canViewGitCredentials ? [{
-                name: 'git-credentials',
-                menuItem: <Menu.Item icon='git' content={t('Git credentials')} key='Git credentials' />,
-                render: () => <Tab.Pane><GitSettings /></Tab.Pane>,
+            // TODO: currently not needed
+            // ...(canViewGitCredentials ? [{
+            //     name: 'git-credentials',
+            //     menuItem: <Menu.Item icon='git' content={t('Git credentials')} key='Git credentials' />,
+            //     render: () => <Tab.Pane><GitSettings /></Tab.Pane>,
+            // }] : []),
+
+            ...(canViewFaq ? [{
+                name: 'faq',
+                menuItem: <Menu.Item icon='question' content={t('FAQ')} key='FAQ' />,
+                render: () => <Tab.Pane><Faq /></Tab.Pane>,
             }] : []),
 
 

@@ -347,6 +347,7 @@ if (Meteor.isServer) {
     import { postTraining } from '../model/server/model.utils';
     // eslint-disable-next-line import/order
     import { performance } from 'perf_hooks';
+    import { getFaqExamplesString } from './server/faqUtils';
 
     const trainingAppLogger = getAppLoggerForFile(__filename);
 
@@ -579,6 +580,26 @@ if (Meteor.isServer) {
                 language,
                 selectedIntents,
             );
+
+            // Append faq examples to training data
+            const { faqSettings } = Projects.findOne(
+                { _id: projectId },
+                { fields: { faqSettings: 1 } },
+            );
+            if (faqSettings?.host && faqSettings?.enabled) {
+                const faqExamples = await getFaqExamplesString(
+                    faqSettings.host,
+                    faqSettings.nExamples,
+                );
+                const faqIntent = nlu.find(
+                    nluItem => nluItem.intent === faqSettings.intentName,
+                );
+                if (faqIntent) {
+                    faqIntent.examples = `${faqIntent.examples}\n${faqExamples}`;
+                } else {
+                    nlu.push({ intent: faqSettings.intentName, examples: faqExamples });
+                }
+            }
             const payload = {
                 ...convertDomainBotfrontToRasa(domain),
                 stories: processedStories,

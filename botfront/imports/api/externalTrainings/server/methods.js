@@ -20,7 +20,15 @@ Meteor.methods({
      * @param {string?} node
      * @returns {Promise<string>}
      */
-    async 'externalTraining.train'(projectId, language, host, name, image, rasaExtraArgs, node) {
+    async 'externalTraining.train'(
+        projectId,
+        language,
+        host,
+        name,
+        image,
+        rasaExtraArgs,
+        node,
+    ) {
         checkIfCan('nlu-data:x', projectId);
         check(projectId, String);
         check(language, String);
@@ -40,7 +48,6 @@ Meteor.methods({
             'rasa3.getTrainingPayload',
             projectId,
             { language },
-
         );
         const yamlTrainingData = yaml.safeDump(trainingData, {
             sortKeys: true,
@@ -88,7 +95,10 @@ Meteor.methods({
         }
         checkIfCan('nlu-data:x', training.projectId);
         const cancelled = await betApi.cancel(jobId, host);
-        ExternalTrainings.update({ _id: training._id }, { $set: { status: 'cancelled' } });
+        ExternalTrainings.update(
+            { _id: training._id },
+            { $set: { status: 'cancelled' } },
+        );
         return cancelled;
     },
     /**

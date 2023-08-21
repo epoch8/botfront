@@ -4,12 +4,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import {
-    Container,
-    Table,
-    Icon,
-    Modal,
-    Button,
-    Confirm,
+    Container, Table, Icon, Modal, Button, Confirm,
 } from 'semantic-ui-react';
 import Alert from 'react-s-alert';
 
@@ -32,7 +27,7 @@ const Trainings = ({ trainings, openDetails }) => (
             >
                 <Table.Cell>{training.name}</Table.Cell>
                 <Table.Cell>{training.betUrl}</Table.Cell>
-                <Table.Cell>{training.createdAt.toDateString()}</Table.Cell>
+                <Table.Cell>{training.createdAt.toString()}</Table.Cell>
                 <Table.Cell>{training.status}</Table.Cell>
             </Table.Row>
         ))}
@@ -66,7 +61,7 @@ const TrainingDetails = ({
             ready: trainingsHandler.ready(),
             training: externalTraining,
         };
-    }, [trainingId]);
+    }, [projectId, trainingId]);
 
     const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
     const [checkoutConfirmOpen, setCheckoutConfirmOpen] = useState(false);
@@ -85,17 +80,14 @@ const TrainingDetails = ({
             'backup.checkout',
             projectId,
             training.backupId,
-            wrapMeteorCallback(
-                (err, result) => {
-                    if (!result) return;
-                    const { summary } = result;
-                    Alert.info(JSON.stringify(summary), {
-                        position: 'top-right',
-                        timeout: 'none',
-                    });
-                },
-                `Project data restored from backup ${training.backupId}`,
-            ),
+            wrapMeteorCallback((err, result) => {
+                if (!result) return;
+                const { summary } = result;
+                Alert.info(JSON.stringify(summary), {
+                    position: 'top-right',
+                    timeout: 'none',
+                });
+            }, `Project data restored from backup ${training.backupId}`),
         );
     };
 
@@ -164,7 +156,7 @@ const TrainingDetails = ({
                     <div className='flex-row-container'>
                         <div className='flex-auto-item'>{training.name}</div>
                         <div className='flex-auto-item'>
-                            {training.createdAt.toDateString()}
+                            {training.createdAt.toString()}
                         </div>
                         <div className='flex-auto-item'>{training.status}</div>
                     </div>

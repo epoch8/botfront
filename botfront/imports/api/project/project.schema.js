@@ -24,6 +24,13 @@ export const logosSchema = new SimpleSchema({
     logoUrl: { type: String, optional: true },
 });
 
+export const FaqSettingsSchema = new SimpleSchema({
+    host: { type: String, regEx: /^(http|https):\/\//, optional: true },
+    nExamples: { type: SimpleSchema.Integer, defaultValue: 20 },
+    intentName: { type: String, defaultValue: 'faq_intent' },
+    enabled: { type: Boolean, defaultValue: false },
+});
+
 export const chatWidgetSettingsSchema = new SimpleSchema({
     title: { type: String, optional: true, defaultValue: 'Botfront' },
     // we need to validate the user input (JSON), but we want to store it as an Object, thus the double type
@@ -120,6 +127,7 @@ export const ProjectsSchema = new SimpleSchema({
     smallLogoUrl: { type: String, optional: true },
     allowContextualQuestions: { type: Boolean, defaultValue: false },
     gitSettings: { type: GitSettingsSchema, optional: true },
+    faqSettings: { type: FaqSettingsSchema, optional: true },
 }, { tracker: Tracker });
 
 ProjectsSchema.messageBox.messages({
