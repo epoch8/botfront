@@ -103,7 +103,11 @@ Meteor.startup(function () {
                         if (instanceState === -1) instanceStatus = 'notReachable';
 
                         const externalTrainingsInfo = await Promise.all(
-                            (externalTraining || []).map(async (trainingConfig) => {
+                            (externalTraining || []).filter(
+                                // Compare with undefined for backward compatibility
+                                // TODO make migration?
+                                trainingConfig => trainingConfig.enabled || trainingConfig.enabled === undefined,
+                            ).map(async (trainingConfig) => {
                                 const { host } = trainingConfig;
                                 const { status, jobId } = await getTrainingInfo(projectId, host);
                                 return { host, status, jobId };

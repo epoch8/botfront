@@ -1,6 +1,6 @@
 {
   "name": "botfront",
-  "version": "v2.3.0",
+  "version": "v2.3.1",
   "repository": "https://github.com/epoch8/botfront",
   "license": "Apache-2.0",
   "scripts": {
@@ -81,7 +81,7 @@
     "prop-types": "^15.7.2",
     "query-string": "^5.1.0",
     "random-seed": "^0.3.0",
-    "rasa-webchat": "file:./packages/rasa-webchat-1.0.1-e8-1.tgz",
+    "rasa-webchat": "file:packages/rasa-webchat-2.0.0.tgz",
     "react": "^16.8.6",
     "react-ace": "^6.1.4",
     "react-apollo": "^2.5.8",
@@ -112,6 +112,7 @@
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window-infinite-loader": "^1.0.5",
     "redux": "^4.0.4",
+    "remove": "^0.1.5",
     "request": "^2.88.2",
     "resize-observer-polyfill": "^1.5.1",
     "semantic-ui-css": "^2.4.1",
