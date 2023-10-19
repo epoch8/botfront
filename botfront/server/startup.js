@@ -54,80 +54,80 @@ Meteor.startup(function () {
         fileAppLogger.info(`Botfront ${packageInfo.version} started`);
         Meteor.setInterval(async () => {
             try {
-                const instancesInfo = Instances.find();
-                const newStatuses = await Promise.all(
-                    instancesInfo.map(async (instance) => {
-                        let instanceState;
-                        try {
-                            const client = await createAxiosForRasa(instance.projectId);
-                            const data = await client.get('/status');
-                            instanceState = get(
-                                data,
-                                'data.num_active_training_jobs',
-                                -1,
-                            );
-                        } catch (e) {
-                            instanceState = -1;
-                        }
-                        let status;
-                        if (instanceState >= 1) status = 'training';
-                        if (instanceState === 0) status = 'notTraining';
-                        if (instanceState === -1) status = 'notReachable';
+                // const instancesInfo = Instances.find();
+                // const newStatuses = await Promise.all(
+                //     instancesInfo.map(async (instance) => {
+                //         let instanceState;
+                //         try {
+                //             const client = await createAxiosForRasa(instance.projectId);
+                //             const data = await client.get('/status');
+                //             instanceState = get(
+                //                 data,
+                //                 'data.num_active_training_jobs',
+                //                 -1,
+                //             );
+                //         } catch (e) {
+                //             instanceState = -1;
+                //         }
+                //         let status;
+                //         if (instanceState >= 1) status = 'training';
+                //         if (instanceState === 0) status = 'notTraining';
+                //         if (instanceState === -1) status = 'notReachable';
 
-                        const externalTrainingStatuses = await Promise.all(
-                            (instance.externalTraining || []).map(async (trainingConfig) => {
-                                let externalTrainingStatus = 'notReachable';
-                                const { host } = trainingConfig;
-                                try {
-                                    const resp = await axios.post(
-                                        `${host}/status/${instance.projectId}`,
-                                    );
-                                    const respTrainingStatus = resp.data[0].status;
-                                    switch (respTrainingStatus) {
-                                    case 'scheduled':
-                                    case 'queued':
-                                    case 'running':
-                                    case 'restarting':
-                                    case 'shutdown':
-                                    case 'up_for_retry':
-                                    case 'up_for_reschedule':
-                                    case 'deferred':
-                                        externalTrainingStatus = 'training';
-                                        break;
-                                    case 'unknown':
-                                    case 'none':
-                                    case 'success':
-                                    case 'failed':
-                                    case 'skipped':
-                                    case 'upstream_failed':
-                                    case 'removed':
-                                        externalTrainingStatus = 'notTraining';
-                                        break;
-                                    default:
-                                        externalTrainingStatus = 'notReachable';
-                                        break;
-                                    }
-                                } catch (error) {
-                                    console.error(error);
-                                }
-                                return { host, status: externalTrainingStatus };
-                            }),
-                        );
+                //         const externalTrainingStatuses = await Promise.all(
+                //             (instance.externalTraining || []).map(async (trainingConfig) => {
+                //                 let externalTrainingStatus = 'notReachable';
+                //                 const { host } = trainingConfig;
+                //                 try {
+                //                     const resp = await axios.post(
+                //                         `${host}/status/${instance.projectId}`,
+                //                     );
+                //                     const respTrainingStatus = resp.data[0].status;
+                //                     switch (respTrainingStatus) {
+                //                     case 'scheduled':
+                //                     case 'queued':
+                //                     case 'running':
+                //                     case 'restarting':
+                //                     case 'shutdown':
+                //                     case 'up_for_retry':
+                //                     case 'up_for_reschedule':
+                //                     case 'deferred':
+                //                         externalTrainingStatus = 'training';
+                //                         break;
+                //                     case 'unknown':
+                //                     case 'none':
+                //                     case 'success':
+                //                     case 'failed':
+                //                     case 'skipped':
+                //                     case 'upstream_failed':
+                //                     case 'removed':
+                //                         externalTrainingStatus = 'notTraining';
+                //                         break;
+                //                     default:
+                //                         externalTrainingStatus = 'notReachable';
+                //                         break;
+                //                     }
+                //                 } catch (error) {
+                //                     console.error(error);
+                //                 }
+                //                 return { host, status: externalTrainingStatus };
+                //             }),
+                //         );
 
-                        return { status, externalTrainingStatuses, projectId: instance.projectId };
-                    }),
-                );
-                newStatuses.forEach((status) => {
-                    Projects.update(
-                        { _id: status.projectId },
-                        {
-                            $set: {
-                                'training.instanceStatus': status.status,
-                                'externalTraining.instanceStatuses': status.externalTrainingStatuses,
-                            },
-                        },
-                    );
-                });
+                //         return { status, externalTrainingStatuses, projectId: instance.projectId };
+                //     }),
+                // );
+                // newStatuses.forEach((status) => {
+                //     Projects.update(
+                //         { _id: status.projectId },
+                //         {
+                //             $set: {
+                //                 'training.instanceStatus': status.status,
+                //                 'externalTraining.instanceStatuses': status.externalTrainingStatuses,
+                //             },
+                //         },
+                //     );
+                // });
             } catch (e) {
                 // eslint-disable-next-line no-console
                 console.log(e);
