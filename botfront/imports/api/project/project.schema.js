@@ -24,6 +24,13 @@ export const logosSchema = new SimpleSchema({
     logoUrl: { type: String, optional: true },
 });
 
+export const FaqSettingsSchema = new SimpleSchema({
+    host: { type: String, regEx: /^(http|https):\/\//, optional: true },
+    nExamples: { type: SimpleSchema.Integer, defaultValue: 20 },
+    intentName: { type: String, defaultValue: 'faq_intent' },
+    enabled: { type: Boolean, defaultValue: false },
+});
+
 export const chatWidgetSettingsSchema = new SimpleSchema({
     title: { type: String, optional: true, defaultValue: 'Botfront' },
     // we need to validate the user input (JSON), but we want to store it as an Object, thus the double type
@@ -92,13 +99,17 @@ export const ProjectsSchema = new SimpleSchema({
     'training.startTime': { type: Date, optional: true },
     'training.endTime': { type: Date, optional: true },
     'training.message': { type: String, optional: true },
-    externalTraining: { type: Object, optional: true },
-    'externalTraining.instanceStatuses': { type: Array },
-    'externalTraining.instanceStatuses.$': { type: Object },
-    'externalTraining.instanceStatuses.$.host': { type: String },
-    'externalTraining.instanceStatuses.$.status': {
+    externalTraining: { type: Array, optional: true },
+    'externalTraining.$': { type: Object },
+    'externalTraining.$.host': { type: String },
+    'externalTraining.$.type': { type: String, allowedValues: ['rasa', 'hier'], optional: true },
+    'externalTraining.$.status': {
         type: String,
         allowedValues: ['training', 'notTraining', 'notReachable'],
+    },
+    'externalTraining.$.jobId': {
+        type: String,
+        optional: true,
     },
     deploymentEnvironments: {
         type: Array,
@@ -117,6 +128,7 @@ export const ProjectsSchema = new SimpleSchema({
     smallLogoUrl: { type: String, optional: true },
     allowContextualQuestions: { type: Boolean, defaultValue: false },
     gitSettings: { type: GitSettingsSchema, optional: true },
+    faqSettings: { type: FaqSettingsSchema, optional: true },
 }, { tracker: Tracker });
 
 ProjectsSchema.messageBox.messages({

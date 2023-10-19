@@ -138,9 +138,11 @@ const unzipFiles = files => files.reduce(async (acc, file) => {
     let filesInFile = [file];
     if (file.filename.match(/\.zip$/)) {
         try {
+            const fileStream = file.stream ? file.stream : file.createReadStream();
             const loadedZip = await JSZip.loadAsync(
-                await streamToBuffer(file.createReadStream()),
+                await streamToBuffer(fileStream),
             );
+            console.log(loadedZip);
             filesInFile = await Object.entries(loadedZip.files).reduce(
                 async (acc2, [path, item]) => {
                     if (item.dir) return acc2;

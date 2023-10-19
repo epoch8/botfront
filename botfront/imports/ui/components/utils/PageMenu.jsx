@@ -21,7 +21,11 @@ export default function PageMenu(props) {
     } = useContext(ProjectContext);
     const { t } = useTranslation('utils');
 
-    const renderExternalTraining = () => instance.externalTraining?.map(
+    const renderExternalTraining = () => instance.externalTraining?.filter(
+        // Compare with undefined for backward compatibility
+        // TODO make migration?
+        trainingConfig => trainingConfig.enabled || trainingConfig.enabled === undefined,
+    ).map(
         (trainingConfig, index) => (
             <ExternalTrainingButton
                 projectId={projectId}
@@ -42,6 +46,9 @@ export default function PageMenu(props) {
             {children}
             {withTraining && (
                 <>
+                    <Menu.Item position='right'>
+                        {renderExternalTraining()}
+                    </Menu.Item>
                     <Menu.Item position='right'>
                         {!isTraining(project) && status === 'success' && (
                             <Popup
@@ -98,7 +105,6 @@ export default function PageMenu(props) {
                         )}
                     </Menu.Item>
                     <Menu.Item position='right'>
-                        {renderExternalTraining()}
                         <TrainButton
                             project={project}
                             instance={instance}

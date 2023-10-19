@@ -1,6 +1,6 @@
+/* eslint-disable no-console */
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Accounts } from 'meteor/accounts-base';
-import axios from 'axios';
 import dotenv from 'dotenv';
 import { createGraphQLPublication } from 'meteor/swydo:ddp-apollo';
 import { makeExecutableSchema } from '@graphql-tools/schema';
@@ -10,12 +10,81 @@ import { getAppLoggerForFile } from './logger';
 import { Projects } from '../imports/api/project/project.collection';
 import { Instances } from '../imports/api/instances/instances.collection';
 import { createAxiosForRasa } from '../imports/lib/utils';
+import {
+    checkAndUpdateExternalTraining,
+    checkBet,
+    activeTrainings,
+} from '../imports/api/externalTrainings/server/utils';
+import packageInfo from '../package.json';
 
 const fileAppLogger = getAppLoggerForFile(__filename);
 
+/**
+ * @param {string} projectId
+ * @param {string} host
+ * @returns {Promise<object>}
+ */
+const getTrainingInfo = async (projectId, host) => {
+    try {
+        const betReacheble = await checkBet(host);
+        if (!betReacheble) {
+            return { status: 'notReachable', jobId: null };
+        }
+        const currentTrainings = activeTrainings(projectId, host);
+        if (currentTrainings.length === 0) {
+            return { status: 'notTraining', jobId: null };
+        }
+        return { status: 'training', jobId: currentTrainings[0].jobId };
+    } catch (error) {
+        console.error(error);
+    }
+    return { status: 'notReachable', jobId: null };
+};
+
+/**
+ * @param {string} projectId
+ * @param {string} host
+ * @returns {Promise<object>}
+ */
+const getHierTrainingInfo = async (projectId, host) => {
+    let externalTrainingStatus = 'notReachable';
+    try {
+        const resp = await axios.post(
+            `${host}/status/${projectId}`,
+        );
+        const respTrainingStatus = resp.data[0].status;
+        switch (respTrainingStatus) {
+        case 'scheduled':
+        case 'queued':
+        case 'running':
+        case 'restarting':
+        case 'shutdown':
+        case 'up_for_retry':
+        case 'up_for_reschedule':
+        case 'deferred':
+            externalTrainingStatus = 'training';
+            break;
+        case 'unknown':
+        case 'none':
+        case 'success':
+        case 'failed':
+        case 'skipped':
+        case 'upstream_failed':
+        case 'removed':
+            externalTrainingStatus = 'notTraining';
+            break;
+        default:
+            externalTrainingStatus = 'notReachable';
+            break;
+        }
+    } catch (error) {
+        console.error(error);
+    }
+    return { status: externalTrainingStatus };
+};
+
 Meteor.startup(function () {
     if (Meteor.isServer) {
-        const packageInfo = require('./../package.json');
         const schema = makeExecutableSchema({
             typeDefs: typeDefsWithUpload, // makeExecutableSchema need to define upload when working with files
             resolvers,
@@ -54,86 +123,84 @@ Meteor.startup(function () {
         fileAppLogger.info(`Botfront ${packageInfo.version} started`);
         Meteor.setInterval(async () => {
             try {
-                // const instancesInfo = Instances.find();
-                // const newStatuses = await Promise.all(
-                //     instancesInfo.map(async (instance) => {
-                //         let instanceState;
-                //         try {
-                //             const client = await createAxiosForRasa(instance.projectId);
-                //             const data = await client.get('/status');
-                //             instanceState = get(
-                //                 data,
-                //                 'data.num_active_training_jobs',
-                //                 -1,
-                //             );
-                //         } catch (e) {
-                //             instanceState = -1;
-                //         }
-                //         let status;
-                //         if (instanceState >= 1) status = 'training';
-                //         if (instanceState === 0) status = 'notTraining';
-                //         if (instanceState === -1) status = 'notReachable';
+                const instancesInfo = Instances.find();
+                const newStatuses = await Promise.all(
+                    instancesInfo.map(async (instance) => {
+                        const { projectId, externalTraining } = instance;
+                        let instanceState;
+                        try {
+                            const client = await createAxiosForRasa(projectId);
+                            const data = await client.get('/status');
+                            instanceState = get(
+                                data,
+                                'data.num_active_training_jobs',
+                                -1,
+                            );
+                        } catch (e) {
+                            instanceState = -1;
+                        }
+                        let instanceStatus;
+                        if (instanceState >= 1) instanceStatus = 'training';
+                        if (instanceState === 0) instanceStatus = 'notTraining';
+                        if (instanceState === -1) instanceStatus = 'notReachable';
 
-                //         const externalTrainingStatuses = await Promise.all(
-                //             (instance.externalTraining || []).map(async (trainingConfig) => {
-                //                 let externalTrainingStatus = 'notReachable';
-                //                 const { host } = trainingConfig;
-                //                 try {
-                //                     const resp = await axios.post(
-                //                         `${host}/status/${instance.projectId}`,
-                //                     );
-                //                     const respTrainingStatus = resp.data[0].status;
-                //                     switch (respTrainingStatus) {
-                //                     case 'scheduled':
-                //                     case 'queued':
-                //                     case 'running':
-                //                     case 'restarting':
-                //                     case 'shutdown':
-                //                     case 'up_for_retry':
-                //                     case 'up_for_reschedule':
-                //                     case 'deferred':
-                //                         externalTrainingStatus = 'training';
-                //                         break;
-                //                     case 'unknown':
-                //                     case 'none':
-                //                     case 'success':
-                //                     case 'failed':
-                //                     case 'skipped':
-                //                     case 'upstream_failed':
-                //                     case 'removed':
-                //                         externalTrainingStatus = 'notTraining';
-                //                         break;
-                //                     default:
-                //                         externalTrainingStatus = 'notReachable';
-                //                         break;
-                //                     }
-                //                 } catch (error) {
-                //                     console.error(error);
-                //                 }
-                //                 return { host, status: externalTrainingStatus };
-                //             }),
-                //         );
+                        const externalTrainingsInfo = await Promise.all(
+                            (externalTraining || []).filter(
+                                // Compare with undefined for backward compatibility
+                                // TODO make migration?
+                                trainingConfig => trainingConfig.enabled || trainingConfig.enabled === undefined,
+                            ).map(async (trainingConfig) => {
+                                const { host, type } = trainingConfig;
+                                let status, jobId;
+                                if (type == 'rasa') {
+                                    ({ status, jobId }) = await getTrainingInfo(projectId, host);
+                                } else {
+                                    ({ status }) = await getHierTrainingInfo(projectId, host);
+                                }
+                                return { host, status, jobId };
+                            }),
+                        );
 
-                //         return { status, externalTrainingStatuses, projectId: instance.projectId };
-                //     }),
-                // );
-                // newStatuses.forEach((status) => {
-                //     Projects.update(
-                //         { _id: status.projectId },
-                //         {
-                //             $set: {
-                //                 'training.instanceStatus': status.status,
-                //                 'externalTraining.instanceStatuses': status.externalTrainingStatuses,
-                //             },
-                //         },
-                //     );
-                // });
+                        return {
+                            instanceStatus,
+                            projectId,
+                            externalTrainingsInfo,
+                        };
+                    }),
+                );
+                newStatuses.forEach(
+                    ({ instanceStatus, projectId, externalTrainingsInfo }) => {
+                        Projects.update(
+                            { _id: projectId },
+                            {
+                                $set: {
+                                    'training.instanceStatus': instanceStatus,
+                                    externalTraining: externalTrainingsInfo,
+                                },
+                            },
+                        );
+                    },
+                );
             } catch (e) {
-                // eslint-disable-next-line no-console
                 console.log(e);
-                // eslint-disable-next-line no-console
                 console.log('Something went wrong while trying to get the rasa status');
             }
         }, 10000); // run every 10 seconds == 10000 msec
+
+        const externalTrainingUpdateRoutine = async () => {
+            try {
+                const currentTrainings = activeTrainings();
+                await Promise.all(
+                    currentTrainings.map(async (training) => {
+                        await checkAndUpdateExternalTraining(training._id);
+                    }),
+                );
+            } catch (error) {
+                console.error(error);
+            }
+            Meteor.setTimeout(externalTrainingUpdateRoutine, 10000);
+        };
+
+        Meteor.defer(externalTrainingUpdateRoutine);
     }
 });

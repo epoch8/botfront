@@ -1,0 +1,6 @@
+export const {
+    MODELS_PATH,
+    BACKUPS_PATH,
+    EXTERNAL_TRAINING_TOKEN,
+    EXTERNAL_TRAINING_IMAGE,
+} = process.env;

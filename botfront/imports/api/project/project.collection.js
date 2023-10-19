@@ -141,9 +141,9 @@ if (Meteor.isServer) {
         return Projects.find({ projectId }, { fields: { 'training.instanceStatus': 1 } });
     });
 
-    Meteor.publish('externalTraining.instanceStatuses', function (projectId) {
+    Meteor.publish('project.externalTraining', function (projectId) {
         check(projectId, String);
         if (!can('nlu-data:x', projectId)) return this.ready();
-        return Projects.find({ projectId }, { fields: { 'externalTraining.instanceStatuses': 1 } });
+        return Projects.find({ projectId }, { fields: { externalTraining: 1 } });
     });
 }

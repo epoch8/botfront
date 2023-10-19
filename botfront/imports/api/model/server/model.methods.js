@@ -5,6 +5,7 @@ import { check } from 'meteor/check';
 import { checkIfCan } from '../../../lib/scopes';
 import { Models } from '../model.collection';
 
+import { MODELS_PATH } from '../../../../server/config';
 import {
     getAppLoggerForFile,
     getAppLoggerForMethod,
@@ -21,13 +22,12 @@ Meteor.methods({
         const appMethodLogger = getAppLoggerForMethod(
             logger, 'model.deploy', Meteor.userId(), { projectId },
         );
-        const returnError = (error, errorMsg) => {
+        const returnError = (errorMsg, error) => {
             appMethodLogger.error(error);
-            return { success: false, error: errorMsg || String(error) };
+            return { success: false, errorMsg, error };
         };
 
-        const modelsPath = process.env.MODELS_PATH;
-        if (!modelsPath) {
+        if (!MODELS_PATH) {
             return returnError('Unable to deploy model. MODELS_PATH env var not set');
         }
         const modelInfo = Models.findOne({ projectId, _id: modelId });
@@ -35,12 +35,12 @@ Meteor.methods({
             returnError(`Model ${modelId} not found for project ${projectId}`);
         }
         const modelPath = modelInfo.path;
-        const modelDir = `${modelsPath}/${projectId}`;
+        const modelDir = `${MODELS_PATH}/${projectId}`;
         const fullModelPath = `${modelDir}/${modelPath}`;
         try {
             await fs.promises.stat(fullModelPath);
         } catch (error) {
-            returnError(error, 'Model file not found');
+            returnError('Model file not found', error);
         }
         const symlinkPath = `${modelDir}/current.tar.gz`;
         const tmpSymlinkPath = `${modelDir}/_current.tar.gz`;
@@ -52,7 +52,7 @@ Meteor.methods({
             await fs.promises.symlink(modelPath, tmpSymlinkPath);
             await fs.promises.rename(tmpSymlinkPath, symlinkPath);
         } catch (error) {
-            returnError(error, 'Error deploying model');
+            returnError('Error deploying model', error);
         }
         Models.update({}, { $set: { deployed: false } }, { multi: true });
         Models.update({ _id: modelId }, {

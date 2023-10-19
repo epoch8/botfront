@@ -40,6 +40,10 @@ import '../imports/api/roles/roles';
 import '../imports/api/model/model.methods';
 import '../imports/api/model/model.collection';
 import '../imports/api/model/server/model.methods';
+import '../imports/api/backups/collection';
+import '../imports/api/backups/server/methods';
+import '../imports/api/externalTrainings/collection';
+import '../imports/api/externalTrainings/server/methods';
 
 if (!Meteor.isTest) {
     import './migrations';
