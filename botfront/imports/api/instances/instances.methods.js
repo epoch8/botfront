@@ -351,6 +351,11 @@ if (Meteor.isServer) {
 
     const trainingAppLogger = getAppLoggerForFile(__filename);
 
+    const trainingHostExists = (projectId, trainingHost) => !!Instances.findOne({
+        projectId,
+        externalTraining: { $elemMatch: { host: trainingHost } },
+    }, { fields: {} });
+
     Meteor.methods({
         async 'rasa.parse'(instance, examples, options = {}) {
             checkIfCan('nlu-data:r', instance.projectId);
@@ -770,6 +775,36 @@ if (Meteor.isServer) {
             } catch (e) {
                 throw formatError(e);
             }
+        },
+        async 'hierTraining.train'(projectId, trainingHost) {
+            checkIfCan('nlu-data:x', projectId);
+            check(projectId, String);
+            check(trainingHost, String);
+            if (!trainingHostExists(projectId, trainingHost)) {
+                getAppLoggerForMethod(
+                    trainingAppLogger,
+                    'hierTraining.train',
+                    Meteor.userId(),
+                    { projectId, trainingHost },
+                ).error('Host not found');
+                return;
+            }
+            await axios.post(`${trainingHost}/train/${projectId}`);
+        },
+        async 'hierTraining.cancel'(projectId, trainingHost) {
+            checkIfCan('nlu-data:x', projectId);
+            check(projectId, String);
+            check(trainingHost, String);
+            if (!trainingHostExists(projectId, trainingHost)) {
+                getAppLoggerForMethod(
+                    trainingAppLogger,
+                    'hierTraining.cancel',
+                    Meteor.userId(),
+                    { projectId, trainingHost },
+                ).error('Host not found');
+                return;
+            }
+            await axios.post(`${trainingHost}/cancel/${projectId}`);
         },
     });
 }

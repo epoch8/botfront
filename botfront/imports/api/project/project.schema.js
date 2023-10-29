@@ -102,7 +102,6 @@ export const ProjectsSchema = new SimpleSchema({
     externalTraining: { type: Array, optional: true },
     'externalTraining.$': { type: Object },
     'externalTraining.$.host': { type: String },
-    'externalTraining.$.type': { type: String, allowedValues: ['rasa', 'hier'], optional: true },
     'externalTraining.$.status': {
         type: String,
         allowedValues: ['training', 'notTraining', 'notReachable'],

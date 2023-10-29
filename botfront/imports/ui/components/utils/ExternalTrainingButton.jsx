@@ -52,27 +52,33 @@ const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
             return;
         }
         setClicked(true);
+        const isRasaTraining = trainingConfig.type === 'rasa';
         try {
             if (training) {
-                await Meteor.callWithPromise(
-                    'externalTraining.cancel',
-                    jobId,
-                    trainingConfig.host,
-                );
+                const { host } = trainingConfig;
+                if (isRasaTraining) {
+                    await Meteor.callWithPromise('externalTraining.cancel', jobId, host);
+                } else {
+                    await Meteor.callWithPromise('hierTraining.cancel', projectId, host);
+                }
             } else {
                 const {
                     host, image, name, rasaExtraArgs, node,
                 } = trainingConfig;
-                await Meteor.callWithPromise(
-                    'externalTraining.train',
-                    projectId,
-                    language,
-                    host,
-                    name,
-                    image,
-                    rasaExtraArgs,
-                    node,
-                );
+                if (isRasaTraining) {
+                    await Meteor.callWithPromise(
+                        'externalTraining.train',
+                        projectId,
+                        language,
+                        host,
+                        name,
+                        image,
+                        rasaExtraArgs,
+                        node,
+                    );
+                } else {
+                    await Meteor.callWithPromise('hierTraining.train', projectId, host);
+                }
             }
         } catch (error) {
             console.error(error);
@@ -119,6 +125,7 @@ ExternalTrainingButton.propTypes = {
         image: PropTypes.string,
         rasaExtraArgs: PropTypes.string,
         node: PropTypes.string,
+        type: PropTypes.string,
     }).isRequired,
 };
 
