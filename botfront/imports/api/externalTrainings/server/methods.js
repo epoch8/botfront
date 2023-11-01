@@ -44,15 +44,27 @@ Meteor.methods({
             'External training backup',
         );
 
-        const { augmentationFactor, ...trainingData } = await Meteor.callWithPromise(
-            'rasa3.getTrainingPayload',
-            projectId,
-            { language },
-        );
-        const yamlTrainingData = yaml.safeDump(trainingData, {
-            sortKeys: true,
-            skipInvalid: true,
+        //! Rasa for bf 2
+        const {
+            augmentationFactor,
+            domain: domainYml,
+            config: configBf,
+            ...trainingData
+        } = await Meteor.callWithPromise('rasa.getTrainingPayload', projectId, {
+            language,
         });
+        const domain = yaml.safeLoad(domainYml);
+        const config = yaml.safeLoad(configBf[language]);
+        console.log(config);
+        const yamlTrainingData = yaml.safeDump(
+            {
+                ...domain, ...trainingData, ...config,
+            },
+            {
+                sortKeys: true,
+                skipInvalid: true,
+            },
+        );
 
         auditLog('Starting external training', {
             user: Meteor.user(),

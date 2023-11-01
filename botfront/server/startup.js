@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+import axios from 'axios';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Accounts } from 'meteor/accounts-base';
 import dotenv from 'dotenv';
@@ -151,12 +152,13 @@ Meteor.startup(function () {
                                 trainingConfig => trainingConfig.enabled || trainingConfig.enabled === undefined,
                             ).map(async (trainingConfig) => {
                                 const { host, type } = trainingConfig;
-                                let status, jobId;
-                                if (type == 'rasa') {
-                                    ({ status, jobId }) = await getTrainingInfo(projectId, host);
+                                let trainingInfo;
+                                if (type === 'rasa') {
+                                    trainingInfo = await getTrainingInfo(projectId, host);
                                 } else {
-                                    ({ status }) = await getHierTrainingInfo(projectId, host);
+                                    trainingInfo = await getHierTrainingInfo(projectId, host);
                                 }
+                                const { status, jobId } = trainingInfo;
                                 return { host, status, jobId };
                             }),
                         );
