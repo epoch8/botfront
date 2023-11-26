@@ -351,10 +351,13 @@ if (Meteor.isServer) {
 
     const trainingAppLogger = getAppLoggerForFile(__filename);
 
-    const trainingHostExists = (projectId, trainingHost) => !!Instances.findOne({
-        projectId,
-        externalTraining: { $elemMatch: { host: trainingHost } },
-    }, { fields: {} });
+    const trainingHostExists = (projectId, trainingHost) => !!Instances.findOne(
+        {
+            projectId,
+            externalTraining: { $elemMatch: { host: trainingHost } },
+        },
+        { fields: {} },
+    );
 
     Meteor.methods({
         async 'rasa.parse'(instance, examples, options = {}) {
@@ -424,7 +427,7 @@ if (Meteor.isServer) {
         // ! Legacy
         async 'rasa.getTrainingPayload'(
             projectId,
-            { language = '', env = 'development' } = {},
+            { language = '', env = 'development', nluFormat = 'json' } = {},
         ) {
             checkIfCan(['nlu-data:x', 'projects:r', 'export:x'], projectId);
             check(projectId, String);
@@ -454,7 +457,18 @@ if (Meteor.isServer) {
                 languages = project ? project.languages : [];
             }
             for (const lang of languages) {
-                const { rasa_nlu_data, config: configForLang } = await getNluDataAndConfig(projectId, lang, selectedIntents);
+                let rasa_nlu_data;
+                let configForLang;
+                if (nluFormat === 'md') {
+                    ({ nlu: rasa_nlu_data, config: configForLang } = await getRasaNluDataAndConfig(projectId, lang, selectedIntents));
+                    configForLang = yaml.safeDump(configForLang);
+                } else {
+                    ({ rasa_nlu_data, config: configForLang } = await getNluDataAndConfig(
+                        projectId,
+                        lang,
+                        selectedIntents,
+                    ));
+                }
                 nlu[lang] = { rasa_nlu_data };
                 config[lang] = `${configForLang}\n\n${corePolicies}`;
             }
@@ -508,15 +522,23 @@ if (Meteor.isServer) {
                 } = await Meteor.call('rasa.getTrainingPayload', projectId, { env });
                 // Backport to rasa-for-botfront
                 const domainObj = yaml.safeLoad(domain);
-                const [processedStories, actionsParams] = processParametrizedActions(stories, {});
-                const [processedRules, allActionsParams] = processParametrizedActions(rules, actionsParams);
-                domainObj.actions = deduplicateArray(
-                    [...domainObj.actions, ...Object.keys(allActionsParams)],
+                const [processedStories, actionsParams] = processParametrizedActions(
+                    stories,
+                    {},
                 );
+                const [processedRules, allActionsParams] = processParametrizedActions(
+                    rules,
+                    actionsParams,
+                );
+                domainObj.actions = deduplicateArray([
+                    ...domainObj.actions,
+                    ...Object.keys(allActionsParams),
+                ]);
                 domainObj.actions_params = allActionsParams;
-                payload.domain = yaml.safeDump(
-                    domainObj, { skipInvalid: true, sortKeys: true },
-                );
+                payload.domain = yaml.safeDump(domainObj, {
+                    skipInvalid: true,
+                    sortKeys: true,
+                });
                 //
                 payload.fragments = yaml.safeDump(
                     { stories: processedStories, rules: processedRules },

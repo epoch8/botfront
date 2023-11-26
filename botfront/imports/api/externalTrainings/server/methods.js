@@ -49,16 +49,21 @@ Meteor.methods({
             augmentationFactor,
             domain: domainYml,
             config: configBf,
+            nlu: nluBf,
             ...trainingData
         } = await Meteor.callWithPromise('rasa.getTrainingPayload', projectId, {
-            language,
+            language, nluFormat: 'md',
         });
         const domain = yaml.safeLoad(domainYml);
         const config = yaml.safeLoad(configBf[language]);
+        const nlu = nluBf[language].rasa_nlu_data;
+        // const { common_examples: examples } = rasaNluData;
+        // const nlu = examples;
+        console.log(nlu);
         console.log(config);
         const yamlTrainingData = yaml.safeDump(
             {
-                ...domain, ...trainingData, ...config,
+                ...domain, ...trainingData, ...config, nlu, language,
             },
             {
                 sortKeys: true,
