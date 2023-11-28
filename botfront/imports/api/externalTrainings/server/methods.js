@@ -59,8 +59,8 @@ Meteor.methods({
         const nlu = nluBf[language].rasa_nlu_data;
         // const { common_examples: examples } = rasaNluData;
         // const nlu = examples;
-        console.log(nlu);
-        console.log(config);
+        // console.log(nlu);
+        // console.log(config);
         const yamlTrainingData = yaml.safeDump(
             {
                 ...domain, ...trainingData, ...config, nlu, language,
