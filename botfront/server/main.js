@@ -17,6 +17,7 @@ import '../imports/api/nlu_model/nlu_model.methods';
 import '../imports/api/nlu_model/nlu_model.utils';
 import '../imports/api/project/project.collection';
 import '../imports/api/project/project.methods';
+import '../imports/api/project/server/project.methods';
 import '../imports/api/user/user.methods';
 import '../imports/api/user/user.schema';
 import '../imports/api/user/user.collection';
