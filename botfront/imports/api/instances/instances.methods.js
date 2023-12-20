@@ -472,10 +472,19 @@ if (Meteor.isServer) {
                 nlu[lang] = { rasa_nlu_data };
                 config[lang] = `${configForLang}\n\n${corePolicies}`;
             }
+            // Backport to rasa-for-botfront
+            const [processedStories, storiesActionsParams] = processParametrizedActions(stories);
+            const [processedRules, rulesActionsParams] = processParametrizedActions(rules);
+            domain.actions_params = { ...storiesActionsParams, ...rulesActionsParams };
+            domain.actions = deduplicateArray([
+                ...domain.actions,
+                ...Object.keys(domain.actions_params),
+            ]);
+            //
             const payload = {
                 domain: yaml.safeDump(domain, { skipInvalid: true, sortKeys: true }),
-                stories,
-                rules,
+                stories: processedStories,
+                rules: processedRules,
                 nlu,
                 config,
                 fixed_model_name: getProjectModelFileName(projectId),
@@ -520,28 +529,8 @@ if (Meteor.isServer) {
                     domain,
                     ...payload
                 } = await Meteor.call('rasa.getTrainingPayload', projectId, { env });
-                // Backport to rasa-for-botfront
-                const domainObj = yaml.safeLoad(domain);
-                const [processedStories, actionsParams] = processParametrizedActions(
-                    stories,
-                    {},
-                );
-                const [processedRules, allActionsParams] = processParametrizedActions(
-                    rules,
-                    actionsParams,
-                );
-                domainObj.actions = deduplicateArray([
-                    ...domainObj.actions,
-                    ...Object.keys(allActionsParams),
-                ]);
-                domainObj.actions_params = allActionsParams;
-                payload.domain = yaml.safeDump(domainObj, {
-                    skipInvalid: true,
-                    sortKeys: true,
-                });
-                //
                 payload.fragments = yaml.safeDump(
-                    { stories: processedStories, rules: processedRules },
+                    { stories, rules },
                     { skipInvalid: true },
                 );
                 payload.load_model_after = true;
