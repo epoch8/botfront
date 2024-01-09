@@ -526,7 +526,6 @@ if (Meteor.isServer) {
                 const {
                     stories = [],
                     rules = [],
-                    domain,
                     ...payload
                 } = await Meteor.call('rasa.getTrainingPayload', projectId, { env });
                 payload.fragments = yaml.safeDump(
