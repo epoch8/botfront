@@ -6,11 +6,20 @@ import { Projects } from '../../project/project.collection';
 
 import { getPostTrainingWebhook } from '../../../lib/utils';
 import { MODELS_PATH } from '../../../../server/config';
-import {
-    getAppLoggerForFile,
-} from '../../../../server/logger';
+import { getAppLoggerForFile } from '../../../../server/logger';
 
 const logger = getAppLoggerForFile(__filename);
+
+const writeModelToFS = async (modelPath, modelStream) => {
+    logger.info(`Saving model to file ${modelPath}`);
+    const writeStream = fs.createWriteStream(modelPath);
+    modelStream.pipe(writeStream);
+    modelStream.resume();
+    await new Promise((resolve, reject) => {
+        modelStream.on('end', () => resolve());
+        modelStream.on('error', err => reject(err));
+    });
+};
 
 export const saveModel = async (projectId, dataStream) => {
     if (!MODELS_PATH) {
@@ -24,20 +33,13 @@ export const saveModel = async (projectId, dataStream) => {
     const modelName = ts.toISOString();
     const modelPath = `${modelName}.tar.gz`;
     const modelFullPath = `${modelDir}/${modelPath}`;
-    logger.info(`Saving model to file ${modelFullPath}`);
-    const writeStream = fs.createWriteStream(modelFullPath);
-    dataStream.pipe(writeStream);
-    dataStream.resume();
-    await new Promise((resolve, reject) => {
-        dataStream.on('end', () => resolve());
-        dataStream.on('error', err => reject(err));
-    });
+    await writeModelToFS(modelFullPath, dataStream);
     const tmpSymlinkPath = `${modelDir}/_latest.tar.gz`;
     const symlinkPath = `${modelDir}/latest.tar.gz`;
     try {
         await fs.promises.unlink(tmpSymlinkPath);
-    // eslint-disable-next-line no-empty
-    } catch { }
+        // eslint-disable-next-line no-empty
+    } catch {}
     await fs.promises.symlink(modelPath, tmpSymlinkPath);
     await fs.promises.rename(tmpSymlinkPath, symlinkPath);
     Models.insert({
@@ -51,6 +53,14 @@ export const saveModel = async (projectId, dataStream) => {
     logger.info(`Model ${modelName} saved`);
 
     return modelFullPath;
+};
+
+const writeModelTmp = async (dataStream) => {
+    const ts = new Date();
+    const modelName = ts.toISOString();
+    const modelPath = `/tmp/${modelName}.tar.gz`;
+    await writeModelToFS(modelPath, dataStream);
+    return modelPath;
 };
 
 const sendModel = async (url, method, projectId, namespace, modelData) => {
@@ -84,13 +94,37 @@ const sendModel = async (url, method, projectId, namespace, modelData) => {
 
 export const postTraining = async (projectId, modelData) => {
     let modelFullPath;
+    let savedAsTmp;
     if (MODELS_PATH) {
         modelFullPath = await saveModel(projectId, modelData);
+        savedAsTmp = false;
     }
     const trainingWebhook = await getPostTrainingWebhook();
     if (trainingWebhook.url && trainingWebhook.method) {
-        const modelStream = modelFullPath ? fs.createReadStream(modelFullPath) : modelData;
-        const { namespace } = Projects.findOne({ _id: projectId }, { fields: { namespace: 1 } });
-        await sendModel(trainingWebhook.url, trainingWebhook.method, projectId, namespace, modelStream);
+        if (!modelFullPath) {
+            modelFullPath = await writeModelTmp(modelData);
+            savedAsTmp = true;
+        }
+        try {
+            const modelStream = fs.createReadStream(modelFullPath);
+            const { namespace } = Projects.findOne(
+                { _id: projectId },
+                { fields: { namespace: 1 } },
+            );
+            await sendModel(
+                trainingWebhook.url,
+                trainingWebhook.method,
+                projectId,
+                namespace,
+                modelStream,
+            );
+        } finally {
+            if (savedAsTmp) {
+                try {
+                    await fs.promises.unlink(modelFullPath);
+                    // eslint-disable-next-line no-empty
+                } catch {}
+            }
+        }
     }
 };

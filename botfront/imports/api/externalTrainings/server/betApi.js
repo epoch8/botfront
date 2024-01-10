@@ -126,7 +126,11 @@ export class BetApi {
      */
     result = async (jobId, trainingHost) => {
         const url = `${trainingHost}/result?job_id=${jobId}`;
-        const resp = await axiosClient.get(url, { responseType: 'stream' });
+        const resp = await axiosClient.get(url, {
+            responseType: 'stream',
+            maxContentLength: process.env.TRAINING_MAX_CONTENT_LEN || Infinity,
+            maxBodyLength: process.env.TRAINING_MAX_BODY_LEN || Infinity,
+        });
         checkStatus(resp);
         return resp.data;
     };
