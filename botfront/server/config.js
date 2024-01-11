@@ -3,4 +3,6 @@ export const {
     BACKUPS_PATH,
     EXTERNAL_TRAINING_TOKEN,
     EXTERNAL_TRAINING_IMAGE,
+    DEPLOYER_ADDR,
+    DEPLOYER_API_KEY,
 } = process.env;

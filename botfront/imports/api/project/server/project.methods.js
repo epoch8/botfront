@@ -3,15 +3,32 @@ import axios from 'axios';
 
 import { checkIfCan } from '../../../lib/scopes';
 import { Projects } from '../project.collection';
+import { DEPLOYER_ADDR, DEPLOYER_API_KEY } from '../../../../server/config';
 
-const { DEPLOYER_ADDR } = process.env;
+
+const processServiceParams = (serviceParams) => {
+    const {
+        env, dev, prod, ...result
+    } = serviceParams;
+    if (dev) {
+        result.dev = processServiceParams(dev);
+    }
+    if (prod) {
+        result.prod = processServiceParams(prod);
+    }
+    if (env) {
+        result.env = Object.fromEntries(
+            env.map(envParam => [envParam.name, envParam.value]),
+        );
+    }
+    return result;
+};
 
 Meteor.methods({
     async 'project.deploy'(projectId, infrastructureSettings) {
         checkIfCan('infrastructure:w', projectId);
         check(projectId, String);
         check(infrastructureSettings, Object);
-        console.log('Deploy');
         if (!DEPLOYER_ADDR) {
             throw new Meteor.Error(500, 'No Deployer address!');
         }
@@ -19,12 +36,21 @@ Meteor.methods({
         if (!project) {
             throw new Meteor.Error(404, `Project ${projectId} not found!`);
         }
-        const url = `${DEPLOYER_ADDR}/deploy`;
+        const url = `${DEPLOYER_ADDR}/deploy?token=${DEPLOYER_API_KEY}`;
+        const {
+            rasa: rasaSettings,
+            actions: actionsSettings,
+            ...restSettings
+        } = infrastructureSettings;
         const payload = {
-            ...infrastructureSettings,
+            ...restSettings,
+            rasa: processServiceParams(rasaSettings),
+            actions: processServiceParams(actionsSettings),
+            callback_url: null,
             project_id: projectId,
             project_name: project.name,
         };
+        console.log('Deploy', JSON.stringify(payload));
         const resp = await axios.post(url, payload);
         if (!resp.status.toString().startsWith('2')) {
             throw new Meteor.Error(
