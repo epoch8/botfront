@@ -41,6 +41,7 @@ const Infrastructure = ({ projectId }) => {
     const [deploying, setDeploying] = useState(false);
     const [deployed, setDeployed] = useState(false);
     const [deployConfirmOpen, setDeployConfirmOpen] = useState(false);
+    const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false);
     const formRef = useRef();
 
     const onSave = (newSettings) => {
@@ -66,7 +67,21 @@ const Infrastructure = ({ projectId }) => {
             wrapMeteorCallback((err) => {
                 setDeploying(false);
                 setDeployed(!err);
-                Alert.success('Infrastructure update started');
+                if (!err) {
+                    Alert.success('Infrastructure update started');
+                }
+            }),
+        );
+    };
+
+    const remove = () => {
+        Meteor.call(
+            'project.removeInfrastructure',
+            projectId,
+            wrapMeteorCallback((err) => {
+                setDeploying(false);
+                setDeployed(!err);
+                Alert.success('Infrastructure deleted');
             }),
         );
     };
@@ -126,6 +141,58 @@ const Infrastructure = ({ projectId }) => {
         },
     ];
 
+    const chatwootContent = (
+        <>
+            <AutoField name='account_id' />
+            <AutoField name='admin_access_token' />
+            <AutoField name='agent_bot_access_token' />
+            <AutoField name='website_token' />
+        </>
+    );
+
+    const chatwootEnvPanels = [
+        {
+            key: 'dev',
+            title: 'Dev',
+            content: {
+                content: (
+                    <NestField name='chatwoot.dev' label={null}>
+                        {chatwootContent}
+                    </NestField>
+                ),
+            },
+        },
+        {
+            key: 'prod',
+            title: 'Prod',
+            content: {
+                content: (
+                    <NestField name='chatwoot.dev' label={null}>
+                        {chatwootContent}
+                    </NestField>
+                ),
+            },
+        },
+    ];
+
+    const telegramEnvPanels = [
+        {
+            key: 'dev',
+            title: 'Dev',
+            content: {
+                content: (<AutoField name='telegram.dev' label={null} />),
+            },
+        },
+        {
+            key: 'prod',
+            title: 'Prod',
+            content: {
+                content: (<AutoField name='telegram.prod' label={null} />),
+
+            },
+        },
+    ];
+
     const panels = [
         {
             key: 'rasa',
@@ -159,6 +226,36 @@ const Infrastructure = ({ projectId }) => {
                 ),
             },
         },
+        {
+            key: 'chatwoot',
+            title: 'Chatwoot',
+            content: {
+                content: (
+                    <NestField name='chatwoot' label={null}>
+                        <AutoField name='account_id' />
+                        <AutoField name='admin_access_token' />
+                        <AccordionAccordion
+                            exclusive={false}
+                            panels={chatwootEnvPanels}
+                            styled
+                        />
+                    </NestField>
+                ),
+            },
+        },
+        {
+            key: 'telegram',
+            title: 'Telegram',
+            content: {
+                content: (
+                    <AccordionAccordion
+                        exclusive={false}
+                        panels={telegramEnvPanels}
+                        styled
+                    />
+                ),
+            },
+        },
     ];
 
     return (
@@ -176,11 +273,6 @@ const Infrastructure = ({ projectId }) => {
             <Divider />
             <Accordion exclusive={false} panels={panels} styled />
             <Divider />
-            <Header as='h3'>{t('Chatwoot')}</Header>
-            <AutoField name='chatwoot' label={null} />
-            <Divider />
-            <Header as='h3'>{t('Telegram')}</Header>
-            <AutoField name='telegram' label={null} />
             <SaveButton saving={saving} saved={saved} />
             <Button
                 floated='right'
@@ -204,6 +296,27 @@ const Infrastructure = ({ projectId }) => {
                     setDeployConfirmOpen(false);
                 }}
                 content={t('Do you really want to deploy infrastucture?')}
+            />
+            <Button
+                floated='right'
+                color='red'
+                onClick={(e) => {
+                    e.preventDefault();
+                    setRemoveConfirmOpen(true);
+                }}
+            >
+                {t('Remove')}
+            </Button>
+            <Confirm
+                open={removeConfirmOpen}
+                onCancel={() => {
+                    setRemoveConfirmOpen(false);
+                }}
+                onConfirm={() => {
+                    remove();
+                    setRemoveConfirmOpen(false);
+                }}
+                content={t('Do you really want to remove infrastucture?')}
             />
         </AutoForm>
     );
