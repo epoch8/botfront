@@ -56,6 +56,9 @@ for (let i = 0; i < 100; i += 1) {
         'branches.$': {
             type: intermediateStorySchemas[intermediateStorySchemas.length - 1][1],
         },
+        checkpoints: { type: Array, optional: true },
+        'checkpoints.$': { type: Array },
+        'checkpoints.$.$': { type: String },
     };
     intermediateStorySchemas.push([schemaShape, new SimpleSchema(schemaShape)]);
 }

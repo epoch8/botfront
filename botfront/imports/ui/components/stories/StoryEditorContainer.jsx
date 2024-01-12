@@ -151,12 +151,25 @@ const StoryEditorContainer = ({
 
     const isBranchLinked = branchId => destinationStories.some(aStory => (aStory.checkpoints || []).some(checkpointPath => checkpointPath.includes(branchId)));
 
+    const getDestinastionStoriesAndBranches = (storiesOrBranches, branchPath) => storiesOrBranches.map((storyOrBranch) => {
+        const { checkpoints, branches } = storyOrBranch;
+        const destinationBranches = getDestinastionStoriesAndBranches(branches || [], branchPath);
+        // if ((checkpoints || []).includes(branchPath[branchPath.length - 1])) {
+        if (checkpoints && checkpoints.length) {
+            return [storyOrBranch, ...destinationBranches];
+        }
+        return destinationBranches;
+    }).flat();
+
     useEffect(() => {
-        const newDestinationStories = stories.filter(aStory => branchPath.some(storyId => (aStory.checkpoints || []).some(checkpointPath => checkpointPath.includes(storyId))));
+        // const newDestinationStories = stories.filter(aStory => branchPath.some(storyId => (aStory.checkpoints || []).some(checkpointPath => checkpointPath.includes(storyId))));
+        const newDestinationStories = getDestinastionStoriesAndBranches(stories, branchPath);
+        console.log(newDestinationStories);
         const newDestinationStory = newDestinationStories.find(aStory => (aStory.checkpoints || []).some(
             checkpoint => checkpoint[checkpoint.length - 1]
                     === branchPath[branchPath.length - 1],
         ));
+        console.log(newDestinationStory);
         setDestinationStories(newDestinationStories);
         setDestinationStory(newDestinationStory);
     }, [branchPath, stories]);
@@ -401,12 +414,12 @@ const StoryEditorContainer = ({
                                     onDelete={() => handleDeleteBranch(childPath, index)}
                                     errors={
                                         exceptions[childPath.join()]?.filter(
-                                            ({ type }) => type === 'error'
+                                            ({ type }) => type === 'error',
                                         ).length
                                     }
                                     warnings={
                                         exceptions[childPath.join()]?.filter(
-                                            ({ type }) => type === 'warning'
+                                            ({ type }) => type === 'warning',
                                         ).length
                                     }
                                     siblings={localBranches}

@@ -93,6 +93,28 @@ class StoryFooter extends React.Component {
         return true;
     }).map(({ value, text }) => ({ value, text }));
 
+    getTargetsFromBranches = (parentPath, parentName, branches) => {
+        if (!branches) return [];
+        return branches.map(({ _id, title, branches: subBranches }) => {
+            const value = `${parentPath}.${_id}`;
+            const text = `${parentName}.${title}`;
+            return [
+                { value, text },
+                this.getTargetsFromBranches(value, text, subBranches),
+            ];
+        });
+    };
+
+    getLinkTargets = (stories) => {
+        // console.log(stories);
+        const filteredStories = stories.filter(story => !(story.rules && story.rules.length > 0));
+        const linkTargets = filteredStories.map(({ value, text, branches }) => [
+            { value, text }, this.getTargetsFromBranches(value, text, branches),
+        ]).flat(Infinity);
+        // console.log(linkTargets);
+        return linkTargets;
+    };
+
 
     renderContinue = () => {
         const { canContinue, disableContinue, t } = this.props;
@@ -170,6 +192,7 @@ class StoryFooter extends React.Component {
         } = this.props;
         const { stories } = this.context;
         if (!canBranch || fragment.type === 'rule') return null;
+        console.log(destinationStory ? destinationStory._id : '');
         return (
             <Menu.Item
                 className={`footer-option-button remove-padding color-${this.selectIconColor(
@@ -183,7 +206,7 @@ class StoryFooter extends React.Component {
                     name='arrow right'
                     color='green'
                 />
-                {t('Link&nbsp;to:')}
+                    Link&nbsp;to:
                 <Dropdown
                     placeholder={t('Select story')}
                     value={destinationStory ? destinationStory._id : ''}
@@ -193,7 +216,7 @@ class StoryFooter extends React.Component {
                     clearable
                     selectOnBlur={false}
                     className='stories-linker'
-                    options={this.filterDestinations(stories, fragment._id)}
+                    options={this.getLinkTargets(stories)}
                     data-cy='stories-linker'
                     disabled={!canBranch}
                     onChange={onDestinationStorySelection}
