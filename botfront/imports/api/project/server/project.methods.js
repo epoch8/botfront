@@ -25,12 +25,15 @@ const processServiceParams = (serviceParams) => {
 };
 
 Meteor.methods({
-    async 'project.deploy'(projectId, infrastructureSettings) {
+    async 'project.deployInfrastructure'(projectId, infrastructureSettings) {
         checkIfCan('infrastructure:w', projectId);
         check(projectId, String);
         check(infrastructureSettings, Object);
         if (!DEPLOYER_ADDR) {
-            throw new Meteor.Error(500, 'No Deployer address!');
+            throw new Meteor.Error(500, 'DEPLOYER_ADDR env is not set!');
+        }
+        if (!DEPLOYER_API_KEY) {
+            throw new Meteor.Error(500, 'DEPLOYER_API_KEY env is not set!!');
         }
         const project = Projects.findOne({ _id: projectId }, { fields: { name: 1 } });
         if (!project) {
@@ -51,11 +54,12 @@ Meteor.methods({
             project_name: project.name,
         };
         console.log('Deploy', JSON.stringify(payload));
-        const resp = await axios.post(url, payload);
-        if (!resp.status.toString().startsWith('2')) {
+        try {
+            await axios.post(url, payload);
+        } catch (error) {
             throw new Meteor.Error(
-                resp.status,
-                `Error deploying infra: ${JSON.stringify(resp.data)}`,
+                error.response?.status,
+                `Error deploying infra: ${JSON.stringify(error.response?.data)}`,
             );
         }
     },

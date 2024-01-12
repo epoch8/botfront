@@ -3,12 +3,18 @@ import { useTracker } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import SimpleSchema2Bridge from 'uniforms-bridge-simple-schema-2';
-import { AutoForm, AutoField } from 'uniforms-semantic';
-
+import { AutoForm, AutoField, NestField } from 'uniforms-semantic';
+import Alert from 'react-s-alert';
 import { useTranslation } from 'react-i18next';
 import {
-    Button, Divider, Header,
+    Accordion,
+    AccordionAccordion,
+    Button,
+    Confirm,
+    Divider,
+    Header,
 } from 'semantic-ui-react';
+
 import { Projects } from '../../../api/project/project.collection';
 import { InfrastructureSchema } from '../../../api/project/project.schema';
 import SaveButton from '../utils/SaveButton';
@@ -32,6 +38,9 @@ const Infrastructure = ({ projectId }) => {
     const { t } = useTranslation('settings');
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(true);
+    const [deploying, setDeploying] = useState(false);
+    const [deployed, setDeployed] = useState(false);
+    const [deployConfirmOpen, setDeployConfirmOpen] = useState(false);
     const formRef = useRef();
 
     const onSave = (newSettings) => {
@@ -49,11 +58,16 @@ const Infrastructure = ({ projectId }) => {
     };
 
     const deploy = () => {
+        setDeploying(true);
         Meteor.call(
-            'project.deploy',
+            'project.deployInfrastructure',
             projectId,
             infrastructureSettings,
-            wrapMeteorCallback((err) => {}),
+            wrapMeteorCallback((err) => {
+                setDeploying(false);
+                setDeployed(!err);
+                Alert.success('Infrastructure update started');
+            }),
         );
     };
 
@@ -61,21 +75,106 @@ const Infrastructure = ({ projectId }) => {
         return <></>;
     }
 
+    const resourcesPanels = parentName => [
+        {
+            key: 'resources',
+            title: 'Resources',
+            content: {
+                content: (
+                    <NestField name={parentName} label={null}>
+                        <AutoField name='resources' label={null} />
+                    </NestField>
+                ),
+            },
+        },
+    ];
+
+    const instanceContent = (
+        <>
+            <AutoField name='image' />
+            <AutoField name='version' />
+            <AutoField name='env' />
+        </>
+    );
+
+    const overridesContent = parentName => (
+        <NestField name={parentName} label={null}>
+            {instanceContent}
+            <AccordionAccordion
+                exclusive={false}
+                panels={resourcesPanels(parentName)}
+                styled
+            />
+        </NestField>
+    );
+
+    const instancePanels = parentName => [
+        ...resourcesPanels(parentName),
+        {
+            key: 'dev',
+            title: 'Dev overrides',
+            content: {
+                content: overridesContent(`${parentName}.dev`),
+            },
+        },
+        {
+            key: 'prod',
+            title: 'Prod overrides',
+            content: {
+                content: overridesContent(`${parentName}.prod`),
+            },
+        },
+    ];
+
+    const panels = [
+        {
+            key: 'rasa',
+            title: 'Rasa',
+            content: {
+                content: (
+                    <NestField name='rasa' label={null}>
+                        {instanceContent}
+                        <AccordionAccordion
+                            exclusive={false}
+                            panels={instancePanels('rasa')}
+                            styled
+                        />
+                    </NestField>
+                ),
+            },
+        },
+        {
+            key: 'actions',
+            title: 'Action server',
+            content: {
+                content: (
+                    <NestField name='actions' label={null}>
+                        {instanceContent}
+                        <AccordionAccordion
+                            exclusive={false}
+                            panels={instancePanels('actions')}
+                            styled
+                        />
+                    </NestField>
+                ),
+            },
+        },
+    ];
+
     return (
         <AutoForm
             schema={infrastructureSchemaBridge}
             model={infrastructureSettings}
             onSubmit={newSettings => onSave(newSettings)}
-            onChange={() => setSaved(false)}
+            onChange={() => {
+                setSaved(false);
+                setDeployed(false);
+            }}
             ref={formRef}
         >
             <AutoField name='prod_enabled' label={t('Production infra enabled')} />
             <Divider />
-            <Header as='h3'>{t('Rasa')}</Header>
-            <AutoField name='rasa' label={null} />
-            <Divider />
-            <Header as='h3'>{t('Action server')}</Header>
-            <AutoField name='actions' label={null} />
+            <Accordion exclusive={false} panels={panels} styled />
             <Divider />
             <Header as='h3'>{t('Chatwoot')}</Header>
             <AutoField name='chatwoot' label={null} />
@@ -85,15 +184,27 @@ const Infrastructure = ({ projectId }) => {
             <SaveButton saving={saving} saved={saved} />
             <Button
                 floated='right'
-                color='red'
-                disabled={!saved}
+                color='teal'
+                disabled={!saved || deployed}
+                loading={deploying}
                 onClick={(e) => {
                     e.preventDefault();
-                    deploy();
+                    setDeployConfirmOpen(true);
                 }}
             >
                 {t('Deploy')}
             </Button>
+            <Confirm
+                open={deployConfirmOpen}
+                onCancel={() => {
+                    setDeployConfirmOpen(false);
+                }}
+                onConfirm={() => {
+                    deploy();
+                    setDeployConfirmOpen(false);
+                }}
+                content={t('Do you really want to deploy infrastucture?')}
+            />
         </AutoForm>
     );
 };
