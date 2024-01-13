@@ -151,25 +151,24 @@ const StoryEditorContainer = ({
 
     const isBranchLinked = branchId => destinationStories.some(aStory => (aStory.checkpoints || []).some(checkpointPath => checkpointPath.includes(branchId)));
 
-    const getDestinastionStoriesAndBranches = (storiesOrBranches, branchPath) => storiesOrBranches.map((storyOrBranch) => {
-        const { checkpoints, branches } = storyOrBranch;
-        const destinationBranches = getDestinastionStoriesAndBranches(branches || [], branchPath);
-        // if ((checkpoints || []).includes(branchPath[branchPath.length - 1])) {
-        if (checkpoints && checkpoints.length) {
-            return [storyOrBranch, ...destinationBranches];
+    const getDestinastionStoriesWithPaths = (storiesOrBranches, currentBranchPath, parentPath = '') => storiesOrBranches.map((storyOrBranch) => {
+        const { _id, checkpoints, branches: subBranches } = storyOrBranch;
+        const currentPath = parentPath ? [parentPath, _id].join('.') : _id;
+        const destinationBranchesPaths = getDestinastionStoriesWithPaths(subBranches || [], currentBranchPath, currentPath);
+        if (currentBranchPath.some(
+            branchId => (checkpoints || []).some(checkpointPath => checkpointPath.includes(branchId)),
+        )) {
+            return [{ path: currentPath, ...storyOrBranch }, ...destinationBranchesPaths];
         }
-        return destinationBranches;
+        return destinationBranchesPaths;
     }).flat();
 
     useEffect(() => {
-        // const newDestinationStories = stories.filter(aStory => branchPath.some(storyId => (aStory.checkpoints || []).some(checkpointPath => checkpointPath.includes(storyId))));
-        const newDestinationStories = getDestinastionStoriesAndBranches(stories, branchPath);
-        console.log(newDestinationStories);
+        const newDestinationStories = getDestinastionStoriesWithPaths(stories, branchPath);
         const newDestinationStory = newDestinationStories.find(aStory => (aStory.checkpoints || []).some(
             checkpoint => checkpoint[checkpoint.length - 1]
                     === branchPath[branchPath.length - 1],
         ));
-        console.log(newDestinationStory);
         setDestinationStories(newDestinationStories);
         setDestinationStory(newDestinationStory);
     }, [branchPath, stories]);
@@ -179,14 +178,14 @@ const StoryEditorContainer = ({
             Meteor.call(
                 'stories.removeCheckpoints',
                 projectId,
-                destinationStory._id,
+                destinationStory.path,
                 branchPath,
             );
         } else if (value && destinationStory) {
             Meteor.call(
                 'stories.removeCheckpoints',
                 projectId,
-                destinationStory._id,
+                destinationStory.path,
                 branchPath,
                 () => Meteor.call('stories.addCheckpoints', projectId, value, branchPath),
             );

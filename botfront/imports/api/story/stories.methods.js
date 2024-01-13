@@ -218,15 +218,8 @@ Meteor.methods({
             // destinationStory is a branch path
             const [storyId, ...destinationBranchPath] = destinationStory.split('.');
             const story = Stories.findOne({ _id: storyId });
-            // const destinationBranch = findBranch(story, destinationBranchPath);
-            // if (!destinationBranch) {
-            //     throw new Meteor.Error(`Destination branch ${destinationStory} not found!`)
-            // }
-            // destinationBranch.checkpoints = destinationBranch.checkpoints || [];
-            // destinationBranch.checkpoints.push(branchPath);
             const modifierPath = getBranchModifierPath(story, destinationBranchPath);
             const modifierPathStr = `branches.${modifierPath.join('.branches.')}.checkpoints`;
-            console.log(modifierPathStr);
             return Stories.update(
                 { _id: storyId, type: 'story' },
                 { $addToSet: { [modifierPathStr]: branchPath } },
@@ -255,6 +248,19 @@ Meteor.methods({
         check(destinationStory, String);
         check(branchPath, Array);
         check(projectId, String);
+
+        if (destinationStory.includes('.')) {
+            // destinationStory is a branch path
+            const [storyId, ...destinationBranchPath] = destinationStory.split('.');
+            const story = Stories.findOne({ _id: storyId });
+            const modifierPath = getBranchModifierPath(story, destinationBranchPath);
+            const modifierPathStr = `branches.${modifierPath.join('.branches.')}.checkpoints`;
+            return Stories.update(
+                { _id: storyId, type: 'story' },
+                { $pullAll: { [modifierPathStr]: [branchPath] } },
+            );
+        }
+
         const storyBefore = Stories.findOne({ _id: destinationStory });
         const result = Stories.update(
             { _id: destinationStory, type: 'story' },

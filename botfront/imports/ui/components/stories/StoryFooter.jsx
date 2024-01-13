@@ -192,7 +192,6 @@ class StoryFooter extends React.Component {
         } = this.props;
         const { stories } = this.context;
         if (!canBranch || fragment.type === 'rule') return null;
-        console.log(destinationStory ? destinationStory._id : '');
         return (
             <Menu.Item
                 className={`footer-option-button remove-padding color-${this.selectIconColor(
@@ -209,7 +208,7 @@ class StoryFooter extends React.Component {
                     Link&nbsp;to:
                 <Dropdown
                     placeholder={t('Select story')}
-                    value={destinationStory ? destinationStory._id : ''}
+                    value={destinationStory ? destinationStory.path : ''}
                     fluid
                     search
                     selection
