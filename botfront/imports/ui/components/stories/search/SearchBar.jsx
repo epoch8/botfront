@@ -34,6 +34,7 @@ const SearchBar = (props) => {
 
     const searchStories = useCallback(
         debounce(async (searchInputValue) => {
+            if (!language) return;
             const { data } = await apolloClient.query({
                 query: SEARCH_FRAGMENTS,
                 variables: {
@@ -266,12 +267,16 @@ const SearchBar = (props) => {
 
 SearchBar.propTypes = {
     projectId: PropTypes.string.isRequired,
-    language: PropTypes.string.isRequired,
+    language: PropTypes.string,
     router: PropTypes.object.isRequired,
     storyGroups: PropTypes.array.isRequired,
     ready: PropTypes.bool.isRequired,
     setActiveStories: PropTypes.func.isRequired,
     activeStories: PropTypes.array.isRequired,
+};
+
+SearchBar.defaultProps = {
+    language: null,
 };
 
 const SearchBarWithTracker = withRouter(

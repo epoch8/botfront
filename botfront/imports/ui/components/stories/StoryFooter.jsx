@@ -13,6 +13,7 @@ import {
     List,
     ListItem,
     Input,
+    Button,
 } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { withTranslation, useTranslation } from 'react-i18next';
@@ -272,8 +273,21 @@ class StoryFooter extends React.Component {
                     name='arrow right'
                     color='green'
                 />
-                    Link&nbsp;to:
-                <Dropdown
+                <Button
+                    className='link-button'
+                    onClick={() => this.setState({ linkSelectOpen: true })}
+                    disabled={!canBranch}
+                >
+                    Link&nbsp;to: {destinationStory?.text || destinationStory?.title}
+                </Button>
+                {destinationStory ? (
+                    <Button
+                        className='link-button'
+                        icon='x'
+                        onClick={e => onDestinationStorySelection(e, { value: '' })}
+                    />
+                ) : null}
+                {/* <Dropdown
                     placeholder={t('Select story')}
                     value={currentLinkValue}
                     fluid
@@ -287,7 +301,7 @@ class StoryFooter extends React.Component {
                     disabled={!canBranch}
                     onChange={onDestinationStorySelection}
                     onClick={() => this.setState({ linkSelectOpen: true })}
-                />
+                /> */}
                 <LinkSelectModal
                     open={linkSelectOpen}
                     onClose={() => this.setState({ linkSelectOpen: false })}

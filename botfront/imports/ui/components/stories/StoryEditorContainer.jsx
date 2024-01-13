@@ -331,11 +331,11 @@ const StoryEditorContainer = ({
         );
     };
 
-    const handleDeleteBranch = (path, index) => {
+    const handleDeleteBranch = (path, index, leaveSingleBranch = false) => {
         const parentPath = path.slice(0, path.length - 1);
         const parentStory = branches[parentPath.join()];
         const { branches: currentBranches = [] } = parentStory;
-        if (currentBranches.length < 3) {
+        if (currentBranches.length < 3 && !leaveSingleBranch) {
             // we append the remaining story to the parent one.
             const deletedStory = currentBranches[!index ? 1 : 0];
             const newParentStory = `${parentStory.story || ''}${
@@ -410,7 +410,7 @@ const StoryEditorContainer = ({
                                     }}
                                     onChangeName={newName => saveStory(childPath, { title: newName })
                                     }
-                                    onDelete={() => handleDeleteBranch(childPath, index)}
+                                    onDelete={leaveSingleBranch => handleDeleteBranch(childPath, index, leaveSingleBranch)}
                                     errors={
                                         exceptions[childPath.join()]?.filter(
                                             ({ type }) => type === 'error',
@@ -426,6 +426,7 @@ const StoryEditorContainer = ({
                                     isParentLinked={isBranchLinked(
                                         pathToRender[pathToRender.length - 1],
                                     )}
+                                    hasLinksTo={!!(branch.checkpoints && branch.checkpoints.length)}
                                 />
                             );
                         })}
