@@ -86,11 +86,14 @@ class BranchTabLabel extends React.Component {
     };
 
     renderDeleteButton = () => {
-        const { isLinked, siblings, isParentLinked } = this.props;
+        const {
+            isLinked, siblings, isParentLinked, hasLinksTo,
+        } = this.props;
         const { project: { _id: projectId } } = this.context;
         if (can('stories:w', projectId)) {
             return (
-                <Icon name='trash' disabled={isLinked || (siblings.length < 3 && isParentLinked === true)} size='small' data-cy='delete-branch' />
+                // <Icon name='trash' disabled={isLinked || (siblings.length < 3 && isParentLinked === true)} size='small' data-cy='delete-branch' />
+                <Icon name='trash' disabled={isLinked || hasLinksTo} size='small' data-cy='delete-branch' />
             );
         }
         return (<></>);
@@ -104,14 +107,15 @@ class BranchTabLabel extends React.Component {
     renderDeletePopup = () => {
         const { deletePopupOpened } = this.state;
         const {
-            onDelete, siblings, isLinked, isParentLinked, value, t,
+            onDelete, siblings, isLinked, isParentLinked, hasLinksTo, value, t,
         } = this.props;
         const confirmMessage = {};
         if (siblings.length < 3) {
             const strandedBranchName = siblings.filter(s => s.title !== value)[0]?.title;
             confirmMessage.content = (
                 <>
-                    {t('The content of')} <strong>{strandedBranchName}</strong> {t('will be added to the previous story.')}
+                    {t('Add content of')} <strong>{strandedBranchName}</strong> {
+                        t('to the previous story or leave single branch?')}
                 </>
             );
         }
@@ -126,17 +130,28 @@ class BranchTabLabel extends React.Component {
                 />
             );
         }
-        if (siblings.length < 3 && isParentLinked) {
+        if (hasLinksTo) {
             return (
                 <ToolTipPopup
-                    header={t('This story cannot be deleted')}
+                    header={t('This branch cannot be deleted')}
                     toolTipText={[
-                        t('A story that has a only one sibling branch which is linked cannot be deleted'),
+                        t('There are one or more branches linked to this branch'),
                     ]}
                     trigger={this.renderDeleteButton()}
                 />
             );
         }
+        // if (siblings.length < 3 && isParentLinked) {
+        //     return (
+        //         <ToolTipPopup
+        //             header={t('This story cannot be deleted')}
+        //             toolTipText={[
+        //                 t('A story that has a only one sibling branch which is linked cannot be deleted'),
+        //             ]}
+        //             trigger={this.renderDeleteButton()}
+        //         />
+        //     );
+        // }
         return (
             <Popup
                 trigger={this.renderDeleteButton()}
@@ -146,9 +161,15 @@ class BranchTabLabel extends React.Component {
                         {...confirmMessage}
                         onYes={() => {
                             this.setState({ deletePopupOpened: false });
-                            onDelete();
+                            onDelete(false);
                         }}
                         onNo={() => this.setState({ deletePopupOpened: false })}
+                        confirmText={t('Add')}
+                        onExtra={() => {
+                            this.setState({ deletePopupOpened: false });
+                            onDelete(true);
+                        }}
+                        extraBtnText={t('Leave')}
                     />
                 )}
                 on='click'
@@ -181,7 +202,7 @@ class BranchTabLabel extends React.Component {
     static contextType = ProjectContext;
 
     render() {
-        const { active } = this.props;
+        const { active, hasLinksTo } = this.props;
         return (
             <Menu.Item
                 active={active}
@@ -194,6 +215,7 @@ class BranchTabLabel extends React.Component {
                 )}
                 role='textbox'
                 data-cy='branch-label'
+                className={hasLinksTo ? 'target-branch' : null}
             />
         );
     }
@@ -210,6 +232,7 @@ BranchTabLabel.propTypes = {
     siblings: PropTypes.array.isRequired,
     isLinked: PropTypes.bool,
     isParentLinked: PropTypes.bool.isRequired,
+    hasLinksTo: PropTypes.bool,
 };
 
 BranchTabLabel.defaultProps = {
@@ -218,6 +241,7 @@ BranchTabLabel.defaultProps = {
     warnings: 0,
     errors: 0,
     isLinked: true,
+    hasLinksTo: false,
 };
 
 export default withTranslation('stories')(BranchTabLabel);

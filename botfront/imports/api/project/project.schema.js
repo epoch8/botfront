@@ -59,6 +59,64 @@ export const chatWidgetSettingsSchema = new SimpleSchema({
     defaultHighlightAnimation: { type: String, optional: true },
 }, { strict: false });
 
+const Resources = new SimpleSchema({
+    requests: { type: Object, optional: true, defaultValue: null },
+    'requests.cpu': { type: String, optional: true },
+    'requests.memory': { type: String, optional: true },
+    limits: { type: Object, optional: true, defaultValue: null },
+    'limits.cpu': { type: String, optional: true },
+    'limits.memory': { type: String, optional: true },
+});
+
+const ServiceInfraParams = new SimpleSchema({
+    image: { type: String, defaultValue: '' },
+    version: { type: String, defaultValue: '' },
+    env: { type: Array, optional: true },
+    'env.$': { type: Object },
+    'env.$.name': { type: String },
+    'env.$.value': { type: String },
+    resources: { type: Resources },
+});
+
+const ServiceFullParams = new SimpleSchema({
+    dev: { type: ServiceInfraParams, optional: true },
+    prod: { type: ServiceInfraParams, optional: true },
+});
+ServiceFullParams.extend(ServiceInfraParams);
+
+const ChatwootInfraParams = new SimpleSchema({
+    account_id: { type: String, optional: true },
+    admin_access_token: { type: String, optional: true },
+    dev: { type: Object, optional: true },
+    'dev.account_id': { type: String, optional: true },
+    'dev.admin_access_token': { type: String, optional: true },
+    'dev.agent_bot_access_token': { type: String, optional: true },
+    'dev.website_token': { type: String, optional: true },
+    prod: { type: Object, optional: true },
+    'prod.account_id': { type: String, optional: true },
+    'prod.admin_access_token': { type: String, optional: true },
+    'prod.agent_bot_access_token': { type: String, optional: true },
+    'prod.website_token': { type: String, optional: true },
+});
+
+const TelegramInfraParams = new SimpleSchema({
+    dev: { type: Object, optional: true },
+    'dev.access_token': { type: String, optional: true },
+    'dev.verify': { type: String, optional: true },
+    prod: { type: Object, optional: true },
+    'prod.access_token': { type: String, optional: true },
+    'prod.verify': { type: String, optional: true },
+
+});
+
+export const InfrastructureSchema = new SimpleSchema({
+    prod_enabled: { type: Boolean, defaultValue: false },
+    rasa: { type: ServiceFullParams },
+    actions: { type: ServiceFullParams },
+    chatwoot: { type: ChatwootInfraParams, optional: true, defaultValue: null },
+    telegram: { type: TelegramInfraParams, optional: true, defaultValue: null },
+});
+
 export const ProjectsSchema = new SimpleSchema({
     name: {
         type: String,
@@ -128,6 +186,7 @@ export const ProjectsSchema = new SimpleSchema({
     allowContextualQuestions: { type: Boolean, defaultValue: false },
     gitSettings: { type: GitSettingsSchema, optional: true },
     faqSettings: { type: FaqSettingsSchema, optional: true },
+    infrastructureSettings: { type: InfrastructureSchema, optional: true },
 }, { tracker: Tracker });
 
 ProjectsSchema.messageBox.messages({

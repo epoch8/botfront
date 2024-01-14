@@ -65,6 +65,7 @@ const TrainingDetails = ({
 
     const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false);
     const [checkoutConfirmOpen, setCheckoutConfirmOpen] = useState(false);
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
     const cancelTraining = () => {
         Meteor.call(
@@ -72,6 +73,14 @@ const TrainingDetails = ({
             training.jobId,
             training.betUrl,
             wrapMeteorCallback(null, 'Training cancelled'),
+        );
+    };
+
+    const deleteTraining = () => {
+        Meteor.call(
+            'externalTraining.delete',
+            training.jobId,
+            wrapMeteorCallback(null, 'Training deleted'),
         );
     };
 
@@ -90,6 +99,31 @@ const TrainingDetails = ({
             }, `Project data restored from backup ${training.backupId}`),
         );
     };
+
+    const renderDeleteButton = () => (
+        <Can I='nlu-data:x' projectId={projectId}>
+            <>
+                <Button
+                    onClick={() => {
+                        setDeleteConfirmOpen(true);
+                    }}
+                    color='red'
+                >
+                    <Icon name='trash' /> {t('Delete')}
+                </Button>
+                <Confirm
+                    header='Delete training'
+                    open={open && deleteConfirmOpen}
+                    onCancel={() => setDeleteConfirmOpen(false)}
+                    onConfirm={() => {
+                        setDeleteConfirmOpen(false);
+                        setOpen(false);
+                        deleteTraining();
+                    }}
+                />
+            </>
+        </Can>
+    );
 
     const renderCancelButton = () => {
         if (training.status !== 'training') {
@@ -149,6 +183,8 @@ const TrainingDetails = ({
         );
     };
 
+    if (!training) return <></>;
+
     return (
         <Modal size='large' open={open} onClose={() => setOpen(false)}>
             <Loading loading={!ready}>
@@ -162,8 +198,9 @@ const TrainingDetails = ({
                     </div>
                 </Modal.Header>
                 <Modal.Actions>
+                    {renderDeleteButton()}
                     {renderCancelButton()}
-                    {renderRollbackButton()}
+                    {/* {renderRollbackButton()} */}
                 </Modal.Actions>
                 <Modal.Content>
                     <TextareaAutosize
