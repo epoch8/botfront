@@ -49,7 +49,15 @@ if (Meteor.isServer) {
             projectId,
         }, {
             fields: {
-                title: true, checkpoints: true, storyGroupId: true, type: true, rules: true, status: true, success: true, language: true,
+                title: true,
+                checkpoints: true,
+                storyGroupId: true,
+                type: true,
+                rules: true,
+                status: true,
+                success: true,
+                language: true,
+                branches: true,
             },
         });
     });
