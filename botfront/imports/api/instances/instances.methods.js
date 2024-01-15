@@ -348,6 +348,7 @@ if (Meteor.isServer) {
     // eslint-disable-next-line import/order
     import { performance } from 'perf_hooks';
     import { getFaqExamplesString } from './server/faqUtils';
+    import { getRasaVersion } from './server/rasaUtils';
 
     const trainingAppLogger = getAppLoggerForFile(__filename);
 
@@ -424,7 +425,7 @@ if (Meteor.isServer) {
             }
         },
 
-        // ! Legacy
+        // ! Rasa 2
         async 'rasa.getTrainingPayload'(
             projectId,
             { language = '', env = 'development', nluFormat = 'json' } = {},
@@ -501,10 +502,23 @@ if (Meteor.isServer) {
             return payload;
         },
 
-        // ! Legacy
+        // ! Rasa 2
         async 'rasa.train'(projectId, env = 'development') {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
+
+            const rasaVersion = await getRasaVersion(projectId);
+            if (!rasaVersion) {
+                throw new Meteor.Error('Unable to get rasa version!');
+            }
+
+            if (rasaVersion.startsWith('3')) {
+                await Meteor.callWithPromise(
+                    'rasa3.train', projectId, env,
+                );
+                return;
+            }
+
             auditLog('Trained project', {
                 user: Meteor.user(),
                 projectId,

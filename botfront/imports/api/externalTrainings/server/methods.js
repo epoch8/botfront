@@ -6,8 +6,46 @@ import { BetApi } from './betApi';
 import { ExternalTrainings } from '../collection';
 import { checkIfCan } from '../../../lib/scopes';
 import { auditLog } from '../../../../server/logger';
+import { getRasaVersion } from '../../instances/server/rasaUtils';
 
 export const betApi = new BetApi();
+
+
+const getRasaForBfTrainingData = async (projectId, language) => {
+    const {
+        augmentationFactor,
+        domain: domainYml,
+        config: configBf,
+        nlu: nluBf,
+        ...trainingData
+    } = await Meteor.callWithPromise('rasa.getTrainingPayload', projectId, {
+        language, nluFormat: 'md',
+    });
+    const domain = yaml.safeLoad(domainYml);
+    const config = yaml.safeLoad(configBf[language]);
+    const nlu = nluBf[language].rasa_nlu_data;
+    return yaml.safeDump(
+        {
+            ...domain, ...trainingData, ...config, nlu, language,
+        },
+        {
+            sortKeys: true,
+            skipInvalid: true,
+        },
+    );
+};
+
+const getRasa3TrainingData = async (projectId, language) => {
+    const { augmentationFactor, ...trainingData } = await Meteor.callWithPromise(
+        'rasa3.getTrainingPayload',
+        projectId,
+        { language },
+    );
+    return yaml.safeDump(trainingData, {
+        sortKeys: true,
+        skipInvalid: true,
+    });
+};
 
 Meteor.methods({
     /**
@@ -38,38 +76,28 @@ Meteor.methods({
         check(rasaExtraArgs, Match.Maybe(String));
         check(node, Match.Maybe(String));
 
+        let rasaVersion;
+        try {
+            rasaVersion = await getRasaVersion(projectId);
+        } catch (error) {
+            console.log(error);
+        }
+
+        if (!rasaVersion) {
+            throw new Meteor.Error('Unable to get rasa version!');
+        }
+
+        const isRasaForBF = !rasaVersion.startsWith('3');
+
         const backupId = await Meteor.callWithPromise(
             'backup.create',
             projectId,
             'External training backup',
         );
 
-        //! Rasa for bf 2
-        const {
-            augmentationFactor,
-            domain: domainYml,
-            config: configBf,
-            nlu: nluBf,
-            ...trainingData
-        } = await Meteor.callWithPromise('rasa.getTrainingPayload', projectId, {
-            language, nluFormat: 'md',
-        });
-        const domain = yaml.safeLoad(domainYml);
-        const config = yaml.safeLoad(configBf[language]);
-        const nlu = nluBf[language].rasa_nlu_data;
-        // const { common_examples: examples } = rasaNluData;
-        // const nlu = examples;
-        // console.log(nlu);
-        // console.log(config);
-        const yamlTrainingData = yaml.safeDump(
-            {
-                ...domain, ...trainingData, ...config, nlu, language,
-            },
-            {
-                sortKeys: true,
-                skipInvalid: true,
-            },
-        );
+        const yamlTrainingData = isRasaForBF
+            ? await getRasaForBfTrainingData(projectId, language)
+            : await getRasa3TrainingData(projectId, language);
 
         auditLog('Starting external training', {
             user: Meteor.user(),
@@ -80,6 +108,7 @@ Meteor.methods({
             image,
             rasaExtraArgs,
             node,
+            is_rasa_for_botfront: isRasaForBF,
         });
 
         try {
