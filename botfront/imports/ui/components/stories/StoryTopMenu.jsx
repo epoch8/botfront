@@ -49,7 +49,15 @@ const StoryTopMenu = ({
     const {
         stories, updateStory, getResponseLocations, linkToStory, deleteStory,
     } = useContext(ConversationOptionsContext);
-    const isDestinationStory = !!(checkpoints || []).length;
+
+    const hasCheckpoints = (storyOrBranch) => {
+        if ((storyOrBranch.checkpoints || []).length) {
+            return true;
+        }
+        return (storyOrBranch.branches || []).some(branch => hasCheckpoints(branch));
+    };
+
+    const isDestinationStory = useMemo(() => hasCheckpoints(fragment), [fragment]);
 
     const submitTitleInput = () => {
         if (title === newTitle) return null;

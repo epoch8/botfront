@@ -64,20 +64,32 @@ export const addCheckpoints = (fragments) => {
         const story = map[path];
         // add link checkpoints
         const checkpoints = story.checkpoints || [];
+        let hasValidCheckpoint = false;
         if (checkpoints.length) {
             const checkpoint = `link-to-${story.title}/${story._id}`;
-            map[path].steps = [
-                { checkpoint },
-                ...(story.steps || [{ action: 'action_empty_branch' }]),
-            ];
             checkpoints.forEach((checkpointPath) => {
-                map[checkpointPath.join()].steps = [
-                    ...(map[checkpointPath.join()].steps || [
+                const fullPath = Array.isArray(checkpointPath)
+                    ? checkpointPath.join()
+                    : checkpointPath;
+                if (!map[fullPath]) {
+                    console.log(`Invalid checkpoint: ${fullPath}`);
+                    return;
+                }
+                hasValidCheckpoint = true;
+                map[fullPath].steps = [
+                    ...(map[fullPath].steps || [
                         { action: 'action_empty_branch' },
                     ]),
                     { checkpoint },
                 ];
             });
+
+            if (hasValidCheckpoint) {
+                map[path].steps = [
+                    { checkpoint },
+                    ...(story.steps || [{ action: 'action_empty_branch' }]),
+                ];
+            }
         }
         const resolvedPath = path
             .split(',')
