@@ -8,8 +8,4 @@ pipeline:
     max_ngram: 4
   - name: DIETClassifier
     epochs: 200
-  - name: rasa_addons.nlu.components.gazette.Gazette
-  - name: rasa_addons.nlu.components.intent_ranking_canonical_example_injector.IntentRankingCanonicalExampleInjector
   - name: EntitySynonymMapper
-backgroundImages:
-  - https://source.unsplash.com/collection/315548/2400x1500
