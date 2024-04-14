@@ -529,8 +529,12 @@ export const handleImportConversations = async (
                 const { conversations, env } = f;
                 if (supportedEnvs.includes(env)) {
                     const insertConv = conversations.map(async (conv) => {
-                        const { _id, ...convRest } = conv;
+                        const {
+                            _id, createdAt: createdAtTs, updatedAt: updatedAtTs, ...convRest
+                        } = conv;
                         const { sender_id } = conv?.tracker;
+                        const createdAt = new Date(parseInt(createdAtTs, 10));
+                        const updatedAt = new Date(parseInt(updatedAtTs, 10));
                         // we are looking conversation by the sender id because that is what define the user
                         // the id might have changed from a previous import
                         const exist = await Conversations.findOne({ 'tracker.sender_id': sender_id, projectId });
@@ -543,11 +547,15 @@ export const handleImportConversations = async (
                                         ...convRest,
                                         projectId,
                                         env,
+                                        createdAt,
+                                        updatedAt,
                                     },
                                 },
                             );
                         }
-                        return Conversations.create({ ...convRest, env, projectId });
+                        return Conversations.create({
+                            ...convRest, env, projectId, createdAt, updatedAt,
+                        });
                     });
                     await Promise.all(insertConv);
                 }
