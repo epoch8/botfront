@@ -132,6 +132,38 @@ function ConversationViewer(props) {
         }
     }, [data]);
 
+    const [audioLoading, setAudioLoading] = useState(true);
+    const [audioDataUrl, setAudioDataUrl] = useState(null);
+
+    const renderAudioPlayer = () => {
+        if (audioDataUrl) {
+            return 'Audio available';
+        }
+        return 'No audio available';
+    };
+
+    useEffect(() => {
+        const senderId = tracker?.tracker?.sender_id;
+        if (!senderId) return undefined;
+        setAudioLoading(true);
+        let cancelled = false;
+        Meteor.call('conversations.getAudio', senderId, (err, res) => {
+            if (cancelled) {
+                return;
+            }
+            setAudioLoading(false);
+            const newUrl = (res && !err) ? URL.createObjectURL(res) : null;
+            setAudioDataUrl(newUrl);
+        });
+        return () => {
+            cancelled = true;
+            if (audioDataUrl) {
+                URL.revokeObjectURL(audioDataUrl);
+                setAudioDataUrl('');
+            }
+        };
+    }, [tracker]);
+
 
     return (
         <div className='conversation-wrapper'>
@@ -169,6 +201,7 @@ function ConversationViewer(props) {
                     </Menu.Item>
                 </Menu.Menu>
             </Menu>
+            <Segment loading={audioLoading}>{renderAudioPlayer()}</Segment>
             {renderSegment(ready, active, tracker)}
         </div>
     );

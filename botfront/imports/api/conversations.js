@@ -1,7 +1,10 @@
 import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 import { check } from 'meteor/check';
+import axios from 'axios';
 import { checkIfCan } from '../lib/scopes';
+import { GlobalSettings } from './globalSettings/globalSettings.collection';
+import { Cache } from '../lib/utils';
 
 export const Conversations = new Mongo.Collection('conversations');
 // Deny all client-side updates on the Conversations collection
@@ -60,6 +63,8 @@ Meteor.startup(() => {
 if (Meteor.isServer) {
     import { auditLog } from '../../server/logger';
 
+    const audioCache = new Cache(50);
+
     const findConversationProject = (senderId) => {
         const conversation = Conversations.findOne({ _id: senderId });
         if (!conversation) throw Meteor.Error('404', 'Not Found');
@@ -105,6 +110,33 @@ if (Meteor.isServer) {
                 resType: 'conversation',
             });
             return Conversations.remove({ _id: senderId });
+        },
+
+        async 'conversations.getAudio'(senderId) {
+            const conversation = Conversations.findOne({ 'tracker.sender_id': senderId });
+            if (!conversation) throw Meteor.Error('404', 'Not Found');
+            checkIfCan('incoming:r', conversation.projectId);
+            check(senderId, String);
+            let audioData = audioCache.get(senderId);
+            if (audioData) {
+                console.log('Cached audio data');
+                return audioData;
+            }
+            const { settings } = GlobalSettings.findOne({}, { fields: { 'settings.private.audioRecordsUrl': 1 } });
+            const audioRecordsUrl = settings?.private?.audioRecordsUrl;
+            if (!audioRecordsUrl) return null;
+
+            const audioUrl = `${audioRecordsUrl}/${senderId}.wav`;
+            let resp = null;
+            try {
+                resp = await axios.get(audioUrl);
+            } catch (error) {
+                if (error.response.status === 404) return null;
+                throw error;
+            }
+            audioData = resp.data;
+            audioCache.set(senderId, audioData);
+            return audioData;
         },
     });
 }

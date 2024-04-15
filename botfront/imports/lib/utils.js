@@ -341,3 +341,48 @@ export async function createAxiosForRasa(projectId, config = {}, params = {}) {
     const instance = await Instances.findOne({ projectId });
     return createAxiosWithConfig(instance, config, params);
 }
+
+
+export class Cache {
+    /**
+     * @param {int} max_size=0
+     */
+    constructor(maxSize = 0) {
+        this.maxSize = maxSize;
+        this.items = {};
+        this.keys = [];
+    }
+
+    /**
+     * @param {string} key
+     * @returns {any|null}
+     */
+    get(key) {
+        if (!(key in this.items)) {
+            return null;
+        }
+        const value = this.items[key][0];
+        this.items[key] = [value, Date.now()];
+        return value;
+    }
+
+    /**
+     * @param {string} key
+     * @param {any} value
+     */
+    set(key, value) {
+        const item = [value, Date.now()];
+        if (this.maxSize
+            && !(key in this.items)
+            && this.keys.length >= this.maxSize
+        ) {
+            const keyToDelete = this.keys.pop();
+            delete this.items[keyToDelete];
+        }
+        if (key in this.items) {
+            this.keys.filter(val => val !== key);
+        }
+        this.keys.unshift(key);
+        this.items[key] = item;
+    }
+}

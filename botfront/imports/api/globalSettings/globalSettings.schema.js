@@ -26,6 +26,7 @@ export const privateSettingsSchema = new SimpleSchema({
     'webhooks.reportCrashWebhook': { type: webhookSchema, optional: true },
     'webhooks.postTraining': { type: webhookSchema, optional: true },
     reCatpchaSecretServerKey: { type: String, optional: true },
+    audioRecordsUrl: { type: String, optional: true },
 });
 
 export const publicSettingsSchema = new SimpleSchema({
