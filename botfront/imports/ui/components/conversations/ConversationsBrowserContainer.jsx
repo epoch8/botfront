@@ -109,6 +109,8 @@ const ConversationsBrowserContainer = (props) => {
         env: getFilterFromQuery('env'),
         userInitiatedConversations: getFilterFromQuery('userInitiatedConversations'),
         triggeredConversations: getFilterFromQuery('triggeredConversations'),
+        conversationId: getFilterFromQuery('conversationId'),
+        phoneNumber: getFilterFromQuery('phoneNumber'),
     });
     const [activeFilters, setActiveFiltersHidden] = useState(getInitialFilters());
     const [projectTimezoneOffset, setProjectTimezoneOffset] = useState(0);

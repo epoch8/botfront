@@ -154,13 +154,13 @@ function ConversationViewer(props) {
         const cachedAudio = audioCache.get(senderId);
         if (cachedAudio) {
             setAudioDataUrl(URL.createObjectURL(cachedAudio));
+            setAudioLoading(false);
         } else {
             setAudioLoading(true);
             Meteor.call('conversations.getAudio', senderId, (err, res) => {
                 if (cancelled) {
                     return;
                 }
-                setAudioLoading(false);
                 let newUrl = null;
                 if (res && !err) {
                     const audioData = new Blob([res], { type: 'audio/wav' });
@@ -168,6 +168,7 @@ function ConversationViewer(props) {
                     newUrl = URL.createObjectURL(audioData);
                 }
                 setAudioDataUrl(newUrl);
+                setAudioLoading(false);
             });
         }
         return () => {

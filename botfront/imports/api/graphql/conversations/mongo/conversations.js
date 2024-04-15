@@ -134,6 +134,7 @@ export const getConversations = async ({
     endDate = null,
     userId = null,
     conversationId = null,
+    phoneNumber = null,
     eventFilterOperator = 'or',
     eventFilter = null,
     userInitiatedConversations,
@@ -227,6 +228,7 @@ export const getConversations = async ({
     const firstFilters = () => {
         const filters = { projectId };
         if (conversationId) filters._id = conversationId;
+        if (phoneNumber) filters['tracker.slots.phone_number'] = { $regex: phoneNumber };
         if (status.length > 0) filters.status = { $in: status };
         if (env) filters.env = env;
         if (env === 'development') {

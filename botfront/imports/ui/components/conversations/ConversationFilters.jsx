@@ -346,6 +346,28 @@ const ConversationFilters = ({
                             </Segment>
                         </Segment.Group>
                     </div>
+                    {/* phone number filter */}
+                    <div className='conversation-filter phone-number-filter' data-cy='phone-number-filter'>
+                        <Segment.Group
+                            horizontal
+                            data-cy='phone-number-filter'
+                            className='conversation-filter'
+                        >
+                            <Segment className='phone-number-label'>
+                                <Label>{t('Phone number')}</Label>
+                            </Segment>
+                            <Segment className='phone-number-filter'>
+                                <Input
+                                    value={newFilters.phoneNumber || ''}
+                                    onChange={(_e, { value }) => setFilter(
+                                        'phoneNumber',
+                                        value.trim(),
+                                    )}
+                                    // placeholder='unique identifier'
+                                />
+                            </Segment>
+                        </Segment.Group>
+                    </div>
                 </div>
             </Accordion.Content>
         </Accordion>

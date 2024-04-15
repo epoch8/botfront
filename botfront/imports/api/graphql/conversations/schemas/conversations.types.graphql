@@ -32,6 +32,8 @@ type Query {
         userId: String
         """ unique identifier of the conversation"""
         conversationId: String
+        """ caller phone number"""
+        phoneNumber: String
         """ filter conversation containing the listed intents/ actions goes with eventFilterOperator """
         eventFilter: [StepInput],
         """ String (default ‘or’, possible other value ‘and', 'inorder') type of filtering for intents/ actions filters """
