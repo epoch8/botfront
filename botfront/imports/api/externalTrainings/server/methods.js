@@ -83,7 +83,7 @@ Meteor.methods({
 
     /**
      * @param {string} jobId
-     * @param {host} jobId
+     * @param {string} host
      * @returns {Promise<boolean>}
      */
     async 'externalTraining.cancel'(jobId, host) {
@@ -101,6 +101,25 @@ Meteor.methods({
         );
         return cancelled;
     },
+
+    /**
+     * @param {string} jobId
+     * @returns {Promise<boolean>}
+     */
+    async 'externalTraining.delete'(jobId) {
+        check(jobId, String);
+        const training = ExternalTrainings.findOne({ jobId });
+        if (!training) {
+            return false;
+        }
+        checkIfCan('nlu-data:x', training.projectId);
+        try {
+            await betApi.cancel(jobId, training.host);
+        } catch {}
+        ExternalTrainings.remove({ _id: training._id });
+        return true;
+    },
+
     /**
      * @param {string} jobId
      * @returns {Promise<string | null>}

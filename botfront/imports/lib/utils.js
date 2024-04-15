@@ -50,7 +50,7 @@ export const formatError = (error) => {
         const { error: err = {}, message: msg, reason: rs } = errorInfo || {};
         return new Meteor.Error(
             response.status,
-            err.message || err.reason || msg || rs || err || message || reason,
+            err.message || err.reason || msg || rs || message || reason || err,
         );
     }
     if (request && code === 'ECONNREFUSED') {

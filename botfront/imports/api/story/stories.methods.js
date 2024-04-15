@@ -33,6 +33,30 @@ const logStoryUpdate = (story, projectId, originStory) => auditLogIfOnServer('St
     resType: (Array.isArray(story) && story.length > 1) ? 'stories' : 'story',
 });
 
+const findBranch = (story, path) => {
+    if (!path.length) return story;
+    const [currentId, ...remainingPath] = path;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const branch of story.branches) {
+        if (branch._id === currentId) {
+            return findBranch(branch, remainingPath);
+        }
+    }
+    return null;
+};
+
+const getBranchModifierPath = (story, path, modifierPath = []) => {
+    if (!path.length) return modifierPath;
+    const [currentId, ...remainingPath] = path;
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [idx, branch] of story.branches.entries()) {
+        if (branch._id === currentId) {
+            return getBranchModifierPath(branch, remainingPath, [...modifierPath, idx]);
+        }
+    }
+    return null;
+};
+
 Meteor.methods({
     async 'stories.insert'(story) {
         const projectId = Array.isArray(story) ? story[0].projectId : story.projectId;
@@ -190,6 +214,18 @@ Meteor.methods({
         check(branchPath, Array);
         check(projectId, String);
 
+        if (destinationStory.includes('.')) {
+            // destinationStory is a branch path
+            const [storyId, ...destinationBranchPath] = destinationStory.split('.');
+            const story = Stories.findOne({ _id: storyId });
+            const modifierPath = getBranchModifierPath(story, destinationBranchPath);
+            const modifierPathStr = `branches.${modifierPath.join('.branches.')}.checkpoints`;
+            return Stories.update(
+                { _id: storyId, type: 'story' },
+                { $addToSet: { [modifierPathStr]: branchPath } },
+            );
+        }
+
         const storyBefore = Stories.findOne({ _id: destinationStory });
         const checkpointsBefore = storyBefore.checkpoints || [];
         auditLogIfOnServer('Story added checkpoint', {
@@ -212,6 +248,19 @@ Meteor.methods({
         check(destinationStory, String);
         check(branchPath, Array);
         check(projectId, String);
+
+        if (destinationStory.includes('.')) {
+            // destinationStory is a branch path
+            const [storyId, ...destinationBranchPath] = destinationStory.split('.');
+            const story = Stories.findOne({ _id: storyId });
+            const modifierPath = getBranchModifierPath(story, destinationBranchPath);
+            const modifierPathStr = `branches.${modifierPath.join('.branches.')}.checkpoints`;
+            return Stories.update(
+                { _id: storyId, type: 'story' },
+                { $pullAll: { [modifierPathStr]: [branchPath] } },
+            );
+        }
+
         const storyBefore = Stories.findOne({ _id: destinationStory });
         const result = Stories.update(
             { _id: destinationStory, type: 'story' },

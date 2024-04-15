@@ -151,8 +151,20 @@ const StoryEditorContainer = ({
 
     const isBranchLinked = branchId => destinationStories.some(aStory => (aStory.checkpoints || []).some(checkpointPath => checkpointPath.includes(branchId)));
 
+    const getDestinastionStoriesWithPaths = (storiesOrBranches, currentBranchPath, parentPath = '') => storiesOrBranches.map((storyOrBranch) => {
+        const { _id, checkpoints, branches: subBranches } = storyOrBranch;
+        const currentPath = parentPath ? [parentPath, _id].join('.') : _id;
+        const destinationBranchesPaths = getDestinastionStoriesWithPaths(subBranches || [], currentBranchPath, currentPath);
+        if (currentBranchPath.some(
+            branchId => (checkpoints || []).some(checkpointPath => checkpointPath.includes(branchId)),
+        )) {
+            return [{ path: currentPath, ...storyOrBranch }, ...destinationBranchesPaths];
+        }
+        return destinationBranchesPaths;
+    }).flat();
+
     useEffect(() => {
-        const newDestinationStories = stories.filter(aStory => branchPath.some(storyId => (aStory.checkpoints || []).some(checkpointPath => checkpointPath.includes(storyId))));
+        const newDestinationStories = getDestinastionStoriesWithPaths(stories, branchPath);
         const newDestinationStory = newDestinationStories.find(aStory => (aStory.checkpoints || []).some(
             checkpoint => checkpoint[checkpoint.length - 1]
                     === branchPath[branchPath.length - 1],
@@ -166,14 +178,14 @@ const StoryEditorContainer = ({
             Meteor.call(
                 'stories.removeCheckpoints',
                 projectId,
-                destinationStory._id,
+                destinationStory.path,
                 branchPath,
             );
         } else if (value && destinationStory) {
             Meteor.call(
                 'stories.removeCheckpoints',
                 projectId,
-                destinationStory._id,
+                destinationStory.path,
                 branchPath,
                 () => Meteor.call('stories.addCheckpoints', projectId, value, branchPath),
             );
@@ -319,11 +331,11 @@ const StoryEditorContainer = ({
         );
     };
 
-    const handleDeleteBranch = (path, index) => {
+    const handleDeleteBranch = (path, index, leaveSingleBranch = false) => {
         const parentPath = path.slice(0, path.length - 1);
         const parentStory = branches[parentPath.join()];
         const { branches: currentBranches = [] } = parentStory;
-        if (currentBranches.length < 3) {
+        if (currentBranches.length < 3 && !leaveSingleBranch) {
             // we append the remaining story to the parent one.
             const deletedStory = currentBranches[!index ? 1 : 0];
             const newParentStory = `${parentStory.story || ''}${
@@ -398,15 +410,15 @@ const StoryEditorContainer = ({
                                     }}
                                     onChangeName={newName => saveStory(childPath, { title: newName })
                                     }
-                                    onDelete={() => handleDeleteBranch(childPath, index)}
+                                    onDelete={leaveSingleBranch => handleDeleteBranch(childPath, index, leaveSingleBranch)}
                                     errors={
                                         exceptions[childPath.join()]?.filter(
-                                            ({ type }) => type === 'error'
+                                            ({ type }) => type === 'error',
                                         ).length
                                     }
                                     warnings={
                                         exceptions[childPath.join()]?.filter(
-                                            ({ type }) => type === 'warning'
+                                            ({ type }) => type === 'warning',
                                         ).length
                                     }
                                     siblings={localBranches}
@@ -414,6 +426,7 @@ const StoryEditorContainer = ({
                                     isParentLinked={isBranchLinked(
                                         pathToRender[pathToRender.length - 1],
                                     )}
+                                    hasLinksTo={!!(branch.checkpoints && branch.checkpoints.length)}
                                 />
                             );
                         })}

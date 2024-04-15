@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
     Segment,
@@ -7,18 +7,83 @@ import {
     Menu,
     Dropdown,
     Checkbox,
+    Modal,
+    ModalHeader,
+    ModalContent,
+    List,
+    ListItem,
+    Input,
+    Button,
 } from 'semantic-ui-react';
 import { connect } from 'react-redux';
-import { withTranslation } from 'react-i18next';
+import { withTranslation, useTranslation } from 'react-i18next';
 
 import StoryPathPopup from './StoryPathPopup.jsx';
 import { ConversationOptionsContext } from './Context';
 import { can } from '../../../lib/scopes';
 
+
+const LinkSelectModal = ({
+    open, onClose, linkTargets, currentValue, onSelect,
+}) => {
+    const { t } = useTranslation('stories');
+
+    const [searchStr, setSearchStr] = useState('');
+
+    const listItems = useMemo(() => {
+        const searchStrNormalized = searchStr.trim().toLowerCase();
+        const filterdTargets = searchStrNormalized
+            ? linkTargets.filter(({ text }) => text.toLowerCase().includes(searchStrNormalized))
+            : linkTargets;
+        return filterdTargets.map(({ value, text }) => (
+            <ListItem
+                key={value}
+                className={value === currentValue ? 'current-link-target' : null}
+                onClick={e => onSelect(e, { value, text })}
+            >
+                <h3>{text}</h3>
+            </ListItem>
+        ));
+    }, [linkTargets, searchStr]);
+
+    return (
+        <Modal open={open} onClose={onClose}>
+            <ModalHeader>{t('Link to')}</ModalHeader>
+            <ModalContent>
+                <Input
+                    placeholder={t('Search...')}
+                    icon='search'
+                    fluid
+                    value={searchStr}
+                    onChange={(e, { value }) => setSearchStr(value)}
+                />
+                <List divided selection relaxed='very'>
+                    {listItems}
+                </List>
+            </ModalContent>
+        </Modal>
+    );
+};
+
+LinkSelectModal.propTypes = {
+    open: PropTypes.bool,
+    onClose: PropTypes.func,
+    linkTargets: PropTypes.array,
+};
+
+LinkSelectModal.defaultProps = {
+    open: false,
+    onClose: () => {},
+    linkTargets: [],
+};
+
+
 class StoryFooter extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            linkSelectOpen: false,
+        };
     }
 
     renderPath = () => {
@@ -92,6 +157,28 @@ class StoryFooter extends React.Component {
         if (story.rules && story.rules.length > 0) return false;
         return true;
     }).map(({ value, text }) => ({ value, text }));
+
+    getTargetsFromBranches = (parentPath, parentName, branches) => {
+        if (!branches) return [];
+        return branches.map(({ _id, title, branches: subBranches }) => {
+            const value = `${parentPath}.${_id}`;
+            const text = `${parentName}.${title}`;
+            return [
+                { value, text },
+                this.getTargetsFromBranches(value, text, subBranches),
+            ];
+        });
+    };
+
+    getLinkTargets = (stories) => {
+        // console.log(stories);
+        const filteredStories = stories.filter(story => !(story.rules && story.rules.length > 0));
+        const linkTargets = filteredStories.map(({ value, text, branches }) => [
+            { value, text }, this.getTargetsFromBranches(value, text, branches),
+        ]).flat(Infinity);
+        // console.log(linkTargets);
+        return linkTargets;
+    };
 
 
     renderContinue = () => {
@@ -170,6 +257,9 @@ class StoryFooter extends React.Component {
         } = this.props;
         const { stories } = this.context;
         if (!canBranch || fragment.type === 'rule') return null;
+        const { linkSelectOpen } = this.state;
+        const linkTargets = this.getLinkTargets(stories);
+        const currentLinkValue = destinationStory ? destinationStory.path : '';
         return (
             <Menu.Item
                 className={`footer-option-button remove-padding color-${this.selectIconColor(
@@ -183,20 +273,41 @@ class StoryFooter extends React.Component {
                     name='arrow right'
                     color='green'
                 />
-                {t('Link&nbsp;to:')}
-                <Dropdown
+                <Button
+                    className='link-button'
+                    onClick={() => this.setState({ linkSelectOpen: true })}
+                    disabled={!canBranch}
+                >
+                    Link&nbsp;to: {destinationStory?.text || destinationStory?.title}
+                </Button>
+                {destinationStory ? (
+                    <Button
+                        className='link-button'
+                        icon='x'
+                        onClick={e => onDestinationStorySelection(e, { value: '' })}
+                    />
+                ) : null}
+                {/* <Dropdown
                     placeholder={t('Select story')}
-                    value={destinationStory ? destinationStory._id : ''}
+                    value={currentLinkValue}
                     fluid
                     search
                     selection
                     clearable
                     selectOnBlur={false}
                     className='stories-linker'
-                    options={this.filterDestinations(stories, fragment._id)}
+                    options={linkTargets}
                     data-cy='stories-linker'
                     disabled={!canBranch}
                     onChange={onDestinationStorySelection}
+                    onClick={() => this.setState({ linkSelectOpen: true })}
+                /> */}
+                <LinkSelectModal
+                    open={linkSelectOpen}
+                    onClose={() => this.setState({ linkSelectOpen: false })}
+                    linkTargets={linkTargets}
+                    currentValue={currentLinkValue}
+                    onSelect={onDestinationStorySelection}
                 />
             </Menu.Item>
         );

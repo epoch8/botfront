@@ -18,6 +18,7 @@ import ImportExportProject from './ImportExportProject';
 import ChatWidgetForm from './ChatWidgetForm';
 import GitSettings from './GitSettings';
 import Faq from './Faq';
+import Infrastructure from './Infrastructure';
 
 class Settings extends React.Component {
     componentDidMount() {
@@ -42,6 +43,7 @@ class Settings extends React.Component {
         const canImport = can('import:x', projectId);
         const canViewGitCredentials = can('git-credentials:r', projectId);
         const canViewFaq = can('nlu-data:w', projectId);
+        const canManageInfrastructure = can('infrastructure:w', projectId);
         const panes = [
             ...(canViewProjects ? [
                 {
@@ -108,6 +110,12 @@ class Settings extends React.Component {
                 menuItem: <Menu.Item icon='question' content={t('FAQ')} key='FAQ' />,
                 render: () => <Tab.Pane><Faq /></Tab.Pane>,
             }] : []),
+            // TODO: in progress
+            // ...(canManageInfrastructure ? [{
+            //     name: 'Infrastructure',
+            //     menuItem: <Menu.Item icon='server' content={t('Infrastructure')} key='Infrastructure' />,
+            //     render: () => <Tab.Pane><Infrastructure /></Tab.Pane>,
+            // }] : []),
 
 
         ];

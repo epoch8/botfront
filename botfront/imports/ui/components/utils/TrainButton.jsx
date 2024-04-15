@@ -38,21 +38,22 @@ class TrainButton extends React.Component {
         const {
             project: { _id: projectId },
         } = this.context;
-        if (can('projects:w', projectId)) {
-            Meteor.call(
-                'getDeploymentWebhook',
-                projectId,
-                wrapMeteorCallback((err, result) => {
-                    if (err) return;
-                    const webhook = get(
-                        result,
-                        'settings.private.webhooks.deploymentWebhook',
-                        {},
-                    );
-                    this.setState({ webhook });
-                }),
-            );
-        }
+        // TODO: use subscription
+        // if (can('projects:w', projectId)) {
+        //     Meteor.call(
+        //         'getDeploymentWebhook',
+        //         projectId,
+        //         wrapMeteorCallback((err, result) => {
+        //             if (err) return;
+        //             const webhook = get(
+        //                 result,
+        //                 'settings.private.webhooks.deploymentWebhook',
+        //                 {},
+        //             );
+        //             this.setState({ webhook });
+        //         }),
+        //     );
+        // }
         this.commitMessage = React.createRef();
         this.revertTable = React.createRef();
     }

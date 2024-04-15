@@ -474,12 +474,12 @@ export class TrainingDataValidator {
         const linkFrom = [];
         header.forEach((origin) => {
             const motherFromCheckpoint = (origin.match(/(.*)__branches/) || [])[1];
-            const motherFromTitle = (fullTitle.replace(/ /g, '_').match(/(.*)__.*/)
-                || [])[1];
-            if (motherFromCheckpoint || motherFromTitle) {
-                if (motherFromCheckpoint !== motherFromTitle) {
-                    throw new Error('Branching convention not respected.');
-                }
+            // const motherFromTitle = (fullTitle.replace(/ /g, '_').match(/(.*)__.*/)
+            //     || [])[1];
+            if (motherFromCheckpoint) {
+                // if (motherFromCheckpoint !== motherFromTitle) {
+                //     throw new Error('Branching convention not respected.');
+                // }
                 if (ancestorOf.length) throw new Error('Multiple mothers found.');
                 ancestorOf = motherFromCheckpoint.split('__');
             } else {
@@ -719,23 +719,30 @@ export class TrainingDataValidator {
                 this.updateLinks({ linkTo, currentPath, _id });
             });
 
+        const resolveCheckpoints = (stroryOrBranch, rehydratedIdx, storyTitle) => {
+            const { checkpoints = [], branches = [] } = stroryOrBranch;
+            const resolvedCheckpoints = [];
+            checkpoints.forEach((c) => {
+                const currentCheckpoints = this.links.filter(l => l.name === c);
+                if (!currentCheckpoints.length) {
+                    rehydrated[rehydratedIdx].warnings.push({
+                        text: `Story '${storyTitle}' refers to a checkpoint '${c}', but no origin counterpart was found.`,
+                    });
+                }
+                currentCheckpoints.forEach(link => resolvedCheckpoints.push(link.value));
+            });
+            stroryOrBranch.checkpoints = resolvedCheckpoints;
+            branches.forEach(branch => resolveCheckpoints(branch, rehydratedIdx, storyTitle));
+        };
+
         rehydrated.forEach(({ stories: rehydratedStories = [] }, index) => {
             rehydratedStories.forEach(
-                ({ checkpoints = [], title, metadata = {} }, storyIndex) => {
+                (story) => {
+                    const {
+                        title, metadata = {},
+                    } = story;
                     this.incrementFragmentsForGroup(metadata.group, 'stories');
-                    const resolvedCheckpoints = [];
-                    checkpoints.forEach((c) => {
-                        const currentCheckpoints = this.links.filter(l => l.name === c);
-                        if (!currentCheckpoints.length) {
-                            rehydrated[index].warnings.push({
-                                text: `Story '${title}' refers to a checkpoint '${c}', but no origin counterpart was found.`,
-                            });
-                        }
-                        currentCheckpoints.forEach(link => resolvedCheckpoints.push(link.value));
-                    });
-                    rehydrated[index].stories[
-                        storyIndex
-                    ].checkpoints = resolvedCheckpoints;
+                    resolveCheckpoints(story, index, title);
                 },
             );
         });

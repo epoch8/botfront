@@ -1,6 +1,6 @@
 import { ExternalTrainings } from '../collection';
 import { BetApi } from './betApi';
-import { saveModel } from '../../model/server/model.utils';
+import { postTraining } from '../../model/server/model.utils';
 
 const betApi = new BetApi();
 
@@ -39,7 +39,7 @@ export const checkAndUpdateExternalTraining = async (etId) => {
     const logs = await betApi.logs(jobId, betUrl);
     if (newStatus === 'success') {
         const resultStream = await betApi.result(jobId, betUrl);
-        await saveModel(projectId, resultStream);
+        await postTraining(projectId, resultStream);
     }
     ExternalTrainings.update({ _id: etId }, { $set: { status: newStatus, logs } });
     return true;
