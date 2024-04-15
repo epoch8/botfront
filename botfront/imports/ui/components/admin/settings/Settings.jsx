@@ -193,10 +193,6 @@ class Settings extends React.Component {
                 name='settings.private.integrationSettings.slackLink'
                 label='Slack'
             />
-            <AutoField
-                name='settings.private.audioRecordsUrl'
-                label='Audio records URL'
-            />
             {this.renderSubmitButton()}
         </Tab.Pane>// //
     );

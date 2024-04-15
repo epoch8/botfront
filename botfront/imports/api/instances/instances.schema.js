@@ -15,6 +15,7 @@ export const InstanceSchema = new SimpleSchema(
         'externalTraining.$.node': { type: String, optional: true },
         'externalTraining.$.type': { type: String, allowedValues: ['rasa', 'hier'], optional: true },
         'externalTraining.$.enabled': { type: Boolean, defaultValue: true },
+        audioRecordsUrl: { type: String, optional: true },
     },
     {
         clean: {

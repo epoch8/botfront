@@ -6,6 +6,7 @@ import {
 import Alert from 'react-s-alert';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { connect } from 'react-redux';
+import { withTracker } from 'meteor/react-meteor-data';
 import { GET_CONVERSATION } from './queries';
 import { MARK_READ, LABEL_EVENT } from './mutations';
 import { getEventLabel } from './utils';
@@ -13,6 +14,7 @@ import ConversationJsonViewer from './ConversationJsonViewer';
 import ConversationDialogueViewer from './ConversationDialogueViewer';
 import Can from '../roles/Can';
 import { Cache } from '../../../lib/utils';
+import { Instances } from '../../../api/instances/instances.collection';
 
 const audioCache = new Cache(20);
 
@@ -33,6 +35,7 @@ function ConversationViewer(props) {
         onCreateTestCase,
         labeling,
         onLabelChange,
+        audioAvailable,
     } = props;
 
     const [markRead, { data }] = useMutation(MARK_READ);
@@ -217,7 +220,9 @@ function ConversationViewer(props) {
                     </Menu.Item>
                 </Menu.Menu>
             </Menu>
-            <Segment loading={audioLoading}>{renderAudioPlayer()}</Segment>
+            {audioAvailable && (
+                <Segment loading={audioLoading}>{renderAudioPlayer()}</Segment>
+            )}
             {renderSegment(ready, active, tracker)}
         </div>
     );
@@ -229,6 +234,7 @@ ConversationViewer.defaultProps = {
     optimisticlyRemoved: new Set(),
     labeling: false,
     onLabelChange: null,
+
 };
 
 ConversationViewer.propTypes = {
@@ -240,9 +246,10 @@ ConversationViewer.propTypes = {
     onCreateTestCase: PropTypes.func.isRequired,
     labeling: PropTypes.bool,
     onLabelChange: PropTypes.func,
+    audioAvailable: PropTypes.bool.isRequired,
 };
 
-const ConversationViewerContainer = (props) => {
+const ConversationViewerContainer = withTracker((props) => {
     const {
         conversationId,
         projectId,
@@ -262,6 +269,12 @@ const ConversationViewerContainer = (props) => {
         variables: { projectId, conversationId },
         pollInterval: 2000,
     });
+
+    const handler = Meteor.subscribe('nlu_instances', projectId);
+    const instance = Instances.findOne(
+        { projectId }, { fields: { audioRecordsUrl: 1 } },
+    );
+    const audioAvailable = !!instance?.audioRecordsUrl;
 
     const [labelEvent, { data: labelEventData }] = useMutation(LABEL_EVENT);
 
@@ -289,8 +302,8 @@ const ConversationViewerContainer = (props) => {
         labelEvent({ variables: { id: conversationId, eventIndex, label } }).then(() => refetch());
     };
 
-    const componentProps = {
-        ready: !!tracker.current,
+    return {
+        ready: !!tracker.current && handler.ready(),
         onDelete,
         tracker: tracker.current,
         removeReadMark,
@@ -298,10 +311,9 @@ const ConversationViewerContainer = (props) => {
         onCreateTestCase,
         labeling,
         onLabelChange,
+        audioAvailable,
     };
-
-    return (<ConversationViewer {...componentProps} />);
-};
+})(ConversationViewer);
 
 const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),

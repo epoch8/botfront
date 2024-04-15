@@ -3,7 +3,7 @@ import { Mongo } from 'meteor/mongo';
 import { check } from 'meteor/check';
 import axios from 'axios';
 import { checkIfCan } from '../lib/scopes';
-import { GlobalSettings } from './globalSettings/globalSettings.collection';
+import { Instances } from './instances/instances.collection';
 import { Cache } from '../lib/utils';
 
 export const Conversations = new Mongo.Collection('conversations');
@@ -115,14 +115,17 @@ if (Meteor.isServer) {
         async 'conversations.getAudio'(senderId) {
             const conversation = Conversations.findOne({ 'tracker.sender_id': senderId });
             if (!conversation) throw Meteor.Error('404', 'Not Found');
-            checkIfCan('incoming:r', conversation.projectId);
+            const { projectId } = conversation;
+            checkIfCan('incoming:r', projectId);
             check(senderId, String);
             let audioData = audioCache.get(senderId);
             if (audioData) {
                 return audioData;
             }
-            const { settings } = GlobalSettings.findOne({}, { fields: { 'settings.private.audioRecordsUrl': 1 } });
-            const audioRecordsUrl = settings?.private?.audioRecordsUrl;
+            const instance = Instances.findOne(
+                { projectId }, { fields: { audioRecordsUrl: 1 } },
+            );
+            const audioRecordsUrl = instance?.audioRecordsUrl;
             if (!audioRecordsUrl) return null;
 
             const audioUrl = `${audioRecordsUrl}/${senderId}.wav`;
