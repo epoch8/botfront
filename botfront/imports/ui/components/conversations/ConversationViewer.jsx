@@ -12,6 +12,9 @@ import { getEventLabel } from './utils';
 import ConversationJsonViewer from './ConversationJsonViewer';
 import ConversationDialogueViewer from './ConversationDialogueViewer';
 import Can from '../roles/Can';
+import { Cache } from '../../../lib/utils';
+
+const audioCache = new Cache(20);
 
 function ConversationViewer(props) {
     const [active, setActive] = useState('Text');
@@ -136,30 +139,42 @@ function ConversationViewer(props) {
     const [audioDataUrl, setAudioDataUrl] = useState(null);
 
     const renderAudioPlayer = () => {
-        if (audioDataUrl) {
-            return 'Audio available';
+        if (!audioDataUrl) {
+            return 'No audio available';
         }
-        return 'No audio available';
+        return (
+            <audio controls src={audioDataUrl} />
+        );
     };
 
     useEffect(() => {
         const senderId = tracker?.tracker?.sender_id;
         if (!senderId) return undefined;
-        setAudioLoading(true);
         let cancelled = false;
-        Meteor.call('conversations.getAudio', senderId, (err, res) => {
-            if (cancelled) {
-                return;
-            }
-            setAudioLoading(false);
-            const newUrl = (res && !err) ? URL.createObjectURL(res) : null;
-            setAudioDataUrl(newUrl);
-        });
+        const cachedAudio = audioCache.get(senderId);
+        if (cachedAudio) {
+            setAudioDataUrl(URL.createObjectURL(cachedAudio));
+        } else {
+            setAudioLoading(true);
+            Meteor.call('conversations.getAudio', senderId, (err, res) => {
+                if (cancelled) {
+                    return;
+                }
+                setAudioLoading(false);
+                let newUrl = null;
+                if (res && !err) {
+                    const audioData = new Blob([res], { type: 'audio/wav' });
+                    audioCache.set(senderId, audioData);
+                    newUrl = URL.createObjectURL(audioData);
+                }
+                setAudioDataUrl(newUrl);
+            });
+        }
         return () => {
             cancelled = true;
             if (audioDataUrl) {
                 URL.revokeObjectURL(audioDataUrl);
-                setAudioDataUrl('');
+                setAudioDataUrl(null);
             }
         };
     }, [tracker]);

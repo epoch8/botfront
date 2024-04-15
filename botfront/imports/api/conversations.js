@@ -119,7 +119,6 @@ if (Meteor.isServer) {
             check(senderId, String);
             let audioData = audioCache.get(senderId);
             if (audioData) {
-                console.log('Cached audio data');
                 return audioData;
             }
             const { settings } = GlobalSettings.findOne({}, { fields: { 'settings.private.audioRecordsUrl': 1 } });
@@ -129,7 +128,7 @@ if (Meteor.isServer) {
             const audioUrl = `${audioRecordsUrl}/${senderId}.wav`;
             let resp = null;
             try {
-                resp = await axios.get(audioUrl);
+                resp = await axios.get(audioUrl, { responseType: 'arraybuffer' });
             } catch (error) {
                 if (error.response.status === 404) return null;
                 throw error;
