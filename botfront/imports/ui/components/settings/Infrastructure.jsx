@@ -15,6 +15,7 @@ import {
     Header,
     Segment,
 } from 'semantic-ui-react';
+import _ from 'lodash';
 
 import { Projects } from '../../../api/project/project.collection';
 import { InfrastructureSchema } from '../../../api/project/project.schema';
@@ -43,7 +44,6 @@ const Infrastructure = ({ projectId }) => {
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(true);
     const [deploying, setDeploying] = useState(false);
-    const [deployed, setDeployed] = useState(false);
     const [deployConfirmOpen, setDeployConfirmOpen] = useState(false);
     const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false);
     const formRef = useRef();
@@ -70,7 +70,6 @@ const Infrastructure = ({ projectId }) => {
             infrastructureSettings,
             wrapMeteorCallback((err) => {
                 setDeploying(false);
-                setDeployed(!err);
                 if (!err) {
                     Alert.success('Infrastructure update started');
                 }
@@ -84,8 +83,9 @@ const Infrastructure = ({ projectId }) => {
             projectId,
             wrapMeteorCallback((err) => {
                 setDeploying(false);
-                setDeployed(!err);
-                Alert.success('Infrastructure deleted');
+                if (!err) {
+                    Alert.success('Infrastructure deleted');
+                }
             }),
         );
     };
@@ -204,10 +204,10 @@ const Infrastructure = ({ projectId }) => {
                 content: (
                     <NestField name='rasa' label={null}>
                         {instanceContent}
-                        <AccordionAccordion
+                        {/* <AccordionAccordion
                             exclusive={false}
                             panels={instancePanels('rasa')}
-                        />
+                        /> */}
                     </NestField>
                 ),
             },
@@ -219,39 +219,40 @@ const Infrastructure = ({ projectId }) => {
                 content: (
                     <NestField name='actions' label={null}>
                         {instanceContent}
-                        <AccordionAccordion
+                        {/* <AccordionAccordion
                             exclusive={false}
                             panels={instancePanels('actions')}
-                        />
+                        /> */}
                     </NestField>
                 ),
             },
         },
-        {
-            key: 'chatwoot',
-            title: 'Chatwoot',
-            content: {
-                content: (
-                    <NestField name='chatwoot' label={null}>
-                        <AutoField name='account_id' />
-                        <AutoField name='admin_access_token' />
-                        <AccordionAccordion
-                            exclusive={false}
-                            panels={chatwootEnvPanels}
-                        />
-                    </NestField>
-                ),
-            },
-        },
+        // {
+        //     key: 'chatwoot',
+        //     title: 'Chatwoot',
+        //     content: {
+        //         content: (
+        //             <NestField name='chatwoot' label={null}>
+        //                 <AutoField name='account_id' />
+        //                 <AutoField name='admin_access_token' />
+        //                 <AccordionAccordion
+        //                     exclusive={false}
+        //                     panels={chatwootEnvPanels}
+        //                 />
+        //             </NestField>
+        //         ),
+        //     },
+        // },
         {
             key: 'telegram',
             title: 'Telegram',
             content: {
                 content: (
-                    <AccordionAccordion
-                        exclusive={false}
-                        panels={telegramEnvPanels}
-                    />
+                    <AutoField name='telegram.dev' label={null} />
+                // <AccordionAccordion
+                //     exclusive={false}
+                //     panels={telegramEnvPanels}
+                // />
                 ),
             },
         },
@@ -290,7 +291,15 @@ const Infrastructure = ({ projectId }) => {
         break;
     }
 
-    const renderProjectStatus = () => 'Project deploying';
+    const renderProjectStatus = () => {
+        if (pending) {
+            return 'Project deploying';
+        }
+        if (!lastDeployed) {
+            return 'Not deployed';
+        }
+        return `Deployed at ${lastDeployed}`;
+    };
 
     return (
         <>
@@ -299,23 +308,29 @@ const Infrastructure = ({ projectId }) => {
                 schema={infrastructureSchemaBridge}
                 model={infrastructureSettings}
                 onSubmit={newSettings => onSave(newSettings)}
-                onChange={() => {
-                    setSaved(false);
-                    setDeployed(false);
+                onChange={(k, v) => {
+                    if (_.get(infrastructureSettings, k) !== v) {
+                        setSaved(false);
+                    }
                 }}
                 ref={formRef}
-                disabled={pending}
+                // disabled={pending}
             >
                 {/* <AutoField name='prod_enabled' label={t('Production infra enabled')} /> */}
                 {/* <Divider /> */}
                 <Accordion exclusive={false} panels={panels} styled />
                 <Divider />
-                <SaveButton saving={saving} saved={saved} />
+                <SaveButton
+                    saving={saving}
+                    saved={saved}
+                    // disabled={!changed}
+                    onSave={() => { formRef.current.submit(); }}
+                />
                 <Button
                     floated='right'
                     color='teal'
                     disabled={!saved || pending}
-                    loading={pending}
+                    loading={pending || deploying}
                     onClick={(e) => {
                         e.preventDefault();
                         setDeployConfirmOpen(true);

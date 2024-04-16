@@ -80,7 +80,7 @@ const ServiceInfraParams = new SimpleSchema({
 
 const ServiceFullParams = new SimpleSchema({
     dev: { type: ServiceInfraParams, optional: true },
-    prod: { type: ServiceInfraParams, optional: true },
+    // prod: { type: ServiceInfraParams, optional: true },
 });
 ServiceFullParams.extend(ServiceInfraParams);
 
@@ -113,7 +113,7 @@ export const InfrastructureSchema = new SimpleSchema({
     prod_enabled: { type: Boolean, defaultValue: false },
     rasa: { type: ServiceFullParams },
     actions: { type: ServiceFullParams },
-    chatwoot: { type: ChatwootInfraParams, optional: true, defaultValue: null },
+    // chatwoot: { type: ChatwootInfraParams, optional: true, defaultValue: null },
     telegram: { type: TelegramInfraParams, optional: true, defaultValue: null },
 });
 
