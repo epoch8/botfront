@@ -110,12 +110,11 @@ class Settings extends React.Component {
                 menuItem: <Menu.Item icon='question' content={t('FAQ')} key='FAQ' />,
                 render: () => <Tab.Pane><Faq /></Tab.Pane>,
             }] : []),
-            // TODO: in progress
-            // ...(canManageInfrastructure ? [{
-            //     name: 'Infrastructure',
-            //     menuItem: <Menu.Item icon='server' content={t('Infrastructure')} key='Infrastructure' />,
-            //     render: () => <Tab.Pane><Infrastructure /></Tab.Pane>,
-            // }] : []),
+            ...(canManageInfrastructure ? [{
+                name: 'Infrastructure',
+                menuItem: <Menu.Item icon='server' content={t('Infrastructure')} key='Infrastructure' />,
+                render: () => <Tab.Pane><Infrastructure /></Tab.Pane>,
+            }] : []),
 
 
         ];

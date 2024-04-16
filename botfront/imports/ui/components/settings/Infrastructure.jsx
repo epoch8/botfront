@@ -13,6 +13,7 @@ import {
     Confirm,
     Divider,
     Header,
+    Segment,
 } from 'semantic-ui-react';
 
 import { Projects } from '../../../api/project/project.collection';
@@ -23,15 +24,18 @@ import { wrapMeteorCallback } from '../utils/Errors';
 const infrastructureSchemaBridge = new SimpleSchema2Bridge(InfrastructureSchema);
 
 const Infrastructure = ({ projectId }) => {
-    const { ready, infrastructureSettings } = useTracker(() => {
+    const {
+        ready, infrastructureSettings, infrastructureStatus,
+    } = useTracker(() => {
         const handler = Meteor.subscribe('projects', projectId);
         const project = Projects.findOne(
             { _id: projectId },
-            { fields: { infrastructureSettings: 1 } },
+            { fields: { infrastructureSettings: 1, infrastructureStatus: 1 } },
         );
         return {
             ready: handler.ready(),
             infrastructureSettings: project.infrastructureSettings,
+            infrastructureStatus: project.infrastructureStatus,
         };
     }, [projectId]);
 
@@ -118,7 +122,6 @@ const Infrastructure = ({ projectId }) => {
             <AccordionAccordion
                 exclusive={false}
                 panels={resourcesPanels(parentName)}
-                styled
             />
         </NestField>
     );
@@ -204,7 +207,6 @@ const Infrastructure = ({ projectId }) => {
                         <AccordionAccordion
                             exclusive={false}
                             panels={instancePanels('rasa')}
-                            styled
                         />
                     </NestField>
                 ),
@@ -220,7 +222,6 @@ const Infrastructure = ({ projectId }) => {
                         <AccordionAccordion
                             exclusive={false}
                             panels={instancePanels('actions')}
-                            styled
                         />
                     </NestField>
                 ),
@@ -237,7 +238,6 @@ const Infrastructure = ({ projectId }) => {
                         <AccordionAccordion
                             exclusive={false}
                             panels={chatwootEnvPanels}
-                            styled
                         />
                     </NestField>
                 ),
@@ -251,74 +251,113 @@ const Infrastructure = ({ projectId }) => {
                     <AccordionAccordion
                         exclusive={false}
                         panels={telegramEnvPanels}
-                        styled
                     />
                 ),
             },
         },
     ];
 
+    let statusColor = null;
+    let pending = false;
+    let success = false;
+    const deployStatus = infrastructureStatus?.status;
+    const lastDeployed = infrastructureStatus?.lastDeployed;
+
+    switch (deployStatus) {
+    // case 'unknown':
+    case 'deployed':
+        pending = false;
+        success = false;
+        statusColor = 'green';
+        break;
+    // case 'uninstalled':
+    // case 'superseded':
+    case 'failed':
+        pending = false;
+        success = false;
+        statusColor = 'red';
+        break;
+    case 'uninstalling':
+    case 'pending-install':
+    case 'pending-upgrade':
+    case 'pending-rollback':
+        pending = true;
+        success = false;
+        statusColor = 'yellow';
+        break;
+
+    default:
+        break;
+    }
+
+    const renderProjectStatus = () => 'Project deploying';
+
     return (
-        <AutoForm
-            schema={infrastructureSchemaBridge}
-            model={infrastructureSettings}
-            onSubmit={newSettings => onSave(newSettings)}
-            onChange={() => {
-                setSaved(false);
-                setDeployed(false);
-            }}
-            ref={formRef}
-        >
-            <AutoField name='prod_enabled' label={t('Production infra enabled')} />
-            <Divider />
-            <Accordion exclusive={false} panels={panels} styled />
-            <Divider />
-            <SaveButton saving={saving} saved={saved} />
-            <Button
-                floated='right'
-                color='teal'
-                disabled={!saved || deployed}
-                loading={deploying}
-                onClick={(e) => {
-                    e.preventDefault();
-                    setDeployConfirmOpen(true);
+        <>
+            <Segment color={statusColor}>{renderProjectStatus()}</Segment>
+            <AutoForm
+                schema={infrastructureSchemaBridge}
+                model={infrastructureSettings}
+                onSubmit={newSettings => onSave(newSettings)}
+                onChange={() => {
+                    setSaved(false);
+                    setDeployed(false);
                 }}
+                ref={formRef}
+                disabled={pending}
             >
-                {t('Deploy')}
-            </Button>
-            <Confirm
-                open={deployConfirmOpen}
-                onCancel={() => {
-                    setDeployConfirmOpen(false);
-                }}
-                onConfirm={() => {
-                    deploy();
-                    setDeployConfirmOpen(false);
-                }}
-                content={t('Do you really want to deploy infrastucture?')}
-            />
-            <Button
-                floated='right'
-                color='red'
-                onClick={(e) => {
-                    e.preventDefault();
-                    setRemoveConfirmOpen(true);
-                }}
-            >
-                {t('Remove')}
-            </Button>
-            <Confirm
-                open={removeConfirmOpen}
-                onCancel={() => {
-                    setRemoveConfirmOpen(false);
-                }}
-                onConfirm={() => {
-                    remove();
-                    setRemoveConfirmOpen(false);
-                }}
-                content={t('Do you really want to remove infrastucture?')}
-            />
-        </AutoForm>
+                {/* <AutoField name='prod_enabled' label={t('Production infra enabled')} /> */}
+                {/* <Divider /> */}
+                <Accordion exclusive={false} panels={panels} styled />
+                <Divider />
+                <SaveButton saving={saving} saved={saved} />
+                <Button
+                    floated='right'
+                    color='teal'
+                    disabled={!saved || pending}
+                    loading={pending}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setDeployConfirmOpen(true);
+                    }}
+                >
+                    {t('Deploy')}
+                </Button>
+                <Confirm
+                    open={deployConfirmOpen}
+                    onCancel={() => {
+                        setDeployConfirmOpen(false);
+                    }}
+                    onConfirm={() => {
+                        deploy();
+                        setDeployConfirmOpen(false);
+                    }}
+                    content={t('Do you really want to deploy infrastucture?')}
+                />
+                <Button
+                    floated='right'
+                    color='red'
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setRemoveConfirmOpen(true);
+                    }}
+                    disabled={!lastDeployed}
+                >
+                    {t('Remove')}
+                </Button>
+                <Confirm
+                    open={removeConfirmOpen}
+                    onCancel={() => {
+                        setRemoveConfirmOpen(false);
+                    }}
+                    onConfirm={() => {
+                        remove();
+                        setRemoveConfirmOpen(false);
+                    }}
+                    content={t('Do you really want to remove infrastucture?')}
+                />
+            </AutoForm>
+        </>
     );
 };
 

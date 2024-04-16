@@ -135,7 +135,7 @@ if (Meteor.isServer) {
         );
     });
 
-    Meteor.publish('training.status', function (projectId) {
+    Meteor.publish('project.trainingStatus', function (projectId) {
         check(projectId, String);
         if (!can('nlu-data:x', projectId)) return this.ready();
         return Projects.find({ projectId }, { fields: { 'training.instanceStatus': 1 } });
@@ -145,5 +145,11 @@ if (Meteor.isServer) {
         check(projectId, String);
         if (!can('nlu-data:x', projectId)) return this.ready();
         return Projects.find({ projectId }, { fields: { externalTraining: 1 } });
+    });
+
+    Meteor.publish('project.infrastructureStatus', function (projectId) {
+        check(projectId, String);
+        if (!can('infrastructure:r', projectId)) return this.ready();
+        return Projects.find({ projectId }, { fields: { infrastructureStatus: 1 } });
     });
 }

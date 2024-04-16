@@ -117,6 +117,12 @@ export const InfrastructureSchema = new SimpleSchema({
     telegram: { type: TelegramInfraParams, optional: true, defaultValue: null },
 });
 
+const InfrastructureStatusSchema = new SimpleSchema({
+    status: { type: String },
+    error: { type: String, optional: true },
+    lastDeployed: { type: Date, optional: true },
+});
+
 export const ProjectsSchema = new SimpleSchema({
     name: {
         type: String,
@@ -187,6 +193,7 @@ export const ProjectsSchema = new SimpleSchema({
     gitSettings: { type: GitSettingsSchema, optional: true },
     faqSettings: { type: FaqSettingsSchema, optional: true },
     infrastructureSettings: { type: InfrastructureSchema, optional: true },
+    infrastructureStatus: { type: InfrastructureStatusSchema, optional: true },
 }, { tracker: Tracker });
 
 ProjectsSchema.messageBox.messages({

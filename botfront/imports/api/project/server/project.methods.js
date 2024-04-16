@@ -75,10 +75,9 @@ Meteor.methods({
         checkIfCan('infrastructure:w', projectId);
         check(projectId, String);
         checkEnvs();
-        const project = getProject(projectId);
-        const url = `${DEPLOYER_ADDR}/delete?token=${DEPLOYER_API_KEY}&project_name=${project.name}`;
+        const url = `${DEPLOYER_ADDR}/${projectId}/delete?token=${DEPLOYER_API_KEY}`;
         try {
-            await axios.get(url);
+            await axios.post(url);
         } catch (error) {
             throw new Meteor.Error(
                 error.response?.status,
