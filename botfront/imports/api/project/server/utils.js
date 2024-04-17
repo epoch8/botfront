@@ -7,8 +7,9 @@ export const updateInfrastructureStatus = async (projectId) => {
     const url = `${DEPLOYER_ADDR}/${projectId}/status?token=${DEPLOYER_API_KEY}`;
     let infraStatus = null;
     try {
-        const resp = await axios.post(url);
+        const resp = await axios.get(url);
         infraStatus = resp.data;
+        console.log(infraStatus);
     } catch (error) {
         if (error.response?.status !== 404) {
             throw new Meteor.Error(
@@ -17,5 +18,15 @@ export const updateInfrastructureStatus = async (projectId) => {
             );
         }
     }
-    Projects.update({ projectId }, { $set: { infrastructureStatus: infraStatus } });
+    let newInfraStatus = null;
+    if (infraStatus) {
+        const { status, last_deployed: lastDeployed } = infraStatus;
+        newInfraStatus = { status, lastDeployed };
+    }
+    Projects.update(
+        { _id: projectId },
+        {
+            $set: { infrastructureStatus: newInfraStatus },
+        },
+    );
 };

@@ -64,6 +64,9 @@ const Infrastructure = ({ projectId }) => {
 
     const deploy = () => {
         setDeploying(true);
+        Projects.update(
+            { _id: projectId }, { $set: { 'infrastructureSettings.status': 'pending-upgrade' } },
+        );
         Meteor.call(
             'project.deployInfrastructure',
             projectId,
@@ -116,85 +119,85 @@ const Infrastructure = ({ projectId }) => {
         </>
     );
 
-    const overridesContent = parentName => (
-        <NestField name={parentName} label={null}>
-            {instanceContent}
-            <AccordionAccordion
-                exclusive={false}
-                panels={resourcesPanels(parentName)}
-            />
-        </NestField>
-    );
+    // const overridesContent = parentName => (
+    //     <NestField name={parentName} label={null}>
+    //         {instanceContent}
+    //         <AccordionAccordion
+    //             exclusive={false}
+    //             panels={resourcesPanels(parentName)}
+    //         />
+    //     </NestField>
+    // );
 
-    const instancePanels = parentName => [
-        ...resourcesPanels(parentName),
-        {
-            key: 'dev',
-            title: 'Dev overrides',
-            content: {
-                content: overridesContent(`${parentName}.dev`),
-            },
-        },
-        {
-            key: 'prod',
-            title: 'Prod overrides',
-            content: {
-                content: overridesContent(`${parentName}.prod`),
-            },
-        },
-    ];
+    // const instancePanels = parentName => [
+    //     ...resourcesPanels(parentName),
+    //     {
+    //         key: 'dev',
+    //         title: 'Dev overrides',
+    //         content: {
+    //             content: overridesContent(`${parentName}.dev`),
+    //         },
+    //     },
+    //     {
+    //         key: 'prod',
+    //         title: 'Prod overrides',
+    //         content: {
+    //             content: overridesContent(`${parentName}.prod`),
+    //         },
+    //     },
+    // ];
 
-    const chatwootContent = (
-        <>
-            <AutoField name='account_id' />
-            <AutoField name='admin_access_token' />
-            <AutoField name='agent_bot_access_token' />
-            <AutoField name='website_token' />
-        </>
-    );
+    // const chatwootContent = (
+    //     <>
+    //         <AutoField name='account_id' />
+    //         <AutoField name='admin_access_token' />
+    //         <AutoField name='agent_bot_access_token' />
+    //         <AutoField name='website_token' />
+    //     </>
+    // );
 
-    const chatwootEnvPanels = [
-        {
-            key: 'dev',
-            title: 'Dev',
-            content: {
-                content: (
-                    <NestField name='chatwoot.dev' label={null}>
-                        {chatwootContent}
-                    </NestField>
-                ),
-            },
-        },
-        {
-            key: 'prod',
-            title: 'Prod',
-            content: {
-                content: (
-                    <NestField name='chatwoot.dev' label={null}>
-                        {chatwootContent}
-                    </NestField>
-                ),
-            },
-        },
-    ];
+    // const chatwootEnvPanels = [
+    //     {
+    //         key: 'dev',
+    //         title: 'Dev',
+    //         content: {
+    //             content: (
+    //                 <NestField name='chatwoot.dev' label={null}>
+    //                     {chatwootContent}
+    //                 </NestField>
+    //             ),
+    //         },
+    //     },
+    //     {
+    //         key: 'prod',
+    //         title: 'Prod',
+    //         content: {
+    //             content: (
+    //                 <NestField name='chatwoot.dev' label={null}>
+    //                     {chatwootContent}
+    //                 </NestField>
+    //             ),
+    //         },
+    //     },
+    // ];
 
-    const telegramEnvPanels = [
-        {
-            key: 'dev',
-            title: 'Dev',
-            content: {
-                content: (<AutoField name='telegram.dev' label={null} />),
-            },
-        },
-        {
-            key: 'prod',
-            title: 'Prod',
-            content: {
-                content: (<AutoField name='telegram.prod' label={null} />),
+    // const telegramEnvPanels = [
+    //     {
+    //         key: 'dev',
+    //         title: 'Dev',
+    //         content: {
+    //             content: (<AutoField name='telegram.dev' label={null} />),
+    //         },
+    //     },
+    //     {
+    //         key: 'prod',
+    //         title: 'Prod',
+    //         content: {
+    //             content: (<AutoField name='telegram.prod' label={null} />),
 
-            },
-        },
-    ];
+    //         },
+    //     },
+    // ];
 
     const panels = [
         {
@@ -208,6 +211,10 @@ const Infrastructure = ({ projectId }) => {
                             exclusive={false}
                             panels={instancePanels('rasa')}
                         /> */}
+                        <AccordionAccordion
+                            exclusive={false}
+                            panels={resourcesPanels('rasa.dev')}
+                        />
                     </NestField>
                 ),
             },
@@ -223,6 +230,10 @@ const Infrastructure = ({ projectId }) => {
                             exclusive={false}
                             panels={instancePanels('actions')}
                         /> */}
+                        <AccordionAccordion
+                            exclusive={false}
+                            panels={resourcesPanels('actions.dev')}
+                        />
                     </NestField>
                 ),
             },
@@ -258,7 +269,7 @@ const Infrastructure = ({ projectId }) => {
         },
     ];
 
-    let statusColor = null;
+    let statusColor = 'grey';
     let pending = false;
     let success = false;
     const deployStatus = infrastructureStatus?.status;
@@ -303,7 +314,7 @@ const Infrastructure = ({ projectId }) => {
 
     return (
         <>
-            <Segment color={statusColor}>{renderProjectStatus()}</Segment>
+            <Segment color={statusColor} inverted>{renderProjectStatus()}</Segment>
             <AutoForm
                 schema={infrastructureSchemaBridge}
                 model={infrastructureSettings}
@@ -330,7 +341,7 @@ const Infrastructure = ({ projectId }) => {
                     floated='right'
                     color='teal'
                     disabled={!saved || pending}
-                    loading={pending || deploying}
+                    loading={pending}
                     onClick={(e) => {
                         e.preventDefault();
                         setDeployConfirmOpen(true);

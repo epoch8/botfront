@@ -157,8 +157,8 @@ Meteor.startup(function () {
 
         if (DEPLOYER_ADDR && DEPLOYER_API_KEY) {
             Meteor.setInterval(async () => {
-                Projects.find({}, { fields: { projectId: 1 } }).forEach(
-                    ({ projectId }) => {
+                Projects.find({}, { fields: {} }).forEach(
+                    ({ _id: projectId }) => {
                         updateInfrastructureStatus(projectId);
                     },
                 );
