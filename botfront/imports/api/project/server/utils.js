@@ -9,7 +9,6 @@ export const updateInfrastructureStatus = async (projectId) => {
     try {
         const resp = await axios.get(url);
         infraStatus = resp.data;
-        console.log(infraStatus);
     } catch (error) {
         if (error.response?.status !== 404) {
             throw new Meteor.Error(

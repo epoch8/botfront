@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTracker } from 'meteor/react-meteor-data';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -12,7 +12,6 @@ import {
     Button,
     Confirm,
     Divider,
-    Header,
     Segment,
 } from 'semantic-ui-react';
 import _ from 'lodash';
@@ -48,6 +47,12 @@ const Infrastructure = ({ projectId }) => {
     const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false);
     const formRef = useRef();
 
+    useEffect(() => {
+        if (deploying) {
+            setDeploying(false);
+        }
+    }, [infrastructureStatus]);
+
     const onSave = (newSettings) => {
         setSaving(true);
         Meteor.call(
@@ -64,23 +69,22 @@ const Infrastructure = ({ projectId }) => {
 
     const deploy = () => {
         setDeploying(true);
-        Projects.update(
-            { _id: projectId }, { $set: { 'infrastructureSettings.status': 'pending-upgrade' } },
-        );
         Meteor.call(
             'project.deployInfrastructure',
             projectId,
             infrastructureSettings,
             wrapMeteorCallback((err) => {
-                setDeploying(false);
                 if (!err) {
                     Alert.success('Infrastructure update started');
+                } else {
+                    setDeploying(false);
                 }
             }),
         );
     };
 
     const remove = () => {
+        setDeploying(true);
         Meteor.call(
             'project.removeInfrastructure',
             projectId,
@@ -271,7 +275,7 @@ const Infrastructure = ({ projectId }) => {
 
     let statusColor = 'grey';
     let pending = false;
-    let success = false;
+    let error = false;
     const deployStatus = infrastructureStatus?.status;
     const lastDeployed = infrastructureStatus?.lastDeployed;
 
@@ -279,14 +283,14 @@ const Infrastructure = ({ projectId }) => {
     // case 'unknown':
     case 'deployed':
         pending = false;
-        success = false;
+        error = false;
         statusColor = 'green';
         break;
     // case 'uninstalled':
     // case 'superseded':
     case 'failed':
         pending = false;
-        success = false;
+        error = true;
         statusColor = 'red';
         break;
     case 'uninstalling':
@@ -294,7 +298,7 @@ const Infrastructure = ({ projectId }) => {
     case 'pending-upgrade':
     case 'pending-rollback':
         pending = true;
-        success = false;
+        error = false;
         statusColor = 'yellow';
         break;
 
@@ -305,6 +309,12 @@ const Infrastructure = ({ projectId }) => {
     const renderProjectStatus = () => {
         if (pending) {
             return 'Project deploying';
+        }
+        if (error) {
+            if (lastDeployed) {
+                return `Error deploying. Last deployed at ${lastDeployed}`;
+            }
+            return 'Error deploying';
         }
         if (!lastDeployed) {
             return 'Not deployed';
@@ -340,8 +350,8 @@ const Infrastructure = ({ projectId }) => {
                 <Button
                     floated='right'
                     color='teal'
-                    disabled={!saved || pending}
-                    loading={pending}
+                    disabled={!saved || pending || deploying}
+                    loading={pending || deploying}
                     onClick={(e) => {
                         e.preventDefault();
                         setDeployConfirmOpen(true);
@@ -367,7 +377,7 @@ const Infrastructure = ({ projectId }) => {
                         e.preventDefault();
                         setRemoveConfirmOpen(true);
                     }}
-                    disabled={!lastDeployed}
+                    disabled={!lastDeployed || pending || deploying}
                 >
                     {t('Remove')}
                 </Button>

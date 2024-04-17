@@ -3,7 +3,9 @@ import axios from 'axios';
 
 import { checkIfCan } from '../../../lib/scopes';
 import { Projects } from '../project.collection';
+import { Instances } from '../../instances/instances.collection';
 import { DEPLOYER_ADDR, DEPLOYER_API_KEY } from '../../../../server/config';
+import { updateInfrastructureStatus } from './utils';
 
 const processServiceParams = (serviceParams) => {
     const {
@@ -61,7 +63,6 @@ Meteor.methods({
             project_id: projectId,
             project_name: project.name,
         };
-        console.log('Deploy', JSON.stringify(payload));
         try {
             await axios.post(url, payload);
         } catch (error) {
@@ -70,6 +71,10 @@ Meteor.methods({
                 `Error deploying infra: ${JSON.stringify(error.response?.data)}`,
             );
         }
+        Instances.update(
+            { projectId },
+            { $set: { host: `http://${projectId.toLowerCase()}-rasa-dev:5005` } },
+        );
     },
     async 'project.removeInfrastructure'(projectId) {
         checkIfCan('infrastructure:w', projectId);
@@ -84,5 +89,6 @@ Meteor.methods({
                 `Error deploying infra: ${JSON.stringify(error.response?.data)}`,
             );
         }
+        await updateInfrastructureStatus(projectId);
     },
 });
