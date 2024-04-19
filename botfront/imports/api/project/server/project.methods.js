@@ -73,7 +73,7 @@ Meteor.methods({
         }
         Instances.update(
             { projectId },
-            { $set: { host: `http://${projectId.toLowerCase()}-rasa-dev:5005` } },
+            { $set: { host: `http://${projectId.toLowerCase()}-infra-rasa-dev:5005` } },
         );
     },
     async 'project.removeInfrastructure'(projectId) {
