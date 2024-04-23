@@ -29,7 +29,12 @@ const authHeaders = () => ({
     Authorization: EXTERNAL_TRAINING_TOKEN,
 });
 
-const axiosClient = axios.create({ headers: authHeaders(), validateStatus: false });
+const axiosClient = axios.create({
+    headers: authHeaders(),
+    validateStatus: false,
+    maxBodyLength: Infinity,
+    maxContentLength: Infinity,
+});
 
 export class BetApi {
     /**
