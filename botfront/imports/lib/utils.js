@@ -361,8 +361,9 @@ export class Cache {
         if (!(key in this.items)) {
             return null;
         }
-        const value = this.items[key][0];
-        this.items[key] = [value, Date.now()];
+        const value = this.items[key];
+        this.keys = [key, ...this.keys.filter(k => k !== key)];
+        this.items[key] = value;
         return value;
     }
 
@@ -371,7 +372,6 @@ export class Cache {
      * @param {any} value
      */
     set(key, value) {
-        const item = [value, Date.now()];
         if (this.maxSize
             && !(key in this.items)
             && this.keys.length >= this.maxSize
@@ -380,9 +380,10 @@ export class Cache {
             delete this.items[keyToDelete];
         }
         if (key in this.items) {
-            this.keys.filter(val => val !== key);
+            this.keys = [key, ...this.keys.filter(k => k !== key)];
+        } else {
+            this.keys.unshift(key);
         }
-        this.keys.unshift(key);
-        this.items[key] = item;
+        this.items[key] = value;
     }
 }
