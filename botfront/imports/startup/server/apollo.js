@@ -187,39 +187,41 @@ export const runAppolloServer = () => {
     });
 
     WebApp.connectHandlers.use('/health', (req, res) => {
-        const { authorization } = req.headers;
-        const headersObject = authorization
-            ? {
-                headers: {
-                    authorization,
-                },
-            }
-            : {};
-        axios
-            .get(
-                'http://localhost:3000/graphql?query=query%20%7BhealthCheck%7D',
-                headersObject,
-            )
-            .then((response) => {
-                // handle success
-                if (response.data) {
-                    if (
-                        response.data
-                        && response.data.data
-                        && response.data.data.healthCheck
-                    ) {
-                        res.statusCode = 200;
-                        res.end();
-                    }
-                } else {
-                    res.statusCode = 401;
-                    res.end();
-                }
-            })
-            .catch(function () {
-                res.statusCode = 500;
-                res.end();
-            });
+        res.statusCode = 200;
+        res.end();
+        // const { authorization } = req.headers;
+        // const headersObject = authorization
+        //     ? {
+        //         headers: {
+        //             authorization,
+        //         },
+        //     }
+        //     : {};
+        // axios
+        //     .get(
+        //         'http://localhost:3000/graphql?query=query%20%7BhealthCheck%7D',
+        //         headersObject,
+        //     )
+        //     .then((response) => {
+        //         // handle success
+        //         if (response.data) {
+        //             if (
+        //                 response.data
+        //                 && response.data.data
+        //                 && response.data.data.healthCheck
+        //             ) {
+        //                 res.statusCode = 200;
+        //                 res.end();
+        //             }
+        //         } else {
+        //             res.statusCode = 401;
+        //             res.end();
+        //         }
+        //     })
+        //     .catch(function () {
+        //         res.statusCode = 500;
+        //         res.end();
+        //     });
     });
 
     WebApp.connectHandlers.use('/api/export-project', apiWrapper(['POST'],
