@@ -758,5 +758,27 @@ if (Meteor.isServer) {
                 throw formatError(e);
             }
         },
+
+        async 'actionServer.getListOfActions'(projectId) {
+            check(projectId, String);
+        
+            const instance = await Instances.findOne({ projectId });
+            if (!instance) {
+                throw new Meteor.Error('Instance not found');
+            }
+
+            const externalServerUrl = `${instance.actionServerHost}/actions`;
+        
+            try {
+                const response = await axios.get(externalServerUrl, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+                return response.data;
+            } catch (error) {
+                throw new Meteor.Error('external-fetch-failed', error.message);
+            }
+        },
     });
 }

@@ -120,6 +120,7 @@ class Instances extends React.Component {
                                 onConfirm={() => { this.generateAuthToken(); this.closeConfirm(); }}
                             />
                         </div>
+                        <AutoField name='actionServerHost' label={t('Action Server Host')} />
                         <AutoField name='externalTraining' label={t('External training')} />
 
                         <br />

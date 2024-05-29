@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, {
+    useState, useEffect, useMemo, useContext,
+} from 'react';
+import { Meteor } from 'meteor/meteor';
 import PropTypes from 'prop-types';
 import {
     Popup, Input, Divider, Form, Button,
 } from 'semantic-ui-react';
+import { ProjectContext } from '../../../layouts/context';
+
 
 const ActionPopupContent = (props) => {
     const {
@@ -11,7 +16,10 @@ const ActionPopupContent = (props) => {
     const [isOpen, setIsOpen] = useState();
     const [actionName, setActionName] = useState(initialValue || '');
     const [actionParams, setActionParams] = useState(initialParams || []);
-
+    const [listOfActions, setListOfActions] = useState([]);
+    const context = useContext(ProjectContext);
+    const projectId = context.project._id;
+    
     const updateParamName = (index, name) => {
         setActionParams(
             actionParams.map(([pName, pVal], i) => (i === index ? [name, pVal] : [pName, pVal])),
@@ -33,6 +41,24 @@ const ActionPopupContent = (props) => {
     const addParam = () => {
         setActionParams([...actionParams, ['', '']]);
     };
+
+    const getListOfActions = () => {
+        Meteor.call('actionServer.getListOfActions', projectId, (error, result) => {
+            if (error) {
+                console.error('Error fetching actions:', error);
+            } else {
+                setListOfActions(result);
+            }
+        });
+    };
+
+    useEffect(() => {
+        getListOfActions();
+    }, []);
+
+    const actionsList = useMemo(() => listOfActions.map((action, index) => (
+        <option key={index} value={action.name}>{action.name}</option>
+    )), [listOfActions]);
 
     const params = actionParams.map(([pName, pVal], index) => (
         <Form.Group key={index}>
@@ -90,11 +116,17 @@ const ActionPopupContent = (props) => {
                     }
                 }}
             >
-                <Input
-                    value={actionName}
-                    onChange={e => setActionName(e.target.value.trim())}
-                    autoFocus
-                />
+                <div>
+                    <Input
+                        value={actionName}
+                        onChange={e => setActionName(e.target.value.trim())}
+                        list='actions'
+                        autoFocus
+                    />
+                    <datalist id='actions'>
+                        {actionsList}
+                    </datalist>
+                </div>
                 <Divider />
                 <p className='all-caps-header'>Parameters</p>
                 {params.length ? params : <></>}

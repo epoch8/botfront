@@ -5,6 +5,7 @@ export const InstanceSchema = new SimpleSchema(
         name: { type: String, optional: true },
         host: { type: String, regEx: /^(http|https):\/\// },
         token: { type: String, optional: true },
+        actionServerHost: { type: String, optional: true, regEx: /^(http|https):\/\// },
         projectId: { type: String },
         externalTraining: { type: Array, optional: true, maxCount: 2 },
         'externalTraining.$': { type: Object },
