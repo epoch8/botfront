@@ -26,9 +26,25 @@ export default class StoryVisualEditor extends React.Component {
         lineInsertIndex: null,
         responseLocations: [],
         loadingResponseLocations: false,
+        listOfActions: [],
     };
 
     addStoryCursor = React.createRef();
+
+    isCancelled = false;
+
+    componentDidMount() {
+        const { project: { _id: projectId } } = this.context;
+        Meteor.call('actionServer.getListOfActions', projectId, (error, result) => {
+            if (!this.isCancelled) {
+                if (error) {
+                    console.error('Error fetching actions:', error);
+                } else {
+                    this.setState({ listOfActions: result });
+                }
+            }
+        });
+    }
 
     componentDidUpdate(_prevProps, prevState) {
         const { lineInsertIndex } = this.state;
@@ -38,6 +54,10 @@ export default class StoryVisualEditor extends React.Component {
         ) {
             this.addStoryCursor.current.focus();
         }
+    }
+
+    componentWillUnmount() {
+        this.isCancelled = true;
     }
 
     menuCloser = () => {};
@@ -120,6 +140,7 @@ export default class StoryVisualEditor extends React.Component {
                     ref={this.addStoryCursor}
                     trackOpenMenu={this.trackOpenMenu}
                     availableActions={options}
+                    listOfActions={this.state.listOfActions}
                     onCreateUtteranceFromInput={() => this.handleInsertLine(index, { intent: USER_LINE_EDIT_MODE })}
                     onCreateUtteranceFromPayload={payload => this.handleInsertLine(index, payload)}
                     onCreateResponse={templateType => this.handleInsertBotResponse(index, templateType)}
