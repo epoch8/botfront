@@ -29,6 +29,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
         size,
         onBlur,
         trackOpenMenu,
+        listOfActions,
     } = props;
     const [loopMenuOpen, setLoopMenuOpen] = useState(false);
     const [actionName, setActionName] = useState('');
@@ -159,6 +160,7 @@ const AddStoryLine = React.forwardRef((props, ref) => {
                         </DashedButton>
                     )}
                     trackOpenMenu={trackOpenMenu}
+                    listOfActions={listOfActions}
                 />
             )}
             {slot && (
@@ -211,6 +213,7 @@ AddStoryLine.propTypes = {
     size: PropTypes.string,
     onBlur: PropTypes.func,
     trackOpenMenu: PropTypes.func,
+    listOfActions: PropTypes.array,
 };
 
 AddStoryLine.defaultProps = {
@@ -223,6 +226,7 @@ AddStoryLine.defaultProps = {
     size: 'mini',
     onBlur: () => {},
     trackOpenMenu: () => {},
+    listOfActions: [],
 };
 
 export default AddStoryLine;
