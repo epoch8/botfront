@@ -80,7 +80,7 @@ const ServiceInfraParams = new SimpleSchema({
 
 const ServiceFullParams = new SimpleSchema({
     dev: { type: ServiceInfraParams, optional: true },
-    prod: { type: ServiceInfraParams, optional: true },
+    // prod: { type: ServiceInfraParams, optional: true },
 });
 ServiceFullParams.extend(ServiceInfraParams);
 
@@ -113,8 +113,14 @@ export const InfrastructureSchema = new SimpleSchema({
     prod_enabled: { type: Boolean, defaultValue: false },
     rasa: { type: ServiceFullParams },
     actions: { type: ServiceFullParams },
-    chatwoot: { type: ChatwootInfraParams, optional: true, defaultValue: null },
+    // chatwoot: { type: ChatwootInfraParams, optional: true, defaultValue: null },
     telegram: { type: TelegramInfraParams, optional: true, defaultValue: null },
+});
+
+const InfrastructureStatusSchema = new SimpleSchema({
+    status: { type: String },
+    error: { type: String, optional: true },
+    lastDeployed: { type: Date, optional: true },
 });
 
 export const ProjectsSchema = new SimpleSchema({
@@ -187,6 +193,7 @@ export const ProjectsSchema = new SimpleSchema({
     gitSettings: { type: GitSettingsSchema, optional: true },
     faqSettings: { type: FaqSettingsSchema, optional: true },
     infrastructureSettings: { type: InfrastructureSchema, optional: true },
+    infrastructureStatus: { type: InfrastructureStatusSchema, optional: true },
 }, { tracker: Tracker });
 
 ProjectsSchema.messageBox.messages({

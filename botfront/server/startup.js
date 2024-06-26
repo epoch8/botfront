@@ -17,6 +17,8 @@ import {
     activeTrainings,
 } from '../imports/api/externalTrainings/server/utils';
 import packageInfo from '../package.json';
+import { DEPLOYER_ADDR, DEPLOYER_API_KEY } from './config';
+import { updateInfrastructureStatus } from '../imports/api/project/server/utils';
 
 const fileAppLogger = getAppLoggerForFile(__filename);
 
@@ -189,7 +191,7 @@ Meteor.startup(function () {
             }
         }, 10000); // run every 10 seconds == 10000 msec
 
-        const externalTrainingUpdateRoutine = async () => {
+        Meteor.setInterval(async () => {
             try {
                 const currentTrainings = activeTrainings();
                 await Promise.all(
@@ -200,9 +202,16 @@ Meteor.startup(function () {
             } catch (error) {
                 console.error(error);
             }
-            Meteor.setTimeout(externalTrainingUpdateRoutine, 10000);
-        };
+        }, 10000);
 
-        Meteor.defer(externalTrainingUpdateRoutine);
+        if (DEPLOYER_ADDR && DEPLOYER_API_KEY) {
+            Meteor.setInterval(async () => {
+                Projects.find({}, { fields: {} }).forEach(
+                    ({ _id: projectId }) => {
+                        updateInfrastructureStatus(projectId);
+                    },
+                );
+            }, 20000);
+        }
     }
 });

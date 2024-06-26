@@ -497,7 +497,7 @@ TrainButton.defaultProps = {
 export default withTracker((props) => {
     // Gets the required number of selected storygroups and sets the content and popup for the train button
     const { projectId } = props;
-    const trainingStatusHandler = Meteor.subscribe('training.status', projectId);
+    const trainingStatusHandler = Meteor.subscribe('project.trainingStatus', projectId);
     const storyGroupHandler = Meteor.subscribe('storiesGroup', projectId);
     const ready = storyGroupHandler.ready() && trainingStatusHandler.ready();
 
