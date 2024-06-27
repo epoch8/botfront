@@ -4,14 +4,14 @@ import {
     Popup, Input, Divider, Form, Button,
 } from 'semantic-ui-react';
 
+
 const ActionPopupContent = (props) => {
     const {
-        onSelect, trigger, initialValue, initialParams, trackOpenMenu,
+        onSelect, trigger, initialValue, initialParams, trackOpenMenu, listOfActions,
     } = props;
     const [isOpen, setIsOpen] = useState();
     const [actionName, setActionName] = useState(initialValue || '');
     const [actionParams, setActionParams] = useState(initialParams || []);
-
     const updateParamName = (index, name) => {
         setActionParams(
             actionParams.map(([pName, pVal], i) => (i === index ? [name, pVal] : [pName, pVal])),
@@ -33,6 +33,20 @@ const ActionPopupContent = (props) => {
     const addParam = () => {
         setActionParams([...actionParams, ['', '']]);
     };
+
+    const handleActionChange = (e) => {
+        const value = e.target.value.trim();
+        setActionName(value);
+        
+        const selectedAction = listOfActions.find(action => action.name === value);
+        if (selectedAction) {
+            setActionParams([]);
+            const { parameters } = selectedAction;
+            parameters.map(param => (
+                setActionParams(prevActionParams => [...prevActionParams, [param.name, param.default]])));
+        }
+    };
+
 
     const params = actionParams.map(([pName, pVal], index) => (
         <Form.Group key={index}>
@@ -90,11 +104,21 @@ const ActionPopupContent = (props) => {
                     }
                 }}
             >
-                <Input
-                    value={actionName}
-                    onChange={e => setActionName(e.target.value.trim())}
-                    autoFocus
-                />
+                <div>
+                    <Input
+                        value={actionName}
+                        onChange={handleActionChange}
+                        list='actions'
+                        autoFocus
+                    />
+                    <datalist id='actions'>
+                        {
+                            listOfActions.map((action, index) => (
+                                <option key={index} value={action.name}>{action.name}</option>
+                            ))
+                        }
+                    </datalist>
+                </div>
                 <Divider />
                 <p className='all-caps-header'>Parameters</p>
                 {params.length ? params : <></>}
@@ -111,6 +135,7 @@ ActionPopupContent.propTypes = {
     initialValue: PropTypes.string,
     initialParams: PropTypes.array,
     trackOpenMenu: PropTypes.func,
+    listOfActions: PropTypes.array,
 };
 
 ActionPopupContent.defaultProps = {
@@ -118,6 +143,7 @@ ActionPopupContent.defaultProps = {
     initialValue: '',
     initialParams: [],
     trackOpenMenu: () => {},
+    listOfActions: [],
 };
 
 export default ActionPopupContent;
