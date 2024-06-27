@@ -800,7 +800,6 @@ if (Meteor.isServer) {
                 throw formatError(e);
             }
         },
-<<<<<<< HEAD
         async 'hierTraining.train'(projectId, trainingHost) {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
@@ -834,14 +833,14 @@ if (Meteor.isServer) {
 
         async 'actionServer.getListOfActions'(projectId) {
             check(projectId, String);
-        
+
             const instance = await Instances.findOne({ projectId });
             if (!instance) {
                 throw new Meteor.Error('Instance not found');
             }
 
             const externalServerUrl = `${instance.actionServerHost}/actions`;
-        
+
             try {
                 const response = await axios.get(externalServerUrl, {
                     headers: {
