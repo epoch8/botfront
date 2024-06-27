@@ -121,6 +121,7 @@ class Instances extends React.Component {
                             />
                         </div>
                         <AutoField name='audioRecordsUrl' label={t('Audio records URL')} />
+                        <AutoField name='actionServerHost' label={t('Action Server Host')} />
                         <AutoField name='externalTraining' label={t('External training')} />
 
                         <br />
