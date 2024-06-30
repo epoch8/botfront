@@ -18,7 +18,6 @@ import _ from 'lodash';
 
 import { Projects } from '../../../api/project/project.collection';
 import { InfrastructureSchema } from '../../../api/project/project.schema';
-import SaveButton from '../utils/SaveButton';
 import { wrapMeteorCallback } from '../utils/Errors';
 
 const infrastructureSchemaBridge = new SimpleSchema2Bridge(InfrastructureSchema);
@@ -32,6 +31,7 @@ const Infrastructure = ({ projectId }) => {
             { _id: projectId },
             { fields: { infrastructureSettings: 1, infrastructureStatus: 1 } },
         );
+        console.log('DB Settings', project.infrastructureSettings);
         return {
             ready: handler.ready(),
             infrastructureSettings: project.infrastructureSettings,
@@ -41,7 +41,6 @@ const Infrastructure = ({ projectId }) => {
 
     const { t } = useTranslation('settings');
     const [saving, setSaving] = useState(false);
-    const [saved, setSaved] = useState(true);
     const [deploying, setDeploying] = useState(false);
     const [deployConfirmOpen, setDeployConfirmOpen] = useState(false);
     const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false);
@@ -54,6 +53,7 @@ const Infrastructure = ({ projectId }) => {
     }, [infrastructureStatus]);
 
     const onSave = (newSettings) => {
+        console.log('newSettings', newSettings);
         setSaving(true);
         Meteor.call(
             'project.update',
@@ -61,7 +61,9 @@ const Infrastructure = ({ projectId }) => {
             wrapMeteorCallback((err) => {
                 setSaving(false);
                 if (!err) {
-                    setSaved(true);
+                    Alert.success(t('Saved'));
+                } else {
+                    Alert.error(t('Error while saving'));
                 }
             }),
         );
@@ -213,11 +215,11 @@ const Infrastructure = ({ projectId }) => {
                         {instanceContent}
                         {/* <AccordionAccordion
                             exclusive={false}
-                            panels={instancePanels('rasa')}
+                            panels={instancePanels('rasa.dev')}
                         /> */}
                         <AccordionAccordion
                             exclusive={false}
-                            panels={resourcesPanels('rasa.dev')}
+                            panels={resourcesPanels('rasa')}
                         />
                     </NestField>
                 ),
@@ -236,7 +238,7 @@ const Infrastructure = ({ projectId }) => {
                         /> */}
                         <AccordionAccordion
                             exclusive={false}
-                            panels={resourcesPanels('actions.dev')}
+                            panels={resourcesPanels('actions')}
                         />
                     </NestField>
                 ),
@@ -328,12 +330,8 @@ const Infrastructure = ({ projectId }) => {
             <AutoForm
                 schema={infrastructureSchemaBridge}
                 model={infrastructureSettings}
-                onSubmit={newSettings => onSave(newSettings)}
-                onChange={(k, v) => {
-                    if (_.get(infrastructureSettings, k) !== v) {
-                        setSaved(false);
-                    }
-                }}
+                onSubmit={onSave}
+                showInlineError
                 ref={formRef}
                 // disabled={pending}
             >
@@ -341,16 +339,21 @@ const Infrastructure = ({ projectId }) => {
                 {/* <Divider /> */}
                 <Accordion exclusive={false} panels={panels} styled />
                 <Divider />
-                <SaveButton
-                    saving={saving}
-                    saved={saved}
-                    // disabled={!changed}
-                    onSave={() => { formRef.current.submit(); }}
-                />
+                <Button
+                    loading={saving}
+                    disabled={saving}
+                    primary
+                    onClick={(e) => {
+                        e.preventDefault();
+                        if (!saving) formRef.current.submit();
+                    }}
+                >
+                    {t('Save')}
+                </Button>
                 <Button
                     floated='right'
                     color='teal'
-                    disabled={!saved || pending || deploying}
+                    disabled={pending || deploying}
                     loading={pending || deploying}
                     onClick={(e) => {
                         e.preventDefault();
