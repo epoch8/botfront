@@ -75,7 +75,7 @@ const ServiceInfraParams = new SimpleSchema({
     'env.$': { type: Object },
     'env.$.name': { type: String },
     'env.$.value': { type: String },
-    resources: { type: Resources },
+    resources: { type: Resources, optional: true },
 });
 
 const ServiceFullParams = new SimpleSchema({

@@ -76,10 +76,11 @@ const Infrastructure = ({ projectId }) => {
             projectId,
             infrastructureSettings,
             wrapMeteorCallback((err) => {
-                if (!err) {
-                    Alert.success('Infrastructure update started');
+                setDeploying(false);
+                if (err) {
+                    Alert.error(t('Error while starting infrastructure update'));
                 } else {
-                    setDeploying(false);
+                    Alert.success(t('Infrastructure update started'));
                 }
             }),
         );
@@ -92,8 +93,10 @@ const Infrastructure = ({ projectId }) => {
             projectId,
             wrapMeteorCallback((err) => {
                 setDeploying(false);
-                if (!err) {
-                    Alert.success('Infrastructure deleted');
+                if (err) {
+                    Alert.success(t('Error while deleting infrastructure'));
+                } else {
+                    Alert.success(t('Infrastructure deleted'));
                 }
             }),
         );
