@@ -42,6 +42,7 @@ const Infrastructure = ({ projectId }) => {
     const [deploying, setDeploying] = useState(false);
     const [deployConfirmOpen, setDeployConfirmOpen] = useState(false);
     const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false);
+    const [formData, setFormData] = useState(infrastructureSettings);
     const formRef = useRef();
 
     useEffect(() => {
@@ -51,6 +52,7 @@ const Infrastructure = ({ projectId }) => {
     }, [infrastructureStatus]);
 
     const save = (newSettings) => {
+        setFormData(newSettings);
         setSaving(true);
         Meteor.call(
             'project.update',
@@ -71,7 +73,7 @@ const Infrastructure = ({ projectId }) => {
         Meteor.call(
             'project.deployInfrastructure',
             projectId,
-            infrastructureSettings,
+            formData,
             wrapMeteorCallback((err) => {
                 setDeploying(false);
                 if (err) {
@@ -357,8 +359,9 @@ const Infrastructure = ({ projectId }) => {
                     disabled={saving}
                     primary
                     onClick={(e) => {
-                        if (saving) {
-                            e.preventDefault();
+                        e.preventDefault();
+                        if (!saving) {
+                            formRef.current.submit();
                         }
                     }}
                 >
@@ -371,8 +374,10 @@ const Infrastructure = ({ projectId }) => {
                     loading={pending || deploying}
                     onClick={(e) => {
                         e.preventDefault();
+                        if (!saving) {
+                            formRef.current.submit();
+                        }
                         setDeployConfirmOpen(true);
-                        save();
                     }}
                 >
                     {t('Deploy')}
