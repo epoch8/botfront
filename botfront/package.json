@@ -1,6 +1,6 @@
 {
   "name": "botfront",
-  "version": "v1.19.0",
+  "version": "v1.20.0",
   "repository": "https://github.com/epoch8/botfront",
   "license": "Apache-2.0",
   "scripts": {

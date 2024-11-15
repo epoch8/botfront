@@ -76,6 +76,7 @@ const ServiceInfraParams = new SimpleSchema({
     'env.$.name': { type: String },
     'env.$.value': { type: String },
     resources: { type: Resources, optional: true },
+    extra_credentials: { type: String, optional: true },
 });
 
 const ServiceFullParams = new SimpleSchema({
@@ -114,7 +115,7 @@ export const InfrastructureSchema = new SimpleSchema({
     rasa: { type: ServiceInfraParams, optional: true },
     actions: { type: ServiceInfraParams, optional: true },
     // chatwoot: { type: ChatwootInfraParams, optional: true, defaultValue: null },
-    telegram: { type: TelegramInfraParams, optional: true },
+    // telegram: { type: TelegramInfraParams, optional: true },
 });
 
 const InfrastructureStatusSchema = new SimpleSchema({

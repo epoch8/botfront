@@ -19,19 +19,17 @@ import _ from 'lodash';
 import { Projects } from '../../../api/project/project.collection';
 import { InfrastructureSchema } from '../../../api/project/project.schema';
 import { wrapMeteorCallback } from '../utils/Errors';
+import AceField from '../utils/AceField';
 
 const infrastructureSchemaBridge = new SimpleSchema2Bridge(InfrastructureSchema);
 
 const Infrastructure = ({ projectId }) => {
-    const {
-        ready, infrastructureSettings, infrastructureStatus,
-    } = useTracker(() => {
+    const { ready, infrastructureSettings, infrastructureStatus } = useTracker(() => {
         const handler = Meteor.subscribe('projects', projectId);
         const project = Projects.findOne(
             { _id: projectId },
             { fields: { infrastructureSettings: 1, infrastructureStatus: 1 } },
         );
-        console.log('DB Settings', project.infrastructureSettings);
         return {
             ready: handler.ready(),
             infrastructureSettings: project.infrastructureSettings,
@@ -52,8 +50,7 @@ const Infrastructure = ({ projectId }) => {
         }
     }, [infrastructureStatus]);
 
-    const onSave = (newSettings) => {
-        console.log('newSettings', newSettings);
+    const save = (newSettings) => {
         setSaving(true);
         Meteor.call(
             'project.update',
@@ -216,6 +213,12 @@ const Infrastructure = ({ projectId }) => {
                 content: (
                     <NestField name='rasa' label={null}>
                         {instanceContent}
+                        <AceField
+                            name='extra_credentials'
+                            label='Credentials'
+                            mode='yaml'
+                            data-cy='ace-field'
+                        />
                         {/* <AccordionAccordion
                             exclusive={false}
                             panels={instancePanels('rasa.dev')}
@@ -263,19 +266,19 @@ const Infrastructure = ({ projectId }) => {
         //         ),
         //     },
         // },
-        {
-            key: 'telegram',
-            title: 'Telegram',
-            content: {
-                content: (
-                    <AutoField name='telegram.dev' label={null} />
-                // <AccordionAccordion
-                //     exclusive={false}
-                //     panels={telegramEnvPanels}
-                // />
-                ),
-            },
-        },
+        // {
+        //     key: 'telegram',
+        //     title: 'Telegram',
+        //     content: {
+        //         content: (
+        //             <AutoField name='telegram.dev' label={null} />
+        //             // <AccordionAccordion
+        //             //     exclusive={false}
+        //             //     panels={telegramEnvPanels}
+        //             // />
+        //         ),
+        //     },
+        // },
     ];
 
     let statusColor = 'grey';
@@ -291,8 +294,8 @@ const Infrastructure = ({ projectId }) => {
         error = false;
         statusColor = 'green';
         break;
-    // case 'uninstalled':
-    // case 'superseded':
+        // case 'uninstalled':
+        // case 'superseded':
     case 'failed':
         pending = false;
         error = true;
@@ -329,26 +332,34 @@ const Infrastructure = ({ projectId }) => {
 
     return (
         <>
-            <Segment color={statusColor} inverted>{renderProjectStatus()}</Segment>
+            <Segment color={statusColor} inverted>
+                {renderProjectStatus()}
+            </Segment>
             <AutoForm
                 schema={infrastructureSchemaBridge}
                 model={infrastructureSettings}
-                onSubmit={onSave}
+                onSubmit={save}
                 showInlineError
                 ref={formRef}
                 // disabled={pending}
             >
                 {/* <AutoField name='prod_enabled' label={t('Production infra enabled')} /> */}
                 {/* <Divider /> */}
-                <Accordion exclusive={false} panels={panels} styled />
+                <Accordion
+                    exclusive={false}
+                    panels={panels}
+                    styled
+                    defaultActiveIndex={[0, 1]}
+                />
                 <Divider />
                 <Button
                     loading={saving}
                     disabled={saving}
                     primary
                     onClick={(e) => {
-                        e.preventDefault();
-                        if (!saving) formRef.current.submit();
+                        if (saving) {
+                            e.preventDefault();
+                        }
                     }}
                 >
                     {t('Save')}
@@ -361,6 +372,7 @@ const Infrastructure = ({ projectId }) => {
                     onClick={(e) => {
                         e.preventDefault();
                         setDeployConfirmOpen(true);
+                        save();
                     }}
                 >
                     {t('Deploy')}
@@ -383,7 +395,7 @@ const Infrastructure = ({ projectId }) => {
                         e.preventDefault();
                         setRemoveConfirmOpen(true);
                     }}
-                    disabled={!lastDeployed || pending || deploying}
+                    disabled={!lastDeployed}
                 >
                     {t('Remove')}
                 </Button>
