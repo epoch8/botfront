@@ -80,7 +80,7 @@ const BotResponseEditor = (props) => {
     const upsertFullResponse = (updatedResponse, callback = () => {}) => {
         upsertWholeBotResponse({
             variables: {
-                projectId, _id: updatedResponse._id, response: clearTypenameField(updatedResponse), ...(isNew ? {} : { key: newBotResponse.key }),
+                projectId, _id: updatedResponse._id, comment: updatedResponse.comment, response: clearTypenameField(updatedResponse), ...(isNew ? {} : { key: newBotResponse.key }),
             },
         }).then(
             (result) => {
@@ -117,6 +117,7 @@ const BotResponseEditor = (props) => {
     };
 
     const handleChangeMetadata = (updatedMetadata) => {
+        console.log("CHANGE METADATA");
         if (isNew || !newBotResponse._id) {
             setNewBotResponse(
                 { ...newBotResponse, metadata: updatedMetadata },
@@ -127,6 +128,7 @@ const BotResponseEditor = (props) => {
     };
 
     const handleChangeKey = async () => {
+        console.log("CHANGE KEY");
         if (isNew) {
             setNewBotResponse({ ...newBotResponse, key: responseKey });
             return;
@@ -134,7 +136,7 @@ const BotResponseEditor = (props) => {
         upsertFullResponse({ ...newBotResponse, key: responseKey }, validateResponseName);
     };
 
-    const updateSequence = (oldResponse, contentInput, index) => {
+    const updateSequence = (oldResponse, contentInput, commentInput, index) => {
         const updatedResponse = { ...oldResponse };
         const activeIndex = oldResponse.values.findIndex(({ lang }) => lang === language);
         let { sequence } = updatedResponse.values[activeIndex];
@@ -149,13 +151,57 @@ const BotResponseEditor = (props) => {
         return updatedResponse;
     };
 
+    const devUpdateSequence = (oldResponse, contentInput, commentInput, index) => {
+        console.log("UPDATE SEQUENCE");
+        const updatedResponse = { ...oldResponse };
+        console.log(`updatedResponse ${JSON.stringify(updatedResponse)}`);
+        const activeIndex = oldResponse.values.findIndex(({ lang }) => lang === language);
+        let { sequence } = updatedResponse.values[activeIndex];
+        console.log(`sequence ${JSON.stringify(sequence)}`);
+        if (contentInput) {
+            console.log(`contentInput ${JSON.stringify(contentInput)}`);
+            const content = typeof contentInput === 'string'
+                ? contentInput : safeDump(contentInput);
+            if (index !== undefined && sequence[index]) {
+                sequence[index].content = content;
+            } else {
+                sequence = [...sequence, { content }];
+            }
+            updatedResponse.values[activeIndex].sequence = sequence;
+            console.log(`updatedREsponse - ${JSON.stringify(updatedResponse)}`);
+        }
+        else if (commentInput) {
+            console.log(`commentInput ${JSON.stringify(commentInput)}`);
+            const comment = typeof commentInput === 'string' ? commentInput : safeDump(commentInput);
+                console.log(`comment ${comment}`);
+                updatedResponse.comment = comment;
+        }
+        console.log("UPDATE SEQUENCE RETURN");
+        return updatedResponse;
+    };
+
     const handleSequenceChange = (updatedSequence, index) => {
+        console.log("CHANGE SEQUENCE");
         const { payload: { metadata, ...content } } = updatedSequence;
-        const updatedBotResponse = updateSequence(newBotResponse, content, index);
+        const updatedBotResponse = devUpdateSequence(newBotResponse, content, null, index);
         if (isNew) {
             setNewBotResponse(updatedBotResponse);
             return;
         }
+        upsertFullResponse(updatedBotResponse);
+    };
+
+    const handleCommentChange = (updatedSequence, index) => {
+        console.log("CHANGE COMMENT");
+        const { payload: { metadata, ...comment } } = updatedSequence;
+        const updatedBotResponse = devUpdateSequence(newBotResponse, null, comment, index);
+        console.log("SEQUENCE UPDATED");
+        if (isNew) {
+            console.log("IS NEW");
+            setNewBotResponse(updatedBotResponse);
+            return;
+        }
+        console.log("UPSERT");
         upsertFullResponse(updatedBotResponse);
     };
 
@@ -223,8 +269,31 @@ const BotResponseEditor = (props) => {
 
     const renderActiveTab = () => {
         const activeSequence = getActiveSequence();
+        var comment = newBotResponse.comment;
+        // console.log(`activeSequence - ${JSON.stringify(activeSequence)}`);
         if (activeTab === 1) {
             return <Segment attached><MetadataForm responseMetadata={newBotResponse.metadata} onChange={handleChangeMetadata} /></Segment>;
+        }
+        if (activeTab == 2){
+            // console.log(`comment - ${comment}`);
+            if (!comment) {
+                comment = [{"content":"text: ''\n", "__typename":"ContentContainer"}];
+            }
+            else {
+                comment = [{"content": comment, "__typename":"ContentContainer"}]
+            }
+            return (
+                <>
+                    <SequenceEditor
+                        sequence={comment}
+                        onChange={handleCommentChange}
+                        onDeleteVariation={handleDeleteVariation}
+                        onChangePayloadType={handleChangePayloadType}
+                        name={name}
+                        editable={editable}
+                    />
+                </>
+            )
         }
         return (
             <>
@@ -270,6 +339,7 @@ const BotResponseEditor = (props) => {
                         <Menu pointing secondary activeIndex={activeTab}>
                             <MenuItem onClick={() => { setActiveTab(0); }} active={activeTab === 0} className='response-variations' data-cy='variations-tab'>{t('Variations')}</MenuItem>
                             <MenuItem onClick={() => { setActiveTab(1); }} active={activeTab === 1} className='metadata' data-cy='metadata-tab'>{t('Behaviour')}</MenuItem>
+                            <MenuItem onClick={() => { setActiveTab(2); }} active={activeTab === 2} className='comment' data-cy='comment-tab'>{t('Comment')}</MenuItem>
                         </Menu>
                     </div>
                     <div className='response-editor-topbar-section' />
@@ -336,15 +406,26 @@ const BotResponseEditorWrapper = (props) => {
         });
 
         useEffect(() => {
+            let isMounted = true;
             if (data && data.botResponse) {
                 setBotResponse(data.botResponse);
             }
             if (data && data.botResponse === null) {
                 setBotResponse(createResponseFromTemplate('TextPayload', language, { key: name }));
             }
+            return () => {
+                isMounted = false;
+            };
         }, [data]);
 
         useEffect(() => {
+            let isMounted = true;
+            if (isMounted) {
+                refetch();
+            }
+            return () => {
+                isMounted = false;
+            };
             refetch();
         }, []);
 

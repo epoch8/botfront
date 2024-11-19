@@ -12,6 +12,7 @@ subscription responsesModified($projectId: String!) {
             }
         }
         metadata
+        comment
     }
 }`;
 
@@ -27,5 +28,6 @@ subscription responseDeleted($projectId: String!) {
             }
         }
         metadata
+        comment
     }
 }`;

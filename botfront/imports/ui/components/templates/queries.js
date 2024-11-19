@@ -12,6 +12,7 @@ query retreiveBotResponses($projectId: String!) {
             }
         }
         metadata
+        comment
     }
 }`;
 
@@ -27,6 +28,7 @@ query retreiveBotResponses($_id: String!) {
             }
         }
         metadata
+        comment
     }
 }`;
 
@@ -42,5 +44,6 @@ query retreiveABotResponses($projectId: String!, $key: String!, $lang: String) {
             }
         }
         metadata
+        comment
     }
 }`;
