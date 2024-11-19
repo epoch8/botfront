@@ -107,6 +107,7 @@ function Turn({
                             {botResponses.map((response, index) => (
                                 <React.Fragment key={`bot-response-${index}`}>
                                     <BotResponse {...response} />
+                                    {response.comment && <p>Сomment: {response.comment}</p>}
                                 </React.Fragment>
                             ))}
                         </Comment.Text>
@@ -155,12 +156,13 @@ function ConversationDialogueViewer({
     messageIdInView,
     labeling,
     onLabelChange,
+    botResponsesComments
 }) {
     const toScrollTo = React.createRef();
     const { t } = useTranslation('conversations');
 
 
-    const turns = useMemo(() => generateTurns(tracker, mode === 'debug'), [tracker]);
+    const turns = useMemo(() => generateTurns(botResponsesComments, tracker, mode === 'debug'), [tracker]);
     useEffect(() => {
         if (toScrollTo.current) {
             toScrollTo.current.scrollIntoView({ block: 'center' });

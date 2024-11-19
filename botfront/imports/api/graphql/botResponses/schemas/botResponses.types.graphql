@@ -28,6 +28,7 @@ type Mutation {
         _id: String
         key: String
         response: BotResponseInput
+        comment: String
     ): updateResponse!
     createAndOverwriteResponses(
         projectId: String!
@@ -58,6 +59,7 @@ type BotResponse {
     projectId: String
     values: [BotResponseValue]
     metadata: Any
+    comment: String
 }
 
 type BotResponseValue {
@@ -75,6 +77,7 @@ input BotResponseInput {
     projectId: String
     values: [BotResponseValueInput]
     metadata: Any
+    comment: String
 }
 
 input BotResponseValueInput {

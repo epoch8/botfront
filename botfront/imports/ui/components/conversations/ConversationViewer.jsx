@@ -9,9 +9,11 @@ import { connect } from 'react-redux';
 import { GET_CONVERSATION } from './queries';
 import { MARK_READ, LABEL_EVENT } from './mutations';
 import { getEventLabel } from './utils';
+import { GET_BOT_RESPONSES } from '../../components/templates/queries';
 import ConversationJsonViewer from './ConversationJsonViewer';
 import ConversationDialogueViewer from './ConversationDialogueViewer';
 import Can from '../roles/Can';
+import { safeLoad } from 'js-yaml/lib/js-yaml';
 
 function ConversationViewer(props) {
     const [active, setActive] = useState('Text');
@@ -30,6 +32,7 @@ function ConversationViewer(props) {
         onCreateTestCase,
         labeling,
         onLabelChange,
+        botResponsesComments
     } = props;
 
     const [markRead, { data }] = useMutation(MARK_READ);
@@ -101,6 +104,7 @@ function ConversationViewer(props) {
                         labeling={labeling}
                         onLabelChange={onLabelChange}
                         mode='text'
+                        botResponsesComments={botResponsesComments}
                     />
                 )}
                 {active === 'Debug' && (
@@ -109,6 +113,7 @@ function ConversationViewer(props) {
                         labeling={labeling}
                         onLabelChange={onLabelChange}
                         mode='debug'
+                        botResponsesComments={botResponsesComments}
                     />
                 )}
                 {active === 'JSON' && <ConversationJsonViewer tracker={tracker.tracker} />}
@@ -214,6 +219,17 @@ const ConversationViewerContainer = (props) => {
         pollInterval: 2000,
     });
 
+    const {
+        data: resp
+    } = useQuery(GET_BOT_RESPONSES, {
+        variables: { projectId, },
+        pollInterval: 2000,
+    });
+
+    const botResponsesComments = resp?.botResponses.map((r) => {
+            return { id: r.key, comment: safeLoad(r.comment)?.text };
+        });
+    console.log(`${JSON.stringify(botResponsesComments)}`);
     const [labelEvent, { data: labelEventData }] = useMutation(LABEL_EVENT);
 
     const newTracker = !loading && !error && data ? data.conversation : null;
@@ -249,6 +265,7 @@ const ConversationViewerContainer = (props) => {
         onCreateTestCase,
         labeling,
         onLabelChange,
+        botResponsesComments,
     };
 
     return (<ConversationViewer {...componentProps} />);

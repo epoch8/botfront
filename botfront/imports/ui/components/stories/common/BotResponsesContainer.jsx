@@ -8,7 +8,7 @@ import {
     Placeholder,
     Popup,
 } from 'semantic-ui-react';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import { safeLoad } from 'js-yaml';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +25,7 @@ import {
 } from '../../../../lib/botResponse.utils';
 import BotResponseName from './BotResponseName';
 import { RESP_FROM_LANG } from '../graphql/mutations';
+import { GET_BOT_RESPONSE } from '../../templates/queries'
 import ConfirmPopup from '../../common/ConfirmPopup';
 
 export const ResponseContext = React.createContext();
@@ -60,6 +61,24 @@ const BotResponsesContainer = (props) => {
             setResponseInCache(name, { ...content, __typename: type });
         },
     });
+
+    const [comment, setComment] = useState(null);
+    const { data, loading, error, refetch } = useQuery(GET_BOT_RESPONSE, {
+        variables: { projectId, key: name },
+    });
+    useEffect(() => {
+        if (data?.botResponse) {
+            setComment(safeLoad(data.botResponse.comment)?.text);
+        } else if (data && data.botResponse.comment === null) {
+            setComment({
+                comment: '',
+            });
+        }
+    }, [data]);
+    useEffect(() => {
+        refetch();
+    }, [refetch]);
+
     const [template, setTemplate] = useState();
     const [editorOpen, setEditorOpen] = useState(false);
     const [toBeCreated, setToBeCreated] = useState(null);
@@ -182,93 +201,102 @@ const BotResponsesContainer = (props) => {
 
     return (
         <ResponseContext.Provider value={{ name, uploadImage }}>
-            <div className={`utterances-container exception-wrapper-target theme-${theme}`}>
-                {!template && (
-                    <div className='loading-bot-response'>
-                        <Placeholder fluid>
-                            <Placeholder.Line />
-                            <Placeholder.Line />
-                        </Placeholder>
-                    </div>
-                )}
-                {getSequence().map(renderResponse)}
-                <div className='side-by-side right narrow top-right'>
-                    <ButtonTypeToggle
-                        onToggleButtonType={handleToggleQuickReply}
-                        responseType={typeName}
-                    />
-                    {otherLanguages.length > 0
-                    && initialValue
-                    && !initialValue.isNew
-                    && getSequence().length === 1
-                    && !checkContentEmpty(getSequence()[0])
-                    && editable
-                    && (
-                        <Dropdown
-                            button
-                            icon={null}
-                            compact
-                            data-cy='import-from-lang'
-                            className='import-from-lang'
-                            options={otherLanguages}
-                            text={t('Copy from')}
-                            onChange={(_, selection) => {
-                                importRespFromLang({
-                                    variables: {
-                                        projectId, key: name, originLang: selection.value, destLang: language,
-                                    },
-                                });
-                            }}
-                        />
-                    )
-                    }
-                    {enableEditPopup && (
-                        <IconButton
-                            icon='ellipsis vertical'
-                            onClick={() => {
-                                setEditorOpen(true);
-                            }}
-                            onMouseDown={(e) => { e.stopPropagation(); }}
-                            data-cy='edit-responses'
-                            className={template && checkMetadataSet(template.metadata) ? 'light-green' : 'grey'}
-                            color={null}
-                        />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div className={`utterances-container exception-wrapper-target theme-${theme}`}>
+                    {!template && (
+                        <div className='loading-bot-response'>
+                            <Placeholder fluid>
+                                <Placeholder.Line />
+                                <Placeholder.Line />
+                            </Placeholder>
+                        </div>
                     )}
-                    {editorOpen && (
-                        <BotResponseEditor
-                            open={editorOpen}
-                            name={name}
-                            closeModal={() => setEditorOpen(false)}
-                            renameable={renameable}
+                    {getSequence().map(renderResponse)}
+                    <div className='side-by-side right narrow top-right'>
+                        <ButtonTypeToggle
+                            onToggleButtonType={handleToggleQuickReply}
+                            responseType={typeName}
                         />
-                    )}
-                    {deletable && onDeleteAllResponses && editable && (
-                        <>
-                            <Popup
-                                trigger={<span><IconButton onMouseDown={() => {}} icon='trash' /></span>}
-                                content={(
-                                    <ConfirmPopup
-                                        title={t('Delete response?')}
-                                        description={responseLocations.length > 1
-                                            ? t('Remove this response from the current fragment')
-                                            : t('Remove this response from the current fragment and delete it')}
-                                        onYes={() => {
-                                            setDeletePopupOpen(false);
-                                            onDeleteAllResponses();
-                                        }}
-                                        onNo={() => setDeletePopupOpen(false)}
-                                    />
-                                )}
-                                on='click'
-                                open={deletePopupOpen}
-                                onOpen={() => setDeletePopupOpen(true)}
-                                onClose={() => setDeletePopupOpen(false)}
+                        {otherLanguages.length > 0
+                        && initialValue
+                        && !initialValue.isNew
+                        && getSequence().length === 1
+                        && !checkContentEmpty(getSequence()[0])
+                        && editable
+                        && (
+                            <Dropdown
+                                button
+                                icon={null}
+                                compact
+                                data-cy='import-from-lang'
+                                className='import-from-lang'
+                                options={otherLanguages}
+                                text={t('Copy from')}
+                                onChange={(_, selection) => {
+                                    importRespFromLang({
+                                        variables: {
+                                            projectId, key: name, originLang: selection.value, destLang: language,
+                                        },
+                                    });
+                                }}
                             />
-                        </>
-                    )}
+                        )
+                        }
+                        {enableEditPopup && (
+                            <IconButton
+                                icon='ellipsis vertical'
+                                onClick={() => {
+                                    setEditorOpen(true);
+                                }}
+                                onMouseDown={(e) => { e.stopPropagation(); }}
+                                data-cy='edit-responses'
+                                className={template && checkMetadataSet(template.metadata) ? 'light-green' : 'grey'}
+                                color={null}
+                            />
+                        )}
+                        {editorOpen && (
+                            <BotResponseEditor
+                                open={editorOpen}
+                                name={name}
+                                closeModal={() => setEditorOpen(false)}
+                                renameable={renameable}
+                            />
+                        )}
+                        {deletable && onDeleteAllResponses && editable && (
+                            <>
+                                <Popup
+                                    trigger={<span><IconButton onMouseDown={() => {}} icon='trash' /></span>}
+                                    content={(
+                                        <ConfirmPopup
+                                            title={t('Delete response?')}
+                                            description={responseLocations.length > 1
+                                                ? t('Remove this response from the current fragment')
+                                                : t('Remove this response from the current fragment and delete it')}
+                                            onYes={() => {
+                                                setDeletePopupOpen(false);
+                                                onDeleteAllResponses();
+                                            }}
+                                            onNo={() => setDeletePopupOpen(false)}
+                                        />
+                                    )}
+                                    on='click'
+                                    open={deletePopupOpen}
+                                    onOpen={() => setDeletePopupOpen(true)}
+                                    onClose={() => setDeletePopupOpen(false)}
+                                />
+                            </>
+                        )}
+                    </div>
+                    {renderDynamicResponseName()}
+                    {theme !== 'default' && renderThemeTag()}
                 </div>
-                {renderDynamicResponseName()}
-                {theme !== 'default' && renderThemeTag()}
+                {enableEditPopup &&
+                    <div style={{ marginLeft: '10px', overflowWrap: 'break-word' }}>
+                        <label style={{ display: 'inline-block', width: '100%', textAlign: 'left' }}>
+                            {comment}
+                        </label>
+                    </div>
+                }
             </div>
         </ResponseContext.Provider>
     );

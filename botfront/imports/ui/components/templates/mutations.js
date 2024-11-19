@@ -8,8 +8,8 @@ mutation deleteResponse($projectId: String!, $key: String!) {
 }`;
 
 export const UPSERT__FULL_BOT_RESPONSE = gql`
-mutation upsertFullResponse($projectId: String!, $_id: String, $key: String, $response: BotResponseInput) {
-  upsertFullResponse(projectId: $projectId, _id: $_id, key: $key, response: $response){
+mutation upsertFullResponse($projectId: String!, $_id: String, $key: String, $response: BotResponseInput, $comment: String) {
+  upsertFullResponse(projectId: $projectId, _id: $_id, key: $key, response: $response, comment: $comment){
       success
       _id
     }

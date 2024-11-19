@@ -4,7 +4,7 @@ export function getEventLabel(event) {
     return (event && event.metadata && event.metadata.label && event.metadata.label.value) || null;
 }
 
-export function generateTurns(tracker, debug = false, tzOffset = null) {
+export function generateTurns(botResponsesComments, tracker, debug = false, tzOffset = null) {
     const turns = [];
     let currentTurn = {
         userSays: null,
@@ -61,6 +61,7 @@ export function generateTurns(tracker, debug = false, tzOffset = null) {
                 type: 'bot_data',
                 text: event.text,
                 data: event.data,
+                comment: botResponsesComments?.find((r) => r.id == event.metadata.utter_action)?.comment || "",
             });
             ((event.data || {}).buttons || []).forEach((b) => { // remember button title-payload mapping
                 buttonValues[(b.payload || '').replace(/^\//, '')] = b.title;
