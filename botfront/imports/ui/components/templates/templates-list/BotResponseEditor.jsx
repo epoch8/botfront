@@ -117,7 +117,6 @@ const BotResponseEditor = (props) => {
     };
 
     const handleChangeMetadata = (updatedMetadata) => {
-        console.log("CHANGE METADATA");
         if (isNew || !newBotResponse._id) {
             setNewBotResponse(
                 { ...newBotResponse, metadata: updatedMetadata },
@@ -128,7 +127,6 @@ const BotResponseEditor = (props) => {
     };
 
     const handleChangeKey = async () => {
-        console.log("CHANGE KEY");
         if (isNew) {
             setNewBotResponse({ ...newBotResponse, key: responseKey });
             return;
@@ -152,14 +150,10 @@ const BotResponseEditor = (props) => {
     };
 
     const devUpdateSequence = (oldResponse, contentInput, commentInput, index) => {
-        console.log("UPDATE SEQUENCE");
         const updatedResponse = { ...oldResponse };
-        console.log(`updatedResponse ${JSON.stringify(updatedResponse)}`);
         const activeIndex = oldResponse.values.findIndex(({ lang }) => lang === language);
         let { sequence } = updatedResponse.values[activeIndex];
-        console.log(`sequence ${JSON.stringify(sequence)}`);
         if (contentInput) {
-            console.log(`contentInput ${JSON.stringify(contentInput)}`);
             const content = typeof contentInput === 'string'
                 ? contentInput : safeDump(contentInput);
             if (index !== undefined && sequence[index]) {
@@ -168,20 +162,15 @@ const BotResponseEditor = (props) => {
                 sequence = [...sequence, { content }];
             }
             updatedResponse.values[activeIndex].sequence = sequence;
-            console.log(`updatedREsponse - ${JSON.stringify(updatedResponse)}`);
         }
         else if (commentInput) {
-            console.log(`commentInput ${JSON.stringify(commentInput)}`);
             const comment = typeof commentInput === 'string' ? commentInput : safeDump(commentInput);
-                console.log(`comment ${comment}`);
                 updatedResponse.comment = comment;
         }
-        console.log("UPDATE SEQUENCE RETURN");
         return updatedResponse;
     };
 
     const handleSequenceChange = (updatedSequence, index) => {
-        console.log("CHANGE SEQUENCE");
         const { payload: { metadata, ...content } } = updatedSequence;
         const updatedBotResponse = devUpdateSequence(newBotResponse, content, null, index);
         if (isNew) {
@@ -192,16 +181,12 @@ const BotResponseEditor = (props) => {
     };
 
     const handleCommentChange = (updatedSequence, index) => {
-        console.log("CHANGE COMMENT");
         const { payload: { metadata, ...comment } } = updatedSequence;
         const updatedBotResponse = devUpdateSequence(newBotResponse, null, comment, index);
-        console.log("SEQUENCE UPDATED");
         if (isNew) {
-            console.log("IS NEW");
             setNewBotResponse(updatedBotResponse);
             return;
         }
-        console.log("UPSERT");
         upsertFullResponse(updatedBotResponse);
     };
 
@@ -270,12 +255,10 @@ const BotResponseEditor = (props) => {
     const renderActiveTab = () => {
         const activeSequence = getActiveSequence();
         var comment = newBotResponse.comment;
-        // console.log(`activeSequence - ${JSON.stringify(activeSequence)}`);
         if (activeTab === 1) {
             return <Segment attached><MetadataForm responseMetadata={newBotResponse.metadata} onChange={handleChangeMetadata} /></Segment>;
         }
         if (activeTab == 2){
-            // console.log(`comment - ${comment}`);
             if (!comment) {
                 comment = [{"content":"text: ''\n", "__typename":"ContentContainer"}];
             }
