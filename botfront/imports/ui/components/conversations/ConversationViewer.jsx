@@ -10,11 +10,13 @@ import { withTracker } from 'meteor/react-meteor-data';
 import { GET_CONVERSATION } from './queries';
 import { MARK_READ, LABEL_EVENT } from './mutations';
 import { getEventLabel } from './utils';
+import { GET_BOT_RESPONSES } from '../../components/templates/queries';
 import ConversationJsonViewer from './ConversationJsonViewer';
 import ConversationDialogueViewer from './ConversationDialogueViewer';
 import Can from '../roles/Can';
 import { Cache } from '../../../lib/utils';
 import { Instances } from '../../../api/instances/instances.collection';
+import { safeLoad } from 'js-yaml/lib/js-yaml';
 
 const audioCache = new Cache(20);
 
@@ -36,6 +38,7 @@ function ConversationViewer(props) {
         labeling,
         onLabelChange,
         audioAvailable,
+        botResponsesComments
     } = props;
 
     const [markRead, { data }] = useMutation(MARK_READ);
@@ -107,6 +110,7 @@ function ConversationViewer(props) {
                         labeling={labeling}
                         onLabelChange={onLabelChange}
                         mode='text'
+                        botResponsesComments={botResponsesComments}
                     />
                 )}
                 {active === 'Debug' && (
@@ -115,6 +119,7 @@ function ConversationViewer(props) {
                         labeling={labeling}
                         onLabelChange={onLabelChange}
                         mode='debug'
+                        botResponsesComments={botResponsesComments}
                     />
                 )}
                 {active === 'JSON' && <ConversationJsonViewer tracker={tracker.tracker} />}
@@ -276,6 +281,16 @@ const ConversationViewerContainer = withTracker((props) => {
     );
     const audioAvailable = !!instance?.audioRecordsUrl;
 
+    const {
+        data: resp
+    } = useQuery(GET_BOT_RESPONSES, {
+        variables: { projectId, },
+        pollInterval: 2000,
+    });
+
+    const botResponsesComments = resp?.botResponses.map((r) => {
+        return { id: r.key, comment: safeLoad(r.comment)?.text };
+    });
     const [labelEvent, { data: labelEventData }] = useMutation(LABEL_EVENT);
 
     const newTracker = !loading && !error && data ? data.conversation : null;
@@ -312,6 +327,7 @@ const ConversationViewerContainer = withTracker((props) => {
         labeling,
         onLabelChange,
         audioAvailable,
+        botResponsesComments,
     };
 })(ConversationViewer);
 

@@ -1023,6 +1023,16 @@ Migrations.add({
     },
 });
 
+Migrations.add({
+    version: 27,
+    up: () => {
+        BotResponses.update({}, { $set: { comment: null } }, { multi: true });
+    },
+    down: () => {
+        BotResponses.update({}, { $unset: { comment: "" } }, { multi: true });
+    },
+});
+
 Meteor.startup(() => {
     Migrations.migrateTo('latest');
 });

@@ -80,7 +80,7 @@ const BotResponseEditor = (props) => {
     const upsertFullResponse = (updatedResponse, callback = () => {}) => {
         upsertWholeBotResponse({
             variables: {
-                projectId, _id: updatedResponse._id, response: clearTypenameField(updatedResponse), ...(isNew ? {} : { key: newBotResponse.key }),
+                projectId, _id: updatedResponse._id, comment: updatedResponse.comment, response: clearTypenameField(updatedResponse), ...(isNew ? {} : { key: newBotResponse.key }),
             },
         }).then(
             (result) => {
@@ -134,7 +134,7 @@ const BotResponseEditor = (props) => {
         upsertFullResponse({ ...newBotResponse, key: responseKey }, validateResponseName);
     };
 
-    const updateSequence = (oldResponse, contentInput, index) => {
+    const updateSequence = (oldResponse, contentInput, commentInput, index) => {
         const updatedResponse = { ...oldResponse };
         const activeIndex = oldResponse.values.findIndex(({ lang }) => lang === language);
         let { sequence } = updatedResponse.values[activeIndex];
@@ -149,9 +149,40 @@ const BotResponseEditor = (props) => {
         return updatedResponse;
     };
 
+    const devUpdateSequence = (oldResponse, contentInput, commentInput, index) => {
+        const updatedResponse = { ...oldResponse };
+        const activeIndex = oldResponse.values.findIndex(({ lang }) => lang === language);
+        let { sequence } = updatedResponse.values[activeIndex];
+        if (contentInput) {
+            const content = typeof contentInput === 'string'
+                ? contentInput : safeDump(contentInput);
+            if (index !== undefined && sequence[index]) {
+                sequence[index].content = content;
+            } else {
+                sequence = [...sequence, { content }];
+            }
+            updatedResponse.values[activeIndex].sequence = sequence;
+        }
+        else if (commentInput) {
+            const comment = typeof commentInput === 'string' ? commentInput : safeDump(commentInput);
+                updatedResponse.comment = comment;
+        }
+        return updatedResponse;
+    };
+
     const handleSequenceChange = (updatedSequence, index) => {
         const { payload: { metadata, ...content } } = updatedSequence;
-        const updatedBotResponse = updateSequence(newBotResponse, content, index);
+        const updatedBotResponse = devUpdateSequence(newBotResponse, content, null, index);
+        if (isNew) {
+            setNewBotResponse(updatedBotResponse);
+            return;
+        }
+        upsertFullResponse(updatedBotResponse);
+    };
+
+    const handleCommentChange = (updatedSequence, index) => {
+        const { payload: { metadata, ...comment } } = updatedSequence;
+        const updatedBotResponse = devUpdateSequence(newBotResponse, null, comment, index);
         if (isNew) {
             setNewBotResponse(updatedBotResponse);
             return;
@@ -223,8 +254,29 @@ const BotResponseEditor = (props) => {
 
     const renderActiveTab = () => {
         const activeSequence = getActiveSequence();
+        var comment = newBotResponse.comment;
         if (activeTab === 1) {
             return <Segment attached><MetadataForm responseMetadata={newBotResponse.metadata} onChange={handleChangeMetadata} /></Segment>;
+        }
+        if (activeTab == 2){
+            if (!comment) {
+                comment = [{"content":"text: ''\n", "__typename":"ContentContainer"}];
+            }
+            else {
+                comment = [{"content": comment, "__typename":"ContentContainer"}]
+            }
+            return (
+                <>
+                    <SequenceEditor
+                        sequence={comment}
+                        onChange={handleCommentChange}
+                        onDeleteVariation={handleDeleteVariation}
+                        onChangePayloadType={handleChangePayloadType}
+                        name={name}
+                        editable={editable}
+                    />
+                </>
+            )
         }
         return (
             <>
@@ -270,6 +322,7 @@ const BotResponseEditor = (props) => {
                         <Menu pointing secondary activeIndex={activeTab}>
                             <MenuItem onClick={() => { setActiveTab(0); }} active={activeTab === 0} className='response-variations' data-cy='variations-tab'>{t('Variations')}</MenuItem>
                             <MenuItem onClick={() => { setActiveTab(1); }} active={activeTab === 1} className='metadata' data-cy='metadata-tab'>{t('Behaviour')}</MenuItem>
+                            <MenuItem onClick={() => { setActiveTab(2); }} active={activeTab === 2} className='comment' data-cy='comment-tab'>{t('Comment')}</MenuItem>
                         </Menu>
                     </div>
                     <div className='response-editor-topbar-section' />
@@ -336,15 +389,26 @@ const BotResponseEditorWrapper = (props) => {
         });
 
         useEffect(() => {
+            let isMounted = true;
             if (data && data.botResponse) {
                 setBotResponse(data.botResponse);
             }
             if (data && data.botResponse === null) {
                 setBotResponse(createResponseFromTemplate('TextPayload', language, { key: name }));
             }
+            return () => {
+                isMounted = false;
+            };
         }, [data]);
 
         useEffect(() => {
+            let isMounted = true;
+            if (isMounted) {
+                refetch();
+            }
+            return () => {
+                isMounted = false;
+            };
             refetch();
         }, []);
 
