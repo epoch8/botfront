@@ -52,9 +52,7 @@ const getTrainingInfo = async (projectId, host) => {
 const getHierTrainingInfo = async (projectId, host) => {
     let externalTrainingStatus = 'notReachable';
     try {
-        const resp = await axios.post(
-            `${host}/status/${projectId}`,
-        );
+        const resp = await axios.post(`${host}/status/${projectId}`);
         const respTrainingStatus = resp.data[0].status;
         switch (respTrainingStatus) {
         case 'scheduled':
@@ -148,21 +146,30 @@ Meteor.startup(function () {
                         if (instanceState === -1) instanceStatus = 'notReachable';
 
                         const externalTrainingsInfo = await Promise.all(
-                            (externalTraining || []).filter(
-                                // Compare with undefined for backward compatibility
-                                // TODO make migration?
-                                trainingConfig => trainingConfig.enabled || trainingConfig.enabled === undefined,
-                            ).map(async (trainingConfig) => {
-                                const { host, type } = trainingConfig;
-                                let trainingInfo;
-                                if (type === 'rasa') {
-                                    trainingInfo = await getTrainingInfo(projectId, host);
-                                } else {
-                                    trainingInfo = await getHierTrainingInfo(projectId, host);
-                                }
-                                const { status, jobId } = trainingInfo;
-                                return { host, status, jobId };
-                            }),
+                            (externalTraining || [])
+                                .filter(
+                                    // Compare with undefined for backward compatibility
+                                    // TODO make migration?
+                                    trainingConfig => trainingConfig.enabled
+                                        || trainingConfig.enabled === undefined,
+                                )
+                                .map(async (trainingConfig) => {
+                                    const { host, type } = trainingConfig;
+                                    let trainingInfo;
+                                    if (type === 'rasa') {
+                                        trainingInfo = await getTrainingInfo(
+                                            projectId,
+                                            host,
+                                        );
+                                    } else {
+                                        trainingInfo = await getHierTrainingInfo(
+                                            projectId,
+                                            host,
+                                        );
+                                    }
+                                    const { status, jobId } = trainingInfo;
+                                    return { host, status, jobId };
+                                }),
                         );
 
                         return {
@@ -205,12 +212,14 @@ Meteor.startup(function () {
         }, 10000);
 
         if (DEPLOYER_ADDR && DEPLOYER_API_KEY) {
-            Meteor.setInterval(async () => {
-                Projects.find({}, { fields: {} }).forEach(
-                    ({ _id: projectId }) => {
-                        updateInfrastructureStatus(projectId);
-                    },
-                );
+            Meteor.setInterval(() => {
+                Projects.find({}, { fields: {} }).forEach(async ({ _id: projectId }) => {
+                    try {
+                        await updateInfrastructureStatus(projectId);
+                    } catch (error) {
+                        console.error(error);
+                    }
+                });
             }, 20000);
         }
     }
