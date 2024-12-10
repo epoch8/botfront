@@ -75,6 +75,7 @@ Meteor.methods({
             { projectId },
             { $set: { host: `http://${projectId.toLowerCase()}-infra-rasa-dev:5005` } },
         );
+        await updateInfrastructureStatus(projectId);
     },
     async 'project.removeInfrastructure'(projectId) {
         checkIfCan('infrastructure:w', projectId);

@@ -13,7 +13,7 @@ export const updateInfrastructureStatus = async (projectId) => {
         if (error.response?.status !== 404) {
             throw new Meteor.Error(
                 error.response?.status,
-                `Error deploying infra: ${JSON.stringify(error.response?.data)}`,
+                `Error updating infra status: ${JSON.stringify(error.response?.data)}`,
             );
         }
     }

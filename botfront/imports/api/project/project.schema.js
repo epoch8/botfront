@@ -60,22 +60,23 @@ export const chatWidgetSettingsSchema = new SimpleSchema({
 }, { strict: false });
 
 const Resources = new SimpleSchema({
-    requests: { type: Object, optional: true, defaultValue: null },
+    requests: { type: Object, optional: true },
     'requests.cpu': { type: String, optional: true },
     'requests.memory': { type: String, optional: true },
-    limits: { type: Object, optional: true, defaultValue: null },
+    limits: { type: Object, optional: true },
     'limits.cpu': { type: String, optional: true },
     'limits.memory': { type: String, optional: true },
 });
 
 const ServiceInfraParams = new SimpleSchema({
-    image: { type: String, defaultValue: '' },
-    version: { type: String, defaultValue: '' },
+    image: { type: String, optional: true },
+    version: { type: String, optional: true },
     env: { type: Array, optional: true },
     'env.$': { type: Object },
     'env.$.name': { type: String },
     'env.$.value': { type: String },
-    resources: { type: Resources },
+    resources: { type: Resources, optional: true },
+    extra_credentials: { type: String, optional: true },
 });
 
 const ServiceFullParams = new SimpleSchema({
@@ -110,11 +111,11 @@ const TelegramInfraParams = new SimpleSchema({
 });
 
 export const InfrastructureSchema = new SimpleSchema({
-    prod_enabled: { type: Boolean, defaultValue: false },
-    rasa: { type: ServiceFullParams },
-    actions: { type: ServiceFullParams },
+    // prod_enabled: { type: Boolean, defaultValue: false },
+    rasa: { type: ServiceInfraParams, optional: true },
+    actions: { type: ServiceInfraParams, optional: true },
     // chatwoot: { type: ChatwootInfraParams, optional: true, defaultValue: null },
-    telegram: { type: TelegramInfraParams, optional: true, defaultValue: null },
+    // telegram: { type: TelegramInfraParams, optional: true },
 });
 
 const InfrastructureStatusSchema = new SimpleSchema({
