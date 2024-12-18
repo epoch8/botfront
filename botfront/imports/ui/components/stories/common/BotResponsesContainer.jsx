@@ -3,11 +3,7 @@ import React, {
     useState, useEffect, useMemo, useContext,
 } from 'react';
 import PropTypes from 'prop-types';
-import {
-    Dropdown,
-    Placeholder,
-    Popup,
-} from 'semantic-ui-react';
+import { Dropdown, Placeholder, Popup } from 'semantic-ui-react';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { safeLoad } from 'js-yaml';
 import { useTranslation } from 'react-i18next';
@@ -21,11 +17,14 @@ import { useUpload } from '../hooks/image.hooks';
 import { can } from '../../../../lib/scopes';
 import { ProjectContext } from '../../../layouts/context';
 import {
-    checkMetadataSet, toggleButtonPersistence, parseContentType, checkContentEmpty,
+    checkMetadataSet,
+    toggleButtonPersistence,
+    parseContentType,
+    checkContentEmpty,
 } from '../../../../lib/botResponse.utils';
 import BotResponseName from './BotResponseName';
 import { RESP_FROM_LANG } from '../graphql/mutations';
-import { GET_BOT_RESPONSE } from '../../templates/queries'
+import { GET_BOT_RESPONSE } from '../../templates/queries';
 import ConfirmPopup from '../../common/ConfirmPopup';
 
 export const ResponseContext = React.createContext();
@@ -55,26 +54,30 @@ const BotResponsesContainer = (props) => {
     const otherLanguages = projectLanguages.filter(lang => lang.value !== language);
     const [importRespFromLang] = useMutation(RESP_FROM_LANG, {
         onCompleted: (data) => {
-            const resp = data.importRespFromLang.values.find(value => value.lang === language);
+            const resp = data.importRespFromLang.values.find(
+                value => value.lang === language,
+            );
             const content = safeLoad(resp.sequence[0].content);
             const type = parseContentType(content);
             setResponseInCache(name, { ...content, __typename: type });
         },
     });
 
-    const [comment, setComment] = useState(null);
-    const { data, loading, error, refetch } = useQuery(GET_BOT_RESPONSE, {
+    // const [comment, setComment] = useState(null);
+    const {
+        data, loading, error, refetch,
+    } = useQuery(GET_BOT_RESPONSE, {
         variables: { projectId, key: name },
     });
-    useEffect(() => {
-        if (data?.botResponse) {
-            setComment(safeLoad(data.botResponse.comment)?.text);
-        } else if (data && data.botResponse.comment === null) {
-            setComment({
-                comment: '',
-            });
+
+    const comment = useMemo(() => {
+        const ymlData = data?.botResponse?.comment;
+        if (ymlData) {
+            return safeLoad(ymlData)?.text;
         }
+        return null;
     }, [data]);
+
     useEffect(() => {
         refetch();
     }, [refetch]);
@@ -171,9 +174,12 @@ const BotResponsesContainer = (props) => {
                 <BotResponseContainer
                     tag={tag}
                     value={response}
-                    onDelete={() => { if (sequenceArray.length > 1) handleDeleteResponse(index); }}
+                    onDelete={() => {
+                        if (sequenceArray.length > 1) handleDeleteResponse(index);
+                    }}
                     onAbort={() => {}}
-                    onChange={(newContent, enter) => handleChangeResponse(newContent, index, enter)}
+                    onChange={(newContent, enter) => handleChangeResponse(newContent, index, enter)
+                    }
                     focus={focus === index}
                     onFocus={() => setFocus(index)}
                     editCustom={() => setEditorOpen(true)}
@@ -182,7 +188,12 @@ const BotResponsesContainer = (props) => {
                     editable={editable}
                     disableEnterKey={disableEnterKey}
                 />
-                {deletable && sequenceArray.length > 1 && <IconButton onClick={() => handleDeleteResponse(index)} icon='trash' />}
+                {deletable && sequenceArray.length > 1 && (
+                    <IconButton
+                        onClick={() => handleDeleteResponse(index)}
+                        icon='trash'
+                    />
+                )}
             </div>
         </React.Fragment>
     );
@@ -197,12 +208,14 @@ const BotResponsesContainer = (props) => {
         />
     );
 
-    const renderThemeTag = () => (<span className='bot-response theme-tag'>{theme}</span>);
+    const renderThemeTag = () => <span className='bot-response theme-tag'>{theme}</span>;
 
     return (
         <ResponseContext.Provider value={{ name, uploadImage }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                <div className={`utterances-container exception-wrapper-target theme-${theme}`}>
+                <div
+                    className={`utterances-container exception-wrapper-target theme-${theme}`}
+                >
                     {!template && (
                         <div className='loading-bot-response'>
                             <Placeholder fluid>
@@ -218,12 +231,11 @@ const BotResponsesContainer = (props) => {
                             responseType={typeName}
                         />
                         {otherLanguages.length > 0
-                        && initialValue
-                        && !initialValue.isNew
-                        && getSequence().length === 1
-                        && !checkContentEmpty(getSequence()[0])
-                        && editable
-                        && (
+                            && initialValue
+                            && !initialValue.isNew
+                            && getSequence().length === 1
+                            && !checkContentEmpty(getSequence()[0])
+                            && editable && (
                             <Dropdown
                                 button
                                 icon={null}
@@ -235,22 +247,30 @@ const BotResponsesContainer = (props) => {
                                 onChange={(_, selection) => {
                                     importRespFromLang({
                                         variables: {
-                                            projectId, key: name, originLang: selection.value, destLang: language,
+                                            projectId,
+                                            key: name,
+                                            originLang: selection.value,
+                                            destLang: language,
                                         },
                                     });
                                 }}
                             />
-                        )
-                        }
+                        )}
                         {enableEditPopup && (
                             <IconButton
                                 icon='ellipsis vertical'
                                 onClick={() => {
                                     setEditorOpen(true);
                                 }}
-                                onMouseDown={(e) => { e.stopPropagation(); }}
+                                onMouseDown={(e) => {
+                                    e.stopPropagation();
+                                }}
                                 data-cy='edit-responses'
-                                className={template && checkMetadataSet(template.metadata) ? 'light-green' : 'grey'}
+                                className={
+                                    template && checkMetadataSet(template.metadata)
+                                        ? 'light-green'
+                                        : 'grey'
+                                }
                                 color={null}
                             />
                         )}
@@ -265,13 +285,26 @@ const BotResponsesContainer = (props) => {
                         {deletable && onDeleteAllResponses && editable && (
                             <>
                                 <Popup
-                                    trigger={<span><IconButton onMouseDown={() => {}} icon='trash' /></span>}
+                                    trigger={(
+                                        <span>
+                                            <IconButton
+                                                onMouseDown={() => {}}
+                                                icon='trash'
+                                            />
+                                        </span>
+                                    )}
                                     content={(
                                         <ConfirmPopup
                                             title={t('Delete response?')}
-                                            description={responseLocations.length > 1
-                                                ? t('Remove this response from the current fragment')
-                                                : t('Remove this response from the current fragment and delete it')}
+                                            description={
+                                                responseLocations.length > 1
+                                                    ? t(
+                                                        'Remove this response from the current fragment',
+                                                    )
+                                                    : t(
+                                                        'Remove this response from the current fragment and delete it',
+                                                    )
+                                            }
                                             onYes={() => {
                                                 setDeletePopupOpen(false);
                                                 onDeleteAllResponses();
@@ -290,13 +323,19 @@ const BotResponsesContainer = (props) => {
                     {renderDynamicResponseName()}
                     {theme !== 'default' && renderThemeTag()}
                 </div>
-                {enableEditPopup &&
+                {enableEditPopup && (
                     <div style={{ marginLeft: '10px', overflowWrap: 'break-word' }}>
-                        <label style={{ display: 'inline-block', width: '100%', textAlign: 'left' }}>
+                        <label
+                            style={{
+                                display: 'inline-block',
+                                width: '100%',
+                                textAlign: 'left',
+                            }}
+                        >
                             {comment}
                         </label>
                     </div>
-                }
+                )}
             </div>
         </ResponseContext.Provider>
     );

@@ -1,10 +1,14 @@
 import { check } from 'meteor/check';
 import axios from 'axios';
+import uuidv4 from 'uuid/v4';
+import { safeLoad } from 'js-yaml';
 
+import { safeDump } from 'js-yaml/lib/js-yaml';
 import { checkIfCan } from '../../../lib/scopes';
 import { Projects } from '../project.collection';
+import { Credentials } from '../../credentials';
 import { Instances } from '../../instances/instances.collection';
-import { DEPLOYER_ADDR, DEPLOYER_API_KEY } from '../../../../server/config';
+import { DEPLOYER_ADDR, DEPLOYER_API_KEY, RPD_RASA_DOMAIN } from '../../../../server/config';
 import { updateInfrastructureStatus } from './utils';
 
 const processServiceParams = (serviceParams) => {
@@ -48,6 +52,8 @@ Meteor.methods({
         check(projectId, String);
         check(infrastructureSettings, Object);
         checkEnvs();
+        const instanceInfo = Instances.findOne({ projectId }) || {};
+        const token = instanceInfo.token || uuidv4();
         const project = getProject(projectId);
         const url = `${DEPLOYER_ADDR}/deploy?token=${DEPLOYER_API_KEY}`;
         const {
@@ -57,7 +63,7 @@ Meteor.methods({
         } = infrastructureSettings;
         const payload = {
             ...restSettings,
-            rasa: processServiceParams(rasaSettings),
+            rasa: { ...processServiceParams(rasaSettings), token },
             actions: processServiceParams(actionsSettings),
             callback_url: null,
             project_id: projectId,
@@ -71,10 +77,40 @@ Meteor.methods({
                 `Error deploying infra: ${JSON.stringify(error.response?.data)}`,
             );
         }
+
         Instances.update(
             { projectId },
-            { $set: { host: `http://${projectId.toLowerCase()}-infra-rasa-dev:5005` } },
+            {
+                $set: {
+                    host: `http://rpd-${projectId.toLowerCase()}-rasa-dev:5005`,
+                    actionServerHost: `http://rpd-${projectId.toLowerCase()}-actions-dev:5055`,
+                    token,
+                },
+            },
         );
+
+        const { credentials: credentialsYml = '' } = Credentials.findOne(
+            { projectId, environment: 'development' },
+            { credentials: 1 },
+        ) || {};
+        const credentials = safeLoad(credentialsYml) || {};
+        const channel = Object.keys(credentials).find(
+            k => ['WebchatInput', 'WebchatPlusInput'].some(
+                c => k.includes(c),
+            ),
+        ) || 'WebchatInput';
+        const { socket_path: socketPath, ...restChanData } = credentials[channel];
+        credentials[channel] = {
+            ...restChanData,
+            base_url: `https://${projectId}-rasa-dev.${RPD_RASA_DOMAIN}`,
+            socket_path: socketPath || '/socket.io/',
+        };
+
+        Credentials.update(
+            { projectId, environment: 'development' },
+            { $set: { credentials: safeDump(credentials) } },
+        );
+
         await updateInfrastructureStatus(projectId);
     },
     async 'project.removeInfrastructure'(projectId) {

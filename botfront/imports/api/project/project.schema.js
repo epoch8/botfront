@@ -76,6 +76,7 @@ const ServiceInfraParams = new SimpleSchema({
     'env.$.name': { type: String },
     'env.$.value': { type: String },
     resources: { type: Resources, optional: true },
+    token: { type: String, optional: true },
     extra_credentials: { type: String, optional: true },
 });
 
@@ -112,8 +113,8 @@ const TelegramInfraParams = new SimpleSchema({
 
 export const InfrastructureSchema = new SimpleSchema({
     // prod_enabled: { type: Boolean, defaultValue: false },
-    rasa: { type: ServiceInfraParams, optional: true },
-    actions: { type: ServiceInfraParams, optional: true },
+    rasa: { type: ServiceInfraParams, defaultValue: {} },
+    actions: { type: ServiceInfraParams, defaultValue: {} },
     // chatwoot: { type: ChatwootInfraParams, optional: true, defaultValue: null },
     // telegram: { type: TelegramInfraParams, optional: true },
 });

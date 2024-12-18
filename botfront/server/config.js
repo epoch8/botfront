@@ -5,4 +5,5 @@ export const {
     EXTERNAL_TRAINING_IMAGE,
     DEPLOYER_ADDR,
     DEPLOYER_API_KEY,
+    RPD_RASA_DOMAIN,
 } = process.env;

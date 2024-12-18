@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+    useState, useEffect, useRef, useMemo,
+} from 'react';
 import PropTypes from 'prop-types';
 import {
     Icon, Menu, Segment, Placeholder,
@@ -7,16 +9,16 @@ import Alert from 'react-s-alert';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import { connect } from 'react-redux';
 import { withTracker } from 'meteor/react-meteor-data';
+import { safeLoad } from 'js-yaml/lib/js-yaml';
 import { GET_CONVERSATION } from './queries';
 import { MARK_READ, LABEL_EVENT } from './mutations';
 import { getEventLabel } from './utils';
-import { GET_BOT_RESPONSES } from '../../components/templates/queries';
+import { GET_BOT_RESPONSES } from '../templates/queries';
 import ConversationJsonViewer from './ConversationJsonViewer';
 import ConversationDialogueViewer from './ConversationDialogueViewer';
 import Can from '../roles/Can';
 import { Cache } from '../../../lib/utils';
 import { Instances } from '../../../api/instances/instances.collection';
-import { safeLoad } from 'js-yaml/lib/js-yaml';
 
 const audioCache = new Cache(20);
 
@@ -26,7 +28,7 @@ function ConversationViewer(props) {
 
     const timeout = useRef(null);
 
-    useEffect(() => (() => clearTimeout(timeout.current)), []);
+    useEffect(() => () => clearTimeout(timeout.current), []);
 
     const {
         tracker,
@@ -38,7 +40,7 @@ function ConversationViewer(props) {
         labeling,
         onLabelChange,
         audioAvailable,
-        botResponsesComments
+        botResponsesComments,
     } = props;
 
     const [markRead, { data }] = useMutation(MARK_READ);
@@ -122,13 +124,19 @@ function ConversationViewer(props) {
                         botResponsesComments={botResponsesComments}
                     />
                 )}
-                {active === 'JSON' && <ConversationJsonViewer tracker={tracker.tracker} />}
+                {active === 'JSON' && (
+                    <ConversationJsonViewer tracker={tracker.tracker} />
+                )}
             </Segment>
         );
     }
 
     useEffect(() => {
-        if (tracker && tracker.status !== 'read' && !optimisticlyRemoved.has(tracker._id)) {
+        if (
+            tracker
+            && tracker.status !== 'read'
+            && !optimisticlyRemoved.has(tracker._id)
+        ) {
             removeReadMark(tracker._id);
             markRead({ variables: { id: tracker._id } });
         }
@@ -136,10 +144,13 @@ function ConversationViewer(props) {
 
     useEffect(() => {
         if (data && !data.markAsRead.success) {
-            Alert.warning('Something went wrong, the conversation was not marked as read', {
-                position: 'top-right',
-                timeout: 5000,
-            });
+            Alert.warning(
+                'Something went wrong, the conversation was not marked as read',
+                {
+                    position: 'top-right',
+                    timeout: 5000,
+                },
+            );
         }
     }, [data]);
 
@@ -150,9 +161,7 @@ function ConversationViewer(props) {
         if (!audioDataUrl) {
             return 'No audio available';
         }
-        return (
-            <audio controls src={audioDataUrl} />
-        );
+        return <audio controls src={audioDataUrl} />;
     };
 
     useEffect(() => {
@@ -188,7 +197,6 @@ function ConversationViewer(props) {
         };
     }, [tracker]);
 
-
     return (
         <div className='conversation-wrapper'>
             <Menu compact attached='top'>
@@ -200,10 +208,20 @@ function ConversationViewer(props) {
                     </Menu.Item> */}
                 <Can I='incoming:w'>
                     <>
-                        <Menu.Item name='archived' disabled={!ready} active={ready && tracker.status === 'archived'} onClick={handleItemDelete}>
+                        <Menu.Item
+                            name='archived'
+                            disabled={!ready}
+                            active={ready && tracker.status === 'archived'}
+                            onClick={handleItemDelete}
+                        >
                             <Icon name='trash' data-cy='conversation-delete' />
                         </Menu.Item>
-                        <Menu.Item name='archived' disabled={!ready} active={ready && tracker.status === 'archived'} onClick={handleSaveAsTestCase}>
+                        <Menu.Item
+                            name='archived'
+                            disabled={!ready}
+                            active={ready && tracker.status === 'archived'}
+                            onClick={handleSaveAsTestCase}
+                        >
                             <Icon
                                 name='clipboard check'
                                 data-cy='save-as-test'
@@ -214,13 +232,28 @@ function ConversationViewer(props) {
                     </>
                 </Can>
                 <Menu.Menu position='right'>
-                    <Menu.Item name='Text' disabled={!ready} active={ready && active === 'Text'} onClick={handleItemClick}>
+                    <Menu.Item
+                        name='Text'
+                        disabled={!ready}
+                        active={ready && active === 'Text'}
+                        onClick={handleItemClick}
+                    >
                         <Icon name='comments' />
                     </Menu.Item>
-                    <Menu.Item name='Debug' disabled={!ready} active={ready && active === 'Debug'} onClick={handleItemClick}>
+                    <Menu.Item
+                        name='Debug'
+                        disabled={!ready}
+                        active={ready && active === 'Debug'}
+                        onClick={handleItemClick}
+                    >
                         <Icon name='bug' />
                     </Menu.Item>
-                    <Menu.Item name='JSON' disabled={!ready} active={ready && active === 'JSON'} onClick={handleItemClick}>
+                    <Menu.Item
+                        name='JSON'
+                        disabled={!ready}
+                        active={ready && active === 'JSON'}
+                        onClick={handleItemClick}
+                    >
                         <Icon name='code' />
                     </Menu.Item>
                 </Menu.Menu>
@@ -233,13 +266,11 @@ function ConversationViewer(props) {
     );
 }
 
-
 ConversationViewer.defaultProps = {
     tracker: null,
     optimisticlyRemoved: new Set(),
     labeling: false,
     onLabelChange: null,
-
 };
 
 ConversationViewer.propTypes = {
@@ -276,21 +307,21 @@ const ConversationViewerContainer = withTracker((props) => {
     });
 
     const handler = Meteor.subscribe('nlu_instances', projectId);
-    const instance = Instances.findOne(
-        { projectId }, { fields: { audioRecordsUrl: 1 } },
-    );
+    const instance = Instances.findOne({ projectId }, { fields: { audioRecordsUrl: 1 } });
     const audioAvailable = !!instance?.audioRecordsUrl;
 
-    const {
-        data: resp
-    } = useQuery(GET_BOT_RESPONSES, {
-        variables: { projectId, },
+    const { data: resp } = useQuery(GET_BOT_RESPONSES, {
+        variables: { projectId },
         pollInterval: 2000,
     });
 
-    const botResponsesComments = resp?.botResponses.map((r) => {
-        return { id: r.key, comment: safeLoad(r.comment)?.text };
-    });
+    const botResponsesComments = useMemo(
+        () => resp?.botResponses.map(r => ({
+            id: r.key,
+            comment: safeLoad(r.comment)?.text,
+        })),
+        [resp],
+    );
     const [labelEvent, { data: labelEventData }] = useMutation(LABEL_EVENT);
 
     const newTracker = !loading && !error && data ? data.conversation : null;
@@ -298,15 +329,19 @@ const ConversationViewerContainer = withTracker((props) => {
     const compareLabels = () => {
         const currentTracker = tracker.current;
         if (!newTracker || !currentTracker) return false;
-        return newTracker.tracker.events.every((newEvent, index) => (
-            getEventLabel(currentTracker.tracker.events[index]) === getEventLabel(newEvent)
-        ));
+        return newTracker.tracker.events.every(
+            (newEvent, index) => getEventLabel(currentTracker.tracker.events[index])
+                === getEventLabel(newEvent),
+        );
     };
 
-    if (newTracker && (
-        (tracker.current ? tracker.current.tracker.events : []).length !== newTracker.tracker.events.length
-        || (tracker.current || {})._id !== newTracker._id || !compareLabels()
-    )) {
+    if (
+        newTracker
+        && ((tracker.current ? tracker.current.tracker.events : []).length
+            !== newTracker.tracker.events.length
+            || (tracker.current || {})._id !== newTracker._id
+            || !compareLabels())
+    ) {
         tracker.current = newTracker;
         if (onHasLabeledEventChange) {
             onHasLabeledEventChange(newTracker.tracker.events.some(getEventLabel));
@@ -335,6 +370,4 @@ const mapStateToProps = state => ({
     projectId: state.settings.get('projectId'),
 });
 
-export default connect(
-    mapStateToProps,
-)(ConversationViewerContainer);
+export default connect(mapStateToProps)(ConversationViewerContainer);
