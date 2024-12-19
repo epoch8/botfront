@@ -47,10 +47,11 @@ const ChangeResponseType = (props) => {
                 onChange={handleSelectType}
             >
                 <Dropdown.Menu>
-                    {options.map(option => (
+                    {options.map((option, idx) => (
                         <Dropdown.Item
                             onClick={() => handleSelectType(option.value)}
                             active={currentResponseType === option.value}
+                            key={idx}
                         >
                             {option.text}
                         </Dropdown.Item>

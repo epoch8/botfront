@@ -6,9 +6,16 @@ import {
 import PropTypes from 'prop-types';
 import IntentLabel from '../nlu/common/IntentLabel';
 
-
 function SequenceSelector({
-    sequence, onChange, actionOptions, slotOptions, allowedEventTypes, bordered, enableExclusions, width, direction,
+    sequence,
+    onChange,
+    actionOptions,
+    slotOptions,
+    allowedEventTypes,
+    bordered,
+    enableExclusions,
+    width,
+    direction,
 }) {
     const [search, setSearch] = useState('');
     const [mainDropdownOpen, setMainDropdownOpen] = useState(null);
@@ -48,8 +55,7 @@ function SequenceSelector({
         onChange([...newSequence]);
     }
 
-
-    function handleKeyDown (e) {
+    function handleKeyDown(e) {
         if (e.key === 'Enter' && search && search.length) {
             if (enableExclusions) {
                 onAddStep({ name: search, type: dropdownOpen, excluded: false });
@@ -75,7 +81,10 @@ function SequenceSelector({
             break;
         }
         return (
-            <Dropdown.Menu className='actions-container  sub-dropdown' onClick={e => e.stopPropagation()}>
+            <Dropdown.Menu
+                className='actions-container  sub-dropdown'
+                onClick={e => e.stopPropagation()}
+            >
                 <Dropdown.Item className='search-menu-item' key='search'>
                     <Input
                         value={search}
@@ -104,22 +113,20 @@ function SequenceSelector({
                             key={option.text}
                         />
                     ))}
-                {search !== ''
-            && (
-                <Dropdown.Item
-                    className='search-result-item'
-                    data-cy='add-option'
-                    text={`add: ${search}`}
-                    onClick={(e) => {
-                        if (enableExclusions) onAddStep({ name: search, type, excluded: false });
-                        setSearch('');
-                        setDropdownOpen(null);
-                        setMainDropdownOpen(null);
-                        e.stopPropagation();
-                    }}
-                />
-            )}
-
+                {search !== '' && (
+                    <Dropdown.Item
+                        className='search-result-item'
+                        data-cy='add-option'
+                        text={`add: ${search}`}
+                        onClick={(e) => {
+                            if (enableExclusions) onAddStep({ name: search, type, excluded: false });
+                            setSearch('');
+                            setDropdownOpen(null);
+                            setMainDropdownOpen(null);
+                            e.stopPropagation();
+                        }}
+                    />
+                )}
             </Dropdown.Menu>
         );
     };
@@ -128,14 +135,29 @@ function SequenceSelector({
         <Dropdown.Menu>
             {allowedEventTypes.includes('action') && (
                 <Dropdown.Item className='dropdown-step' key='actions-dropdown-item'>
-                    <Dropdown scrolling open={dropdownOpen === 'action'} text='Actions' fluid className='sequence-addition' onClick={() => setDropdownOpen('action')} data-cy='action-event-dropdown'>
+                    <Dropdown
+                        scrolling
+                        open={dropdownOpen === 'action'}
+                        text='Actions'
+                        fluid
+                        className='sequence-addition'
+                        onClick={() => setDropdownOpen('action')}
+                        data-cy='action-event-dropdown'
+                    >
                         {renderContent('action')}
                     </Dropdown>
                 </Dropdown.Item>
             )}
             {allowedEventTypes.includes('intent') && (
                 <Dropdown.Item className='dropdown-step' key='intents-dropdown-item'>
-                    <Dropdown open={dropdownOpen === 'intent'} text='Intents' fluid className='sequence-addition' onClick={() => setDropdownOpen('intent')} data-cy='intent-event-dropdown'>
+                    <Dropdown
+                        open={dropdownOpen === 'intent'}
+                        text='Intents'
+                        fluid
+                        className='sequence-addition'
+                        onClick={() => setDropdownOpen('intent')}
+                        data-cy='intent-event-dropdown'
+                    >
                         <Dropdown.Menu>
                             <IntentLabel
                                 value={null}
@@ -143,8 +165,16 @@ function SequenceSelector({
                                 allowEditing
                                 allowAdditions
                                 enableReset
-                                onChange={v => onAddStep({ name: v, excluded: false, type: 'intent' })}
-                                onClose={() => { setDropdownOpen(null); setMainDropdownOpen(false); }}
+                                onChange={v => onAddStep({
+                                    name: v,
+                                    excluded: false,
+                                    type: 'intent',
+                                })
+                                }
+                                onClose={() => {
+                                    setDropdownOpen(null);
+                                    setMainDropdownOpen(false);
+                                }}
                             />
                         </Dropdown.Menu>
                     </Dropdown>
@@ -152,7 +182,15 @@ function SequenceSelector({
             )}
             {allowedEventTypes.includes('slot') && (
                 <Dropdown.Item className='dropdown-step' key='slots-dropdown-item'>
-                    <Dropdown scrolling open={dropdownOpen === 'slot'} text='Slot events' fluid className='sequence-addition' onClick={() => setDropdownOpen('slot')} data-cy='slot-event-dropdown'>
+                    <Dropdown
+                        scrolling
+                        open={dropdownOpen === 'slot'}
+                        text='Slot events'
+                        fluid
+                        className='sequence-addition'
+                        onClick={() => setDropdownOpen('slot')}
+                        data-cy='slot-event-dropdown'
+                    >
                         {renderContent('slot')}
                     </Dropdown>
                 </Dropdown.Item>
@@ -177,8 +215,11 @@ function SequenceSelector({
                         allowAdditions
                         enableReset
                         onChange={onAddStep}
-                        onClose={() => { setDropdownOpen(null); setMainDropdownOpen(false); }}
-                        width='400'
+                        onClose={() => {
+                            setDropdownOpen(null);
+                            setMainDropdownOpen(false);
+                        }}
+                        width={400}
                     />
                 </Dropdown.Menu>
             );
@@ -200,33 +241,55 @@ function SequenceSelector({
 
     const renderSequenceSelector = () => (
         <div ref={rootRef}>
-            <Grid className={`sequence-selector-grid ${bordered ? 'bordered-sequence-selector' : ''}`}>
-                <Grid.Column data-cy='sequence-container' floated='left' width={width} className={`sequence-item-container ${bordered ? 'bordered-sequence-selector' : ''}`}> {sequence.map((step, index) => (
-                    <Label
-                        key={`sequence-step-${index}`}
-                        className='sequence-step'
-                        data-cy={`sequence-step-${index}`}
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            if (enableExclusions) switchLabel(index, !step.excluded);
-                        }}
-                        color={getLabelColor(step)}
-                    >
-                        {step.excluded && (
+            <Grid
+                className={`sequence-selector-grid ${
+                    bordered ? 'bordered-sequence-selector' : ''
+                }`}
+            >
+                <Grid.Column
+                    data-cy='sequence-container'
+                    floated='left'
+                    width={width}
+                    className={`sequence-item-container ${
+                        bordered ? 'bordered-sequence-selector' : ''
+                    }`}
+                >
+                    {' '}
+                    {sequence.map((step, index) => (
+                        <Label
+                            key={`sequence-step-${index}`}
+                            className='sequence-step'
+                            data-cy={`sequence-step-${index}`}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (enableExclusions) switchLabel(index, !step.excluded);
+                            }}
+                            color={getLabelColor(step)}
+                        >
+                            {step.excluded && (
+                                <Icon name='ban' color='white' size='small' />
+                            )}
+                            {step.type === 'slot'
+                                ? `slot:${getItemName(step)}`
+                                : getItemName(step)}
                             <Icon
-                                name='ban'
-                                color='white'
-                                size='small'
+                                name='delete'
+                                data-cy={`remove-step-${index}`}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onRemoveStep(index);
+                                }}
                             />
-                        )}{step.type === 'slot' ? `slot:${getItemName(step)}` : getItemName(step)}<Icon
-                            name='delete'
-                            data-cy={`remove-step-${index}`}
-                            onClick={(e) => { e.stopPropagation(); onRemoveStep(index); }}
-                        />
-                    </Label>
-                ))}
+                        </Label>
+                    ))}
                 </Grid.Column>
-                <Grid.Column floated='right' width={2} className={`add-event-button ${bordered ? 'bordered-sequence-selector' : ''}`}>
+                <Grid.Column
+                    floated='right'
+                    width={2}
+                    className={`add-event-button ${
+                        bordered ? 'bordered-sequence-selector' : ''
+                    }`}
+                >
                     <Dropdown
                         icon='add'
                         text=' '
@@ -240,12 +303,13 @@ function SequenceSelector({
                         onClick={() => setMainDropdownOpen(true)}
                         direction={direction}
                     >
-                        {allowedEventTypes.length > 1 ? renderMultiTypeDropdown() : renderSingleTypeDropdown(allowedEventTypes[0])}
+                        {allowedEventTypes.length > 1
+                            ? renderMultiTypeDropdown()
+                            : renderSingleTypeDropdown(allowedEventTypes[0])}
                     </Dropdown>
                 </Grid.Column>
             </Grid>
         </div>
-
     );
 
     if (bordered) {
@@ -257,7 +321,6 @@ function SequenceSelector({
     }
     return renderSequenceSelector();
 }
-
 
 SequenceSelector.propTypes = {
     sequence: PropTypes.array,
@@ -271,7 +334,6 @@ SequenceSelector.propTypes = {
     direction: PropTypes.string,
 };
 
-
 SequenceSelector.defaultProps = {
     sequence: [],
     actionOptions: [],
@@ -282,6 +344,5 @@ SequenceSelector.defaultProps = {
     width: 14,
     direction: 'right',
 };
-
 
 export default SequenceSelector;
