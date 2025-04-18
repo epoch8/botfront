@@ -56,6 +56,7 @@ Meteor.methods({
      * @param {string?} image
      * @param {string?} rasaExtraArgs
      * @param {string?} node
+     * @param {string} trainType
      * @returns {Promise<string>}
      */
     async 'externalTraining.train'(
@@ -66,6 +67,7 @@ Meteor.methods({
         image,
         rasaExtraArgs,
         node,
+        trainType,
     ) {
         checkIfCan('nlu-data:x', projectId);
         check(projectId, String);
@@ -75,6 +77,11 @@ Meteor.methods({
         check(image, Match.Maybe(String));
         check(rasaExtraArgs, Match.Maybe(String));
         check(node, Match.Maybe(String));
+        check(trainType, String);
+
+        if (trainType !== 'rasa') {
+            throw new Meteor.Error('Invalid trainType', 'This method only supports Rasa training.');
+        }
 
         let rasaVersion;
         try {
@@ -88,6 +95,8 @@ Meteor.methods({
         }
 
         const isRasaForBF = !rasaVersion.startsWith('3');
+        const resolvedTrainType = isRasaForBF ? 'rasa' : 'hier';
+        console.log(`[TRAINING] Starting training for project ${projectId} with trainType: ${resolvedTrainType}`);
 
         const backupId = await Meteor.callWithPromise(
             'backup.create',
@@ -119,6 +128,7 @@ Meteor.methods({
                 name,
                 backupId,
                 status: 'training',
+                trainType,
                 createdAt: new Date(),
             });
         } catch (error) {
@@ -161,7 +171,9 @@ Meteor.methods({
         checkIfCan('nlu-data:x', training.projectId);
         try {
             await betApi.cancel(jobId, training.host);
-        } catch {}
+        } catch (error) {
+            // Error intentionally ignored
+        }
         ExternalTrainings.remove({ _id: training._id });
         return true;
     },

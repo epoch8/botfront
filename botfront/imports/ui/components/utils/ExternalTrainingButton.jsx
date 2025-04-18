@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Button } from 'semantic-ui-react';
 import { Meteor } from 'meteor/meteor';
@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 import { Projects } from '../../../api/project/project.collection';
 import { Can } from '../../../lib/scopes';
-import { ProjectContext } from '../../layouts/context';
 
 const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
     const { status, jobId } = useTracker(() => {
@@ -33,8 +32,6 @@ const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
         return { status: 'notReachable', jobId: null };
     });
 
-    const { language } = useContext(ProjectContext);
-
     const { t } = useTranslation('utils');
 
     const training = status === 'training';
@@ -52,33 +49,24 @@ const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
             return;
         }
         setClicked(true);
-        const isRasaTraining = trainingConfig.type === 'rasa';
+        const { type: trainType } = trainingConfig; // Получаем trainType из конфигурации
         try {
             if (training) {
                 const { host } = trainingConfig;
-                if (isRasaTraining) {
-                    await Meteor.callWithPromise('externalTraining.cancel', jobId, host);
-                } else {
-                    await Meteor.callWithPromise('hierTraining.cancel', projectId, host);
-                }
+                await Meteor.callWithPromise(
+                    trainType === 'rasa' ? 'externalTraining.cancel' : 'hierTraining.cancel',
+                    jobId,
+                    host,
+                );
             } else {
-                const {
-                    host, image, name, rasaExtraArgs, node,
-                } = trainingConfig;
-                if (isRasaTraining) {
-                    await Meteor.callWithPromise(
-                        'externalTraining.train',
-                        projectId,
-                        language,
-                        host,
-                        name,
-                        image,
-                        rasaExtraArgs,
-                        node,
-                    );
-                } else {
-                    await Meteor.callWithPromise('hierTraining.train', projectId, host);
-                }
+                const { host, name } = trainingConfig;
+                await Meteor.callWithPromise(
+                    trainType === 'rasa' ? 'externalTraining.train' : 'hierTraining.train',
+                    projectId,
+                    host,
+                    name,
+                    trainType,
+                );
             }
         } catch (error) {
             console.error(error);

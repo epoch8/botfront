@@ -12,6 +12,10 @@ export const ExternalTrainingSchema = new SimpleSchema({
         type: String,
         allowedValues: ['training', 'failed', 'success', 'cancelled'],
     },
+    trainType: {
+        type: String,
+        allowedValues: ['rasa', 'hier'],
+    },
     backupId: {
         type: String,
         optional: true,

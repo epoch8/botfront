@@ -8,6 +8,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import { createHash } from 'crypto';
 
+import { performance } from 'perf_hooks'; // Moved to the top level
 import {
     createAxiosForRasa,
     formatError,
@@ -24,6 +25,10 @@ import { getFragmentsAndDomain } from '../../lib/story.utils';
 import { dropNullValuesFromObject } from '../../lib/client.safe.utils';
 import { Projects } from '../project/project.collection';
 import { deduplicateArray } from '../../lib/importers/validateDomain';
+import { BetApi } from '../externalTrainings/server/betApi';
+import { ExternalTrainings } from '../externalTrainings/collection';
+
+export const betApi = new BetApi();
 
 const replaceMongoReservedChars = (input) => {
     if (Array.isArray(input)) return input.map(replaceMongoReservedChars);
@@ -345,8 +350,6 @@ if (Meteor.isServer) {
         auditLog,
     } from '../../../server/logger';
     import { postTraining } from '../model/server/model.utils';
-    // eslint-disable-next-line import/order
-    import { performance } from 'perf_hooks';
     import { getFaqExamplesString } from './server/faqUtils';
     import { getRasaVersion } from './server/rasaUtils';
 
@@ -800,20 +803,52 @@ if (Meteor.isServer) {
                 throw formatError(e);
             }
         },
-        async 'hierTraining.train'(projectId, trainingHost) {
+        async 'hierTraining.train'(
+            projectId,
+            host,
+            name,
+            trainType,
+        ) {
             checkIfCan('nlu-data:x', projectId);
             check(projectId, String);
-            check(trainingHost, String);
-            if (!trainingHostExists(projectId, trainingHost)) {
-                getAppLoggerForMethod(
-                    trainingAppLogger,
-                    'hierTraining.train',
-                    Meteor.userId(),
-                    { projectId, trainingHost },
-                ).error('Host not found');
-                return;
+            check(host, String);
+            check(name, Match.Maybe(String));
+            check(trainType, String);
+        
+            if (trainType !== 'hier') {
+                throw new Meteor.Error('Invalid trainType', 'This method only supports Hier training.');
             }
-            await axios.post(`${trainingHost}/train/${projectId}`);
+        
+            auditLog('Starting Hier training', {
+                user: Meteor.user(),
+                projectId,
+            });
+        
+            const backupId = await Meteor.callWithPromise(
+                'backup.create',
+                projectId,
+                'External training backup',
+            );
+        
+            const yamlTrainingData = '';
+        
+            const jobId = await betApi.train(projectId, host, yamlTrainingData, {});
+        
+            try {
+                ExternalTrainings.insert({
+                    jobId,
+                    projectId,
+                    betUrl: host,
+                    name,
+                    backupId,
+                    status: 'training',
+                    trainType,
+                    createdAt: new Date(),
+                });
+            } catch (error) {
+                await betApi.cancel(jobId, host);
+                throw formatError(error);
+            }
         },
         async 'hierTraining.cancel'(projectId, trainingHost) {
             checkIfCan('nlu-data:x', projectId);

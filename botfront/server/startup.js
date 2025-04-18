@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-import axios from 'axios';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Accounts } from 'meteor/accounts-base';
 import dotenv from 'dotenv';
@@ -25,9 +24,10 @@ const fileAppLogger = getAppLoggerForFile(__filename);
 /**
  * @param {string} projectId
  * @param {string} host
+ * @param {string} trainType
  * @returns {Promise<object>}
  */
-const getTrainingInfo = async (projectId, host) => {
+const getTrainingInfo = async (projectId, host, trainType) => {
     try {
         const betReacheble = await checkBet(host);
         if (!betReacheble) {
@@ -37,52 +37,19 @@ const getTrainingInfo = async (projectId, host) => {
         if (currentTrainings.length === 0) {
             return { status: 'notTraining', jobId: null };
         }
-        return { status: 'training', jobId: currentTrainings[0].jobId };
+
+        const training = currentTrainings.find(t => t.trainType === trainType);
+        if (!training) {
+            return { status: 'notTraining', jobId: null };
+        }
+
+        return { status: 'training', jobId: training.jobId };
     } catch (error) {
         console.error(error);
     }
     return { status: 'notReachable', jobId: null };
 };
 
-/**
- * @param {string} projectId
- * @param {string} host
- * @returns {Promise<object>}
- */
-const getHierTrainingInfo = async (projectId, host) => {
-    let externalTrainingStatus = 'notReachable';
-    try {
-        const resp = await axios.post(`${host}/status/${projectId}`);
-        const respTrainingStatus = resp.data[0].status;
-        switch (respTrainingStatus) {
-        case 'scheduled':
-        case 'queued':
-        case 'running':
-        case 'restarting':
-        case 'shutdown':
-        case 'up_for_retry':
-        case 'up_for_reschedule':
-        case 'deferred':
-            externalTrainingStatus = 'training';
-            break;
-        case 'unknown':
-        case 'none':
-        case 'success':
-        case 'failed':
-        case 'skipped':
-        case 'upstream_failed':
-        case 'removed':
-            externalTrainingStatus = 'notTraining';
-            break;
-        default:
-            externalTrainingStatus = 'notReachable';
-            break;
-        }
-    } catch (error) {
-        console.error(error);
-    }
-    return { status: externalTrainingStatus };
-};
 
 Meteor.startup(function () {
     if (Meteor.isServer) {
@@ -155,18 +122,12 @@ Meteor.startup(function () {
                                 )
                                 .map(async (trainingConfig) => {
                                     const { host, type } = trainingConfig;
-                                    let trainingInfo;
-                                    if (type === 'rasa') {
-                                        trainingInfo = await getTrainingInfo(
-                                            projectId,
-                                            host,
-                                        );
-                                    } else {
-                                        trainingInfo = await getHierTrainingInfo(
-                                            projectId,
-                                            host,
-                                        );
-                                    }
+                                    const trainingInfo = await getTrainingInfo(
+                                        projectId,
+                                        host,
+                                        type,
+                                    );
+                        
                                     const { status, jobId } = trainingInfo;
                                     return { host, status, jobId };
                                 }),
