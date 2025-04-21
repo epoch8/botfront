@@ -49,7 +49,8 @@ const ExternalTrainingButton = ({ projectId, trainingConfig }) => {
             return;
         }
         setClicked(true);
-        const { type: trainType } = trainingConfig; // Получаем trainType из конфигурации
+        const { type: trainType } = trainingConfig;
+        console.log({ trainingConfig }); // Получаем trainType из конфигурации
         try {
             if (training) {
                 const { host } = trainingConfig;

@@ -813,8 +813,10 @@ if (Meteor.isServer) {
             check(projectId, String);
             check(host, String);
             check(name, Match.Maybe(String));
-            check(trainType, String);
-        
+            check(trainType, Match.Maybe(String));
+            
+            console.log({ projectId, language, host, name, image, rasaExtraArgs, node, trainType });
+
             if (trainType !== 'hier') {
                 throw new Meteor.Error('Invalid trainType', 'This method only supports Hier training.');
             }

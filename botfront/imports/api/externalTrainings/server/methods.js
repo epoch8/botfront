@@ -77,7 +77,9 @@ Meteor.methods({
         check(image, Match.Maybe(String));
         check(rasaExtraArgs, Match.Maybe(String));
         check(node, Match.Maybe(String));
-        check(trainType, String);
+        check(trainType, Match.Maybe(String));
+        
+        console.log({ projectId, language, host, name, image, rasaExtraArgs, node, trainType });
 
         if (trainType !== 'rasa') {
             throw new Meteor.Error('Invalid trainType', 'This method only supports Rasa training.');
