@@ -16,6 +16,7 @@ const topLevelFields = {
     },
     rules: { type: Array, optional: true },
     'rules.$': { type: Object, blackbox: true },
+    updatedAt: { type: Date, optional: true },
 };
 
 const stepFields = {

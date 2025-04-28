@@ -64,21 +64,24 @@ Meteor.methods({
         check(story, Match.OneOf(Object, [Object]));
         let result;
         const storyGroups = {};
+        const currentTime = new Date();
+
         if (Array.isArray(story)) {
             const stories = story.map((s) => {
-                if (s.projectId !== projectId) throw new Error(); // ensure homegeneous set
+                if (s.projectId !== projectId) throw new Error(); // ensure homogeneous set
                 const _id = s._id || uuidv4();
                 storyGroups[s.storyGroupId] = [...(storyGroups[s.storyGroupId] || []), _id];
                 return {
                     _id,
                     ...s,
+                    updatedAt: currentTime,
                     ...indexStory(s),
                 };
             });
             result = await Stories.rawCollection().insertMany(stories);
             result = Object.values(result.insertedIds);
         } else {
-            result = [Stories.insert({ ...story, ...indexStory(story) })];
+            result = [Stories.insert({ ...story, updatedAt: currentTime, ...indexStory(story) })];
             storyGroups[story.storyGroupId] = result;
         }
         auditLogIfOnServer('Stories created', {
@@ -120,8 +123,10 @@ Meteor.methods({
         checkIfCan('stories:w', projectId);
         check(story, Match.OneOf(Object, [Object]));
         check(options, Object);
+        const currentTime = new Date();
+
         if (Array.isArray(story)) {
-            if (story.some(s => s.projectId !== projectId)) throw new Error(); // ensure homegeneous set
+            if (story.some(s => s.projectId !== projectId)) throw new Error(); // ensure homogeneous set
             const originStories = Stories.find({ _id: { $in: story.map(({ _id }) => _id) } }).fetch();
             logStoryUpdate(story, projectId, originStories);
             return story.map(({ _id, ...rest }) => Stories.update(
@@ -129,6 +134,7 @@ Meteor.methods({
                 {
                     $set: {
                         ...rest,
+                        updatedAt: currentTime,
                         type: (originStories.find(({ _id: sid }) => sid === _id) || {}).type,
                         ...indexStory(originStories.find(({ _id: sid }) => sid === _id) || {}, { update: { ...rest, _id } }),
                     },
@@ -143,6 +149,7 @@ Meteor.methods({
             return Stories.update({ _id }, {
                 $set: {
                     ...rest,
+                    updatedAt: currentTime,
                     type: originStory.type,
                     ...indexStory(originStory, { update: { ...rest, _id } }),
                 },
@@ -169,7 +176,7 @@ Meteor.methods({
             : rest;
         const result = await Stories.update({ _id }, {
             $set: {
-                type: originStory.type, ...update, events: newEvents, textIndex,
+                type: originStory.type, ...update, events: newEvents, textIndex, updatedAt: currentTime, // Устанавливаем updatedAt
             },
         });
 

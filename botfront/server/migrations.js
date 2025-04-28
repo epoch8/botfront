@@ -1023,6 +1023,16 @@ Migrations.add({
     },
 });
 
+Migrations.add({
+    version: 27,
+    up: () => {
+        Stories.rawCollection().updateMany(
+            { updatedAt: { $exists: false } },
+            { $set: { updatedAt: null } },
+        );
+    },
+});
+
 Meteor.startup(() => {
     Migrations.migrateTo('latest');
 });
