@@ -52,8 +52,11 @@ class Instances extends React.Component {
 
     onSave = (updatedInstance) => {
         const { t } = this.props;
-        Meteor.call('instance.update', updatedInstance, wrapMeteorCallback((err) => {
-            if (err) Alert.error(`${t(Error)}: ${err.reason}`, { position: 'top-right', timeout: 'none' });
+        const { _id, ...instanceData } = updatedInstance;
+        Meteor.call('instance.update', instanceData, wrapMeteorCallback((err) => {
+            if (err) {
+                Alert.error(`${t(Error)}: ${err.reason}`, { position: 'top-right', timeout: 'none' });
+            } 
         }, t('Changes Saved')));
     }
 
@@ -158,7 +161,6 @@ const InstancesContainer = withTracker((props) => {
     const { projectId } = props;
     const handler = Meteor.subscribe('nlu_instances', projectId);
     const instance = InstancesCollection.findOne({ projectId });
-
     return {
         ready: handler.ready(),
         instance,
