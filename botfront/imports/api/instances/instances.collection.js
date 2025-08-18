@@ -36,18 +36,24 @@ if (Meteor.isServer) {
         'instance.update'(item) {
             checkIfCan(['resources:w', 'import:x'], item.projectId);
             check(item, Object);
-            const instanceBefore = Instances.findOne({ _id: item._id });
-            auditLog('Updated instance', {
-                user: Meteor.user(),
-                type: 'updated',
-                projectId: item.projectId,
-                operation: 'project-settings-updated',
-                resId: item.projectId,
-                before: { instance: instanceBefore },
-                after: { instance: item },
-                resType: 'project-settings',
-            });
-            return Instances.update({ projectId: item.projectId }, { $set: item });
+            try {
+                const instanceBefore = Instances.findOne({ projectId: item.projectId });
+                const result = Instances.update({ projectId: item.projectId }, { $set: item }, { upsert: true });
+                const instanceAfter = Instances.findOne({ projectId: item.projectId });
+                auditLog('Updated instance', {
+                    user: Meteor.user(),
+                    type: 'updated',
+                    projectId: item.projectId,
+                    operation: 'project-settings-updated',
+                    resId: item.projectId,
+                    before: { instance: instanceBefore },
+                    after: { instance: item },
+                    resType: 'project-settings',
+                });
+                return result;
+            } catch (e) {
+                throw new Meteor.Error('instance-update-failed', e.message);
+            }
         },
     });
 }
