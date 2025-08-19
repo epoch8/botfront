@@ -52,6 +52,17 @@ function NLUModel(props) {
         workingLanguage,
     } = props;
 
+    console.log('Current workingLanguage:', workingLanguage);
+
+    if (!workingLanguage) {
+        const fallbackLang = project?.defaultLanguage || (project?.languages && project.languages[0]);
+        if (fallbackLang) {
+            changeWorkingLanguage(fallbackLang);
+            return null;
+        }
+        return <Message error content="No language selected. Please set project languages and default language in project settings." />;
+    }
+
     if (workingLanguage !== langFromParams) {
         browserHistory.push({
             pathname: `/project/${projectId}/nlu/model/${workingLanguage}`,
