@@ -59,7 +59,7 @@ if (Meteor.isServer) {
             type: Schema.Types.Mixed,
         },
         textIndex: String,
-    }, { versionKey: false });
+    }, { versionKey: false, timestamps: true });
     
     botResponses.index({ key: 1, projectId: 1 }, { unique: true });
     botResponses.index({ textIndex: 'text' });

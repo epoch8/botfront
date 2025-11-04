@@ -121,6 +121,12 @@ export const upsertFullResponse = async (projectId, _id, key, newResponse) => {
     if (!responseWithNameExists && oldKey && oldKey !== newResponse.key) {
         await replaceStoryLines(projectId, oldKey, newResponse.key);
     }
+    // touch stories that reference this response key (content changed)
+    await Stories.update(
+        { projectId, events: { $in: [newResponse.key] } },
+        { $currentDate: { updatedAt: true } },
+        { multi: true },
+    );
     return { ok: 1, _id: response._id };
 };
 
@@ -227,6 +233,12 @@ export const upsertResponse = async ({
     if (!newNameIsTaken && updatedResponse && newKey === updatedResponse.key) {
         await replaceStoryLines(projectId, key, newKey);
     }
+    // touch stories that reference this response key (content changed)
+    await Stories.update(
+        { projectId, events: { $in: [updatedResponse.key] } },
+        { $currentDate: { updatedAt: true } },
+        { multi: true },
+    );
     return updatedResponse;
 };
 
