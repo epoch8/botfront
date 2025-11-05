@@ -149,7 +149,7 @@ export const replaceStoryLines = (projectId, lineToReplace, newLine) => {
                 lineToReplace,
                 newLine,
             );
-            return Stories.update({ _id }, { $set: { ...rest, ...indexStory(rest) } });
+            return Stories.update({ _id }, { $set: { ...rest, ...indexStory(rest), updatedAt: new Date() } });
         }),
     );
 };
