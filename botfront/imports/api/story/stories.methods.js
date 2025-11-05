@@ -176,7 +176,7 @@ Meteor.methods({
             : rest;
         const result = await Stories.update({ _id }, {
             $set: {
-                type: originStory.type, ...update, events: newEvents, textIndex, updatedAt: currentTime, // Устанавливаем updatedAt
+                type: originStory.type, ...update, events: newEvents, textIndex, updatedAt: currentTime,
             },
         });
 
