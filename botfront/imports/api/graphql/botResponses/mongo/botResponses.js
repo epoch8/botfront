@@ -102,11 +102,9 @@ export const upsertFullResponse = async (projectId, _id, key, newResponse) => {
     let response = await BotResponses.findOneAndUpdate(
         { projectId, ...(_id ? { _id } : { key }) },
         {
-            $set: { ...update, textIndex, updatedAt: new Date() },
+            $set: { ...update, textIndex },
             $setOnInsert: {
                 _id: shortid.generate(),
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         },
         { runValidators: true, upsert: true },
@@ -138,9 +136,9 @@ export const createAndOverwriteResponses = async (projectId, responses) => Promi
             { projectId, key },
             {
                 $set: {
-                    projectId, key, ...rest, textIndex, updatedAt: new Date(),
+                    projectId, key, ...rest, textIndex,
                 },
-                $setOnInsert: { _id, createdAt: new Date(), updatedAt: new Date() },
+                $setOnInsert: { _id },
             },
             { new: true, lean: true, upsert: true },
         );
@@ -179,13 +177,11 @@ export const updateResponseType = async ({
     const result = await BotResponses.findOneAndUpdate(
         { projectId, key },
         {
-            $set: { values: modifyResponseType(response, newResponseType, language, key).values, updatedAt: new Date() },
+            $set: { values: modifyResponseType(response, newResponseType, language, key).values },
             $setOnInsert: {
                 _id: shortid.generate(),
                 projectId,
                 key,
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
         },
         { upsert: true },
@@ -208,9 +204,15 @@ export const upsertResponse = async ({
                     $each: [{ content: safeDump(cleanPayload(newPayload)) }],
                 },
             },
-            $set: { textIndex, ...(newKey ? { key: newKey } : {}), updatedAt: new Date() },
+            $set: { textIndex, ...(newKey ? { key: newKey } : {}) },
         }
-        : { $set: { [`values.$.sequence.${index}`]: { content: safeDump(cleanPayload(newPayload)) }, textIndex, ...(newKey ? { key: newKey } : {}), updatedAt: new Date() } };
+        : {
+            $set: {
+                [`values.$.sequence.${index}`]: { content: safeDump(cleanPayload(newPayload)) },
+                textIndex,
+                ...(newKey ? { key: newKey } : {}),
+            },
+        };
     const updatedResponse = await BotResponses.findOneAndUpdate(
         { projectId, key, 'values.lang': language },
         update,
@@ -226,10 +228,8 @@ export const upsertResponse = async ({
                 projectId,
                 key: newKey || key,
                 textIndex,
-                createdAt: new Date(),
-                updatedAt: new Date(),
             },
-            $set: { updatedAt: new Date() },
+            $set: { },
         },
         {
             runValidators: true, new: true, lean: true, upsert: true,
@@ -239,7 +239,6 @@ export const upsertResponse = async ({
     if (!newNameIsTaken && updatedResponse && newKey === updatedResponse.key) {
         await replaceStoryLines(projectId, key, newKey);
     }
-    // touch stories that reference this response key (content changed)
     await Stories.rawCollection().updateMany(
         { projectId, events: { $in: [updatedResponse.key] } },
         { $currentDate: { updatedAt: true } },
@@ -262,7 +261,7 @@ export const deleteVariation = async ({
     const textIndex = indexBotResponse(responseMatch);
     return BotResponses.findOneAndUpdate(
         { projectId, key, 'values.lang': language },
-        { $set: { 'values.$.sequence': updatedSequence, textIndex, updatedAt: new Date() } },
+        { $set: { 'values.$.sequence': updatedSequence, textIndex } },
         { new: true, lean: true },
     );
 };
